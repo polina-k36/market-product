@@ -1,0 +1,347 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement()) @map("id_cart")
+  userId    Int        @unique(map: "id_user") @map("id_user")
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_carts_user")
+  cartItems CartItem[]
+
+  @@map("cart")
+}
+
+model CartItem {
+  id        BigInt   @id @unique(map: "id_cart_item") @default(autoincrement()) @map("id_cart_item") @db.UnsignedBigInt
+  cartId    Int      @map("id_cart")
+  productId Int      @map("id_product")
+  quantity  Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_cart_items_cart")
+  product   Product  @relation(fields: [productId], references: [id], onUpdate: NoAction, map: "fk_cart_items_product")
+
+  @@unique([cartId, productId], map: "unique_cart_product")
+  @@index([productId], map: "fk_cart_items_product")
+  @@map("cart_item")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement()) @map("id_category")
+  title     String    @map("title_category") @db.VarChar(150)
+  isDeleted Int       @default(0) @map("is_deleted") @db.TinyInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  products  Product[]
+
+  @@map("category")
+}
+
+model Order {
+  id                Int            @id @default(autoincrement()) @map("id_custom_order")
+  date              DateTime       @db.DateTime(0)
+  deliveryCity      String?        @map("delivery_city") @db.VarChar(255)
+  deliveryStreet    String?        @map("delivery_street") @db.VarChar(255)
+  deliveryHouse     String?        @map("delivery_house") @db.VarChar(20)
+  deliveryApartment String?        @map("delivery_apartment") @db.VarChar(20)
+  shopId            Int            @map("id_shop")
+  statusId          Int            @map("id_status")
+  paymentMethodId   Int            @map("id_payment_method")
+  userId            Int            @map("id_user")
+  deliveryMethodId  Int            @map("id_delivery_method")
+  userCardId        Int?           @map("id_user_card")
+  totalPrice        Decimal?       @map("total_price") @db.Decimal(10, 2)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+  deliveryMethod    DeliveryMethod @relation(fields: [deliveryMethodId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_delivery_method1")
+  paymentMethod     PaymentMethod  @relation(fields: [paymentMethodId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_payment_method1")
+  shop              Shop           @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_shop1")
+  status            Status         @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_status1")
+  user              User           @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_user1")
+  userCard          UserCard?      @relation(fields: [userCardId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_user_card")
+  invoices          Invoice[]
+  orderItems        OrderItem[]
+
+  @@index([deliveryMethodId], map: "fk_order_delivery_method1_idx")
+  @@index([paymentMethodId], map: "fk_order_payment_method1_idx")
+  @@index([shopId], map: "fk_order_shop1_idx")
+  @@index([statusId], map: "fk_order_status1_idx")
+  @@index([userId], map: "fk_order_user1_idx")
+  @@index([userCardId], map: "fk_order_user_card")
+  @@map("custom_order")
+}
+
+model DeliveryMethod {
+  id        Int      @id @default(autoincrement()) @map("id_delivery_method")
+  title     String   @unique(map: "title_delivery_method_UNIQUE") @map("title_delivery_method") @db.VarChar(150)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  orders    Order[]
+
+  @@map("delivery_method")
+}
+
+model Invoice {
+  id            Int           @id @default(autoincrement()) @map("id_invoice")
+  date          DateTime      @db.DateTime(0)
+  supplierId    Int?          @map("id_supplier")
+  invoiceTypeId Int           @map("id_invoice_type")
+  orderId       Int?          @map("id_custom_order")
+  shopId        Int           @map("id_shop")
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  invoiceType   InvoiceType   @relation(fields: [invoiceTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_invoice_type1")
+  order         Order?        @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_order1")
+  shop          Shop          @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_shop1")
+  supplier      Supplier?     @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_supplier1")
+  invoiceItems  InvoiceItem[]
+
+  @@index([invoiceTypeId], map: "fk_invoice_invoice_type1_idx")
+  @@index([orderId], map: "fk_invoice_order1_idx")
+  @@index([shopId], map: "fk_invoice_shop1_idx")
+  @@index([supplierId], map: "fk_invoice_supplier1_idx")
+  @@map("invoice")
+}
+
+model InvoiceItem {
+  id        Int     @id @default(autoincrement()) @map("id_invoice_item")
+  price     Decimal @db.Decimal(10, 2)
+  quantity  Decimal @db.Decimal(10, 3)
+  productId Int     @map("id_product")
+  invoiceId Int     @map("id_invoice")
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_item_invoice1")
+  product   Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_item_product1")
+
+  @@unique([invoiceId, productId], map: "invoice_item_UNIQUE")
+  @@index([invoiceId], map: "fk_invoice_item_invoice1_idx")
+  @@index([productId], map: "fk_invoice_item_product1_idx")
+  @@map("invoice_item")
+}
+
+model InvoiceType {
+  id        Int       @id @default(autoincrement()) @map("id_invoice_type")
+  title     String    @unique(map: "title_invoice_type_UNIQUE") @map("title_invoice_type") @db.VarChar(45)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  invoices  Invoice[]
+
+  @@map("invoice_type")
+}
+
+model Nds {
+  id        Int       @id @default(autoincrement()) @map("id_nds")
+  rate      Decimal   @unique(map: "rate_UNIQUE") @db.Decimal(5, 2)
+  titleRate String    @unique(map: "title_UNIQUE") @map("title_rate") @db.VarChar(150)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  products  Product[]
+
+  @@map("nds")
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement()) @map("id_order_item")
+  price     Decimal @db.Decimal(10, 2)
+  quantity  Decimal @db.Decimal(10, 3)
+  orderId   Int     @map("id_custom_order")
+  productId Int     @map("id_product")
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_order1")
+  product   Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_product1")
+
+  @@unique([orderId, productId], map: "order_item_UNIQUE")
+  @@index([orderId], map: "fk_order_item_order1_idx")
+  @@index([productId], map: "fk_order_item_product1_idx")
+  @@map("order_item")
+}
+
+model PaymentMethod {
+  id        Int      @id @default(autoincrement()) @map("id_payment_method")
+  title     String   @unique(map: "title_payment_method_UNIQUE") @map("title_payment_method") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  orders    Order[]
+
+  @@map("payment_method")
+}
+
+model Product {
+  id            Int           @id @default(autoincrement()) @map("id_product")
+  title         String        @unique(map: "title_product_UNIQUE") @map("title_product") @db.VarChar(255)
+  description   String        @db.Text
+  composition   String        @db.Text
+  thumbnail     String        @db.VarChar(255)
+  price         Decimal       @db.Decimal(10, 2)
+  isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
+  categoryId    Int           @map("id_category")
+  unitId        Int           @map("id_unit")
+  ndsId         Int           @map("id_nds")
+  stock         Int           @default(0)
+  reservedStock Int           @default(0) @map("reserved_stock")
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  cartItems     CartItem[]
+  invoiceItems  InvoiceItem[]
+  orderItems    OrderItem[]
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_category")
+  nds           Nds           @relation(fields: [ndsId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_nds1")
+  unit          Unit          @relation(fields: [unitId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_unit1")
+
+  @@index([categoryId], map: "fk_product_category_idx")
+  @@index([ndsId], map: "fk_product_nds1_idx")
+  @@index([unitId], map: "fk_product_unit1_idx")
+  @@map("product")
+}
+
+model Role {
+  id        Int      @id @default(autoincrement()) @map("id_role")
+  title     String   @unique(map: "title_role_UNIQUE") @map("title_role") @db.VarChar(150)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  users     User[]
+
+  @@map("role")
+}
+
+model Shop {
+  id        Int       @id @default(autoincrement()) @map("id_shop")
+  city      String    @map("shop_city") @db.VarChar(200)
+  street    String    @map("shop_street") @db.VarChar(200)
+  house     String    @map("shop_house") @db.VarChar(20)
+  phone     String    @unique(map: "phone_UNIQUE") @db.VarChar(20)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  orders    Order[]
+  invoices  Invoice[]
+
+  @@unique([city, street, house], map: "shop_address_UNIQUE")
+  @@map("shop")
+}
+
+model Status {
+  id        Int      @id @default(autoincrement()) @map("id_status")
+  title     String   @unique(map: "title_status_UNIQUE") @map("title_status") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  orders    Order[]
+
+  @@map("status")
+}
+
+model Supplier {
+  id        Int       @id @default(autoincrement()) @map("id_supplier")
+  title     String    @unique(map: "title_supplier_UNIQUE") @map("title_supplier") @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  invoices  Invoice[]
+
+  @@map("supplier")
+}
+
+model Unit {
+  id         Int       @id @default(autoincrement()) @map("id_unit")
+  shortTitle String    @unique(map: "title_unit_short_UNIQUE") @map("title_unit_short") @db.VarChar(10)
+  fullTitle  String    @unique(map: "title_unit_full_UNIQUE") @map("title_unit_full") @db.VarChar(150)
+  isDeleted  Int       @default(0) @map("is_deleted") @db.TinyInt
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  products   Product[]
+
+  @@map("unit")
+}
+
+model User {
+  id            Int           @id @default(autoincrement()) @map("id_user")
+  name          String        @map("name") @db.VarChar(255)
+  phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
+  email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
+  passwordHash  String        @map("password") @db.Text
+  birthDate     DateTime?     @map("date_birth") @db.Date
+  createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
+  isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
+  roleId        Int           @default(2) @map("id_role")
+  isBanned      Boolean?      @default(false) @map("is_banned")
+  bannedAt      DateTime?     @map("banned_at") @db.DateTime(0)
+  banReason     String?       @map("ban_reason") @db.VarChar(255)
+  cart          Cart?
+  orders        Order[]
+  role          Role          @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role1")
+  addresses     UserAddress[]
+  cards         UserCard[]
+  sessions      Session[]
+  verifications Verification[]
+
+  @@index([roleId], map: "fk_user_role1_idx")
+  @@map("user")
+}
+
+model UserAddress {
+  id        Int      @id @default(autoincrement()) @map("id_user_address")
+  city      String   @db.VarChar(200)
+  street    String   @db.VarChar(200)
+  house     String   @db.VarChar(20)
+  apartment String?  @db.VarChar(20)
+  userId    Int      @map("id_user")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_address_user1")
+
+  @@index([userId], map: "fk_user_address_user1_idx")
+  @@map("user_address")
+}
+
+model UserCard {
+  id         Int       @id @default(autoincrement()) @map("id_user_card")
+  cardNumber String?   @map("card_number") @db.Text
+  expireDate String?   @map("expire_date") @db.VarChar(10)
+  userId     Int?      @map("id_user")
+  isDeleted  Boolean?  @default(false) @map("is_deleted")
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(0)
+  cardLast4  String?   @map("card_last4") @db.VarChar(4)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  orders     Order[]
+  user       User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_card_ibfk_1")
+
+  @@index([userId], map: "id_user")
+  @@map("user_card")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement()) @map("id_session")
+  tokenHash String?  @map("token_hash") @db.Text
+  userId    Int      @map("id_user")
+  expiresAt DateTime @map("expires_at") @db.DateTime(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user      User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_session_ibfk_1")
+
+  @@index([userId], map: "id_user")
+  @@map("session")
+}
+
+model Verification {
+  id        Int              @id @default(autoincrement()) @map("id_verification")
+  tokenHash String           @map("token_hash") @db.Text
+  type      VerificationEnum 
+  userId    Int              @map("id_user")
+  expiresAt DateTime         @map("expires_at") @db.DateTime(0)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user      User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_verification_ibfk_1")
+
+  @@index([userId], map: "id_user")
+  @@map("verification")
+}
+
+enum VerificationEnum {
+  EMAIL
+  PHONE
+}

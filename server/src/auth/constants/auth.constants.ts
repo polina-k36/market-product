@@ -1,0 +1,1 @@
+export const REFRESH_TOKEN_EXPIRES_IN_DAYS = 7;
