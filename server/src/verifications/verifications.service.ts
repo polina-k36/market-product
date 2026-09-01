@@ -1,15 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateVerificationDto } from './dto/create-verification.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { VerificationType } from './enums/verification-type.enum.js';
+import { UsersService } from '../users/users.service.js';
 
 
 @Injectable()
 export class VerificationsService {
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly usersService: UsersService
+
+    ) {}
+
+
+    async getVerificationById(id: number, userId: number) {
+        const verification = await this.prisma.verification.findUnique({
+            where: {
+                id, userId
+            }
+        });
+
+        if (!verification) throw new NotFoundException('Verification not found.');
+
+        return verification;
+    }
+
 
     upsert(verificationDto: CreateVerificationDto) {
 
@@ -48,27 +67,22 @@ export class VerificationsService {
 
     }
 
-    async confirmEmail(userId: number) {
-        const token = crypto.randomBytes(16).toString('hex');
-        const expiresAt = new Date();
-        expiresAt.setMinutes(expiresAt.getMinutes() + 30);
-        const verification = await this.upsert({
-            userId,
-            type: VerificationType.EMAIL,
-            tokenHash: await bcrypt.hash(token, 4),
-            expiresAt
-        });
+    async confirmEmail(userId: number, verificationId: number, token: string) {
+        const verification = await this.getVerificationById(verificationId, userId);
 
-        const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?id=${verification.id}&token=${token}`;
-
-        //отправка на почту но жто ссылка отправки на проверку 
-        //ввероятно нам нуэно это ссылку отдать фронту чтобы она хранила ее так как ссылку которую будет открывать 
-        // пользователь может быть ьссылка страницы фронта которая 
-        // это выполняет 
-
-    }
-
-    
+        if (verification.expiresAt < new Date()) throw new UnauthorizedException('Verification token has expired.'); 
+        
+        const isValidToken = await bcrypt.compare(token, verification.tokenHash);
+        if (!isValidToken) throw new UnauthorizedException('Invalid verification token.'); 
+        
+        await this.usersService.updateVerificationStatus(userId, VerificationType.EMAIL, true);
+        await this.remove(verificationId);
+        
+        return {
+            success: true,
+            message: 'Email successfully verified'
+        }
+    }   
 
 
     remove(id: number) {
