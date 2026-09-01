@@ -260,7 +260,9 @@ model User {
   id            Int           @id @default(autoincrement()) @map("id_user")
   name          String        @map("name") @db.VarChar(255)
   phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
+  phoneVerified Boolean       @map("phone_verified") @default(false) 
   email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
+  emailVerified Boolean       @map("email_verified") @default(false) 
   passwordHash  String        @map("password") @db.Text
   birthDate     DateTime?     @map("date_birth") @db.Date
   createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
@@ -337,6 +339,7 @@ model Verification {
 
   user      User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_verification_ibfk_1")
 
+  @@unique([userId, type])
   @@index([userId], map: "id_user")
   @@map("verification")
 }

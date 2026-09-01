@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module.js';
 import { SessionsService } from './sessions/sessions.service.js';
 import { SessionsModule } from './sessions/sessions.module.js';
+import { VerificationsModule } from './verifications/verifications.module.js';
 
 
 @Module({
@@ -17,7 +18,7 @@ import { SessionsModule } from './sessions/sessions.module.js';
     ConfigModule.forRoot({
       envFilePath: `.env`,
     }),
-    AuthModule, ProductsModule, CategoriesModule, UsersModule, PrismaModule, OrdersModule, SessionsModule],
+    AuthModule, ProductsModule, CategoriesModule, UsersModule, PrismaModule, OrdersModule, SessionsModule, VerificationsModule],
   controllers: [AppController],
   providers: [AppService, SessionsService],
 })

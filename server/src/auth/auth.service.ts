@@ -112,6 +112,7 @@ export class AuthService {
 
     if (new Date() > session.expiresAt) {
       await this.sessionsService.remove(payload.sessionId, payload.sub);
+      throw new UnauthorizedException('Refresh token is missing.');
     }
 
     const user = await this.usersService.getUserById(payload.sub);
