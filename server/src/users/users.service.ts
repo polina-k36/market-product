@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import bcrypt from 'bcrypt';
 import { isEmail, isPhoneNumber } from 'class-validator';
 import { NotFoundError } from 'rxjs';
+import { VerificationType } from '../verifications/enums/verification-type.enum.js';
 
 interface ICreateDataUser {
   name: string;
@@ -53,6 +54,25 @@ export class UsersService {
       success: true,
       data: createdUser
     }
+  }
+
+  updateVerificationStatus( id: number, type: VerificationType, verified: boolean ) {
+    if (type === VerificationType.EMAIL) {
+      return this.prisma.user.update({
+        where: { id },
+        data: {
+          emailVerified: verified
+        }
+      });
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        phoneVerified: verified
+      }
+    })
+
   }
 
   getAll() {

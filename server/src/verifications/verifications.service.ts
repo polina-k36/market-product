@@ -39,7 +39,7 @@ export class VerificationsService {
             expiresAt
         });
 
-        const link = `${process.env.BASE_URL_SERVER}/verification/email/confirm?id=${verification.id}&token=${token}`;
+        const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?id=${verification.id}&token=${token}`;
 
         //отправка на почту но жто ссылка отправки на проверку 
         //ввероятно нам нуэно это ссылку отдать фронту чтобы она хранила ее так как ссылку которую будет открывать 
@@ -47,6 +47,28 @@ export class VerificationsService {
         // это выполняет 
 
     }
+
+    async confirmEmail(userId: number) {
+        const token = crypto.randomBytes(16).toString('hex');
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+        const verification = await this.upsert({
+            userId,
+            type: VerificationType.EMAIL,
+            tokenHash: await bcrypt.hash(token, 4),
+            expiresAt
+        });
+
+        const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?id=${verification.id}&token=${token}`;
+
+        //отправка на почту но жто ссылка отправки на проверку 
+        //ввероятно нам нуэно это ссылку отдать фронту чтобы она хранила ее так как ссылку которую будет открывать 
+        // пользователь может быть ьссылка страницы фронта которая 
+        // это выполняет 
+
+    }
+
+    
 
 
     remove(id: number) {
