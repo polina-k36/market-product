@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateSessionDto } from './dto/create-session.dto.js';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class SessionsService {
@@ -35,21 +36,19 @@ export class SessionsService {
     }
 
     async remove(id: number, userId: number) {
-        
-        const session = await this.prisma.session.findUnique({
-            where: {
-                id, userId
-            },
-            select: { id: true }
-        });
 
-        if (!session) throw new NotFoundException('');
-
-        return await this.prisma.session.delete({
-            where: {
-                id, userId
+        try {
+            return await this.prisma.session.delete({
+                where: {
+                    id, userId
+                }
+            });
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new NotFoundException('');
             }
-        });
+            throw error;
+        }
     }
 
 }

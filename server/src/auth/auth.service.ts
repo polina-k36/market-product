@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException, UnauthorizedException
 import { LoginUserDto } from './dto/login-user.dto.js';
 import { UsersService } from '../users/users.service.js';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/create-user.dto.js';
 import { SessionsService } from '../sessions/sessions.service.js';
 import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
@@ -99,8 +99,7 @@ export class AuthService {
   async refresh(refreshToken: string) {
 
     if (!refreshToken) throw new UnauthorizedException('Refresh token is missing.');
-
-    console.log(refreshToken);
+    
     const payload = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
     });
