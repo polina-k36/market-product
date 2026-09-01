@@ -9,14 +9,14 @@ import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly reflector: Reflector
+    private readonly authService: AuthService
   ) {}
   
   
   @Post('login')
   async login(@Body() dtoLoginUser: LoginUserDto, @Res({passthrough: true}) res: Response) {
     const {refreshToken, ...loginData} = await this.authService.login(dtoLoginUser);
+    
     res.cookie('refreshToken', refreshToken, {
       maxAge: REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -40,7 +40,7 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Req() req: Request) {
-    return this.authService.refresh(req.cookies.refreshToken)
+    return await this.authService.refresh(req.cookies.refreshToken)
   }
 
   @Post('logout')

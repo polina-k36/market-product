@@ -73,7 +73,7 @@ export class AuthService {
     const validUser = await this.validateUser(userDto);
 
     const accessToken = this.createAccessJwtToken({id: validUser.id, role: validUser.role.title});
-    const refreshToken = this.createRefreshJwtToken({id: validUser.id});
+    const refreshToken = await this.createRefreshJwtToken({id: validUser.id});
 
     return {
       success: true,
@@ -87,7 +87,7 @@ export class AuthService {
     const createdUser = await this.usersService.create(userDto);    
 
     const accessToken = this.createAccessJwtToken({id: createdUser.data.id, role: createdUser.data.role.title});
-    const refreshToken = this.createRefreshJwtToken({id: createdUser.data.id});
+    const refreshToken = await this.createRefreshJwtToken({id: createdUser.data.id});
 
     return {
       success: true,
@@ -100,17 +100,19 @@ export class AuthService {
 
     if (!refreshToken) throw new UnauthorizedException('Refresh token is missing.');
 
+    console.log(refreshToken);
     const payload = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
     });
 
     const session = await this.sessionsService.getSessionById(payload.sessionId, payload.sub);
-
-    if (!session) throw new UnauthorizedException('Refresh token is missing.');
-
     const validToken = await bcrypt.compare(refreshToken, session.tokenHash ?? '');
 
     if (!validToken) throw new UnauthorizedException('Refresh token is missing.');
+
+    if (new Date() > session.expiresAt) {
+      await this.sessionsService.remove(payload.sessionId, payload.sub);
+    }
 
     const user = await this.usersService.getUserById(payload.sub);
 

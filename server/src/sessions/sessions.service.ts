@@ -11,7 +11,7 @@ export class SessionsService {
         const session = await this.prisma.session.findUnique({
             where: {
                 id,
-                userId
+                userId,
             }
         });
 
@@ -27,14 +27,15 @@ export class SessionsService {
         });
     }
 
-    updateTokenHash(id: number, userId: number, token: string) {
+    updateTokenHash(id: number, userId: number, tokenHash: string) {
         return this.prisma.session.update({
-            data: { tokenHash: token },
-            where: {id, userId }
+            data: { tokenHash },
+            where: { id, userId }
         })
     }
 
     async remove(id: number, userId: number) {
+        
         const session = await this.prisma.session.findUnique({
             where: {
                 id, userId
@@ -44,11 +45,11 @@ export class SessionsService {
 
         if (!session) throw new NotFoundException('');
 
-        this.prisma.session.delete({
+        return await this.prisma.session.delete({
             where: {
                 id, userId
             }
-        })
+        });
     }
 
 }
