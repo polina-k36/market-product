@@ -41,7 +41,7 @@ export class VerificationsService {
         },
       },
       update: {
-        tokenHash: verificationDto.tokenHash,
+        valueHash: verificationDto.valueHash,
         expiresAt: verificationDto.expiresAt,
       },
       create: verificationDto,
@@ -55,7 +55,7 @@ export class VerificationsService {
     const verification = await this.upsert({
       userId,
       type: VerificationType.EMAIL,
-      tokenHash: await bcrypt.hash(token, 4),
+      valueHash: await bcrypt.hash(token, 4),
       expiresAt,
     });
 
@@ -87,7 +87,7 @@ export class VerificationsService {
     if (verification.expiresAt < new Date())
       throw new UnauthorizedException('Verification token has expired.');
 
-    const isValidToken = await bcrypt.compare(token, verification.tokenHash);
+    const isValidToken = await bcrypt.compare(token, verification.valueHash);
     if (!isValidToken)
       throw new UnauthorizedException('Invalid verification token.');
 
