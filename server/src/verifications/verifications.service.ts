@@ -69,7 +69,7 @@ export class VerificationsService {
 
     const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?id=${verification.id}&token=${token}`;
 
-    this.mailService.sendEmail({
+    return this.mailService.sendEmail({
       recipient: contactInfo.email,
       subject: `Верификация почты на сайте ${process.env.BASE_URL_CLIENT}`,
       html: `Перейдите по ссылке чтобы подтвердить свою почту <br/>Вот ваша ссылка - ${link}`,

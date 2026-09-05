@@ -12,6 +12,7 @@ import { SessionsService } from './sessions/sessions.service.js';
 import { SessionsModule } from './sessions/sessions.module.js';
 import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
