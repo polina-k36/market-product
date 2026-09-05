@@ -75,7 +75,7 @@ export class VerificationsService {
     const value =
       methodVerification === VerificationMethod.CODE
         ? crypto.randomInt(100000, 1000000).toString()
-        : crypto.randomBytes(16).toString('hex');
+        : crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 5);
     const verification = await this.upsert({
