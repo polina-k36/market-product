@@ -278,9 +278,23 @@ model User {
   cards         UserCard[]
   sessions      Session[]
   verifications Verification[]
+  identities    UserIdentity[]
 
   @@index([roleId], map: "fk_user_role1_idx")
   @@map("user")
+}
+
+model UserIdentity {
+  id                Int          @id @default(autoincrement()) @map("id_user_identity")
+  userId            Int          @map("id_user")
+  provider          AuthProvider 
+  providerAccountId String       @map("provider_account_id")
+
+  user              User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_identity_user1")
+
+  @@unique([provider, providerAccountId])
+  @@unique([userId, provider, providerAccountId])
+  @@map("user_identity")
 }
 
 model UserAddress {
@@ -331,8 +345,8 @@ model Session {
 model Verification {
   id        Int                    @id @default(autoincrement()) @map("id_verification")
   valueHash String                 @map("value_hash") @db.Text
-  type      VerificationTypeEnum 
-  method    VerificationMethodEnum 
+  type      VerificationType 
+  method    VerificationMethod 
   userId    Int                    @map("id_user")
   expiresAt DateTime               @map("expires_at") @db.DateTime(0)
   createdAt DateTime               @default(now()) @map("created_at") @db.Timestamp(0)
@@ -344,11 +358,15 @@ model Verification {
   @@map("verification")
 }
 
-enum VerificationTypeEnum {
+enum VerificationType {
   EMAIL
 }
 
-enum VerificationMethodEnum {
+enum VerificationMethod {
   CODE
   LINK
+}
+
+enum AuthProvider {
+  GOOGLE
 }
