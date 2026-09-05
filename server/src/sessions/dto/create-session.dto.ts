@@ -1,8 +1,5 @@
 export class CreateSessionDto {
+  userId: number;
 
-    userId: number
-
-    expiresAt: Date
-
-
+  expiresAt: Date;
 }

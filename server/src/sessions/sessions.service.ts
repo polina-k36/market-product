@@ -1,54 +1,59 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateSessionDto } from './dto/create-session.dto.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class SessionsService {
+  constructor(private readonly prisma: PrismaService) {}
 
-    constructor(private readonly prisma: PrismaService) {}
+  async getSessionById(id: number, userId: number) {
+    const session = await this.prisma.session.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
 
-    async getSessionById(id: number, userId: number) {
-        const session = await this.prisma.session.findUnique({
-            where: {
-                id,
-                userId,
-            }
-        });
+    if (!session) throw new UnauthorizedException();
 
-        if (!session) throw new UnauthorizedException();
+    return session;
+  }
 
-        return session;
+  create(sessionDto: CreateSessionDto) {
+    return this.prisma.session.create({
+      data: sessionDto,
+      select: { id: true },
+    });
+  }
+
+  updateTokenHash(id: number, userId: number, tokenHash: string) {
+    return this.prisma.session.update({
+      data: { tokenHash },
+      where: { id, userId },
+    });
+  }
+
+  async remove(id: number, userId: number) {
+    try {
+      return await this.prisma.session.delete({
+        where: {
+          id,
+          userId,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('');
+      }
+      throw error;
     }
-
-    create(sessionDto: CreateSessionDto) {
-        return this.prisma.session.create({
-            data: sessionDto,
-            select: { id: true }
-        });
-    }
-
-    updateTokenHash(id: number, userId: number, tokenHash: string) {
-        return this.prisma.session.update({
-            data: { tokenHash },
-            where: { id, userId }
-        })
-    }
-
-    async remove(id: number, userId: number) {
-
-        try {
-            return await this.prisma.session.delete({
-                where: {
-                    id, userId
-                }
-            });
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-                throw new NotFoundException('');
-            }
-            throw error;
-        }
-    }
-
+  }
 }

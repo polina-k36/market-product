@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class OrdersService {
-
   constructor(private readonly prisma: PrismaService) {}
 
   create(createOrderDto: CreateOrderDto) {
@@ -15,9 +14,9 @@ export class OrdersService {
   findAll(userId: number, role: string) {
     return this.prisma.order.findMany({
       where: {
-        userId: role === 'ADMIN' ? undefined : userId 
-      }
-    })
+        userId: role === 'ADMIN' ? undefined : userId,
+      },
+    });
   }
 
   findOne(id: number) {

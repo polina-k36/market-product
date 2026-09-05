@@ -13,7 +13,7 @@ import { SessionsModule } from '../sessions/sessions.module.js';
         expiresIn: '15m', // позже возмжно увеличу
       },
     }),
-    SessionsModule
+    SessionsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, UsersService],

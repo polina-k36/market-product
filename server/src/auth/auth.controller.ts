@@ -8,53 +8,56 @@ import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService
-  ) {}
-  
-  
+  constructor(private readonly authService: AuthService) {}
+
   @Post('login')
-  async login(@Body() dtoLoginUser: LoginUserDto, @Res({passthrough: true}) res: Response) {
-    const {refreshToken, ...loginData} = await this.authService.login(dtoLoginUser);
-    
+  async login(
+    @Body() dtoLoginUser: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshToken, ...loginData } =
+      await this.authService.login(dtoLoginUser);
+
     res.cookie('refreshToken', refreshToken, {
       maxAge: REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false //установка тру когда передача будет по защищенному каналу по https
-    })
+      secure: false, //установка тру когда передача будет по защищенному каналу по https
+    });
 
-    return loginData;    
+    return loginData;
   }
 
   @Post('register')
-  async register(@Body() dtoRegUser: CreateUserDto, @Res({passthrough: true}) res: Response) {
-    const {refreshToken, ...registerData} = await this.authService.register(dtoRegUser);
+  async register(
+    @Body() dtoRegUser: CreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshToken, ...registerData } =
+      await this.authService.register(dtoRegUser);
     res.cookie('refreshToken', refreshToken, {
       maxAge: REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false 
-    })
+      secure: false,
+    });
 
-    return registerData;    
+    return registerData;
   }
 
   @Post('refresh')
   async refresh(@Req() req: Request) {
-    return await this.authService.refresh(req.cookies.refreshToken)
+    return await this.authService.refresh(req.cookies.refreshToken);
   }
 
   @Post('logout')
-  async logout(@Res({passthrough: true}) res: Response, @Req() req: Request) {
+  async logout(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
     await this.authService.logout(req.cookies.refreshToken);
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: false //смени когда придет время
+      secure: false, //смени когда придет время
     });
     return {
       success: true,
       message: 'Successfully logged out.',
     };
   }
-
-  
 }

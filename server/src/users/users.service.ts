@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -16,63 +20,77 @@ interface ICreateDataUser {
 
 @Injectable()
 export class UsersService {
-
   constructor(private readonly prisma: PrismaService) {}
 
-  fields = {id: true, name: true, email: true, phone: true, passwordHash: true, role: true};
+  fields = {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    passwordHash: true,
+    role: true,
+  };
 
   async create(createUserDto: CreateUserDto) {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: createUserDto.login },
-          { phone: createUserDto.login },
-        ]
-      }
+        OR: [{ email: createUserDto.login }, { phone: createUserDto.login }],
+      },
     });
 
-    if (user) throw new ConflictException('This email or phone number is already in use.');
+    if (user)
+      throw new ConflictException(
+        'This email or phone number is already in use.',
+      );
 
     const dataUser: ICreateDataUser = {
       name: createUserDto.name,
       passwordHash: await bcrypt.hash(createUserDto.password, 5),
-    }
+    };
 
     if (isEmail(createUserDto.login)) {
       dataUser.email = createUserDto.login;
-    } 
-    else if (isPhoneNumber(createUserDto.login, 'RU')) {
+    } else if (isPhoneNumber(createUserDto.login, 'RU')) {
       dataUser.phone = createUserDto.login;
     }
 
     const createdUser = await this.prisma.user.create({
       data: dataUser,
-      select: {id: true, name: true, email: true, phone: true, role: true}
-    })
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+      },
+    });
 
     return {
       success: true,
-      data: createdUser
-    }
+      data: createdUser,
+    };
   }
 
-  updateVerificationStatus( id: number, type: VerificationType, verified: boolean ) {
+  updateVerificationStatus(
+    id: number,
+    type: VerificationType,
+    verified: boolean,
+  ) {
     if (type === VerificationType.EMAIL) {
       return this.prisma.user.update({
         where: { id },
         data: {
-          emailVerified: verified
-        }
+          emailVerified: verified,
+        },
       });
     }
 
     return this.prisma.user.update({
       where: { id },
       data: {
-        phoneVerified: verified
-      }
-    })
-
+        phoneVerified: verified,
+      },
+    });
   }
 
   getAll() {
@@ -81,25 +99,34 @@ export class UsersService {
 
   getUserById(id: number) {
     const user = this.prisma.user.findUnique({
-      where: {id},
-      select: this.fields
+      where: { id },
+      select: this.fields,
     });
-    if (!user) throw new NotFoundException('');
-    return user; 
+    if (!user) throw new NotFoundException('User not found.');
+    return user;
+  }
+
+  getUsersContactInfoById(id: number) {
+    const user = this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        phone: true,
+        email: true,
+      },
+    });
+    if (!user) throw new NotFoundException('User not found.');
+    return user;
   }
 
   getUserByLogin(login: string) {
     const user = this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: login },
-          { phone: login }
-        ]
+        OR: [{ email: login }, { phone: login }],
       },
-      select: this.fields
+      select: this.fields,
     });
     if (!user) throw new NotFoundException('');
-    return user; 
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

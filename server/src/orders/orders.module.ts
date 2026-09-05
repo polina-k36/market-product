@@ -4,7 +4,6 @@ import { OrdersController } from './orders.controller.js';
 import { AuthModule } from '../auth/auth.module.js';
 
 @Module({
-
   imports: [AuthModule],
   controllers: [OrdersController],
   providers: [OrdersService],

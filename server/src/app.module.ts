@@ -13,13 +13,21 @@ import { SessionsModule } from './sessions/sessions.module.js';
 import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env`,
     }),
-    AuthModule, ProductsModule, CategoriesModule, UsersModule, PrismaModule, OrdersModule, SessionsModule, VerificationsModule, MailModule],
+    AuthModule,
+    ProductsModule,
+    CategoriesModule,
+    UsersModule,
+    PrismaModule,
+    OrdersModule,
+    SessionsModule,
+    VerificationsModule,
+    MailModule,
+  ],
   controllers: [AppController],
   providers: [AppService, SessionsService],
 })
