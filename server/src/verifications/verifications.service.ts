@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 import { VerificationType } from './enums/verification-type.enum.js';
 import { UsersService } from '../users/users.service.js';
 import { MailService } from '../mail/mail.service.js';
+import { VerificationMethod } from './enums/verification-method.enum.js';
 
 @Injectable()
 export class VerificationsService {
@@ -32,6 +33,21 @@ export class VerificationsService {
     return verification;
   }
 
+  async getVerificationEmailByUserId(userId: number) {
+    const verification = await this.prisma.verification.findUnique({
+      where: {
+        userId_type: {
+          userId,
+          type: VerificationType.EMAIL,
+        },
+      },
+    });
+
+    if (!verification) throw new NotFoundException('Verification not found.');
+
+    return verification;
+  }
+
   upsert(verificationDto: CreateVerificationDto) {
     return this.prisma.verification.upsert({
       where: {
@@ -43,20 +59,31 @@ export class VerificationsService {
       update: {
         valueHash: verificationDto.valueHash,
         expiresAt: verificationDto.expiresAt,
+        method: verificationDto.method,
       },
       create: verificationDto,
     });
   }
 
-  async sendEmail(userId: number) {
-    const token = crypto.randomBytes(16).toString('hex');
+  remove(id: number) {
+    return this.prisma.verification.deleteMany({
+      where: { id },
+    });
+  }
+
+  async sendEmail(userId: number, methodVerification: VerificationMethod) {
+    const value =
+      methodVerification === VerificationMethod.CODE
+        ? crypto.randomInt(100000, 1000000).toString()
+        : crypto.randomBytes(16).toString('hex');
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
     const verification = await this.upsert({
       userId,
       type: VerificationType.EMAIL,
-      valueHash: await bcrypt.hash(token, 4),
+      valueHash: await bcrypt.hash(value, 4),
       expiresAt,
+      method: methodVerification,
     });
 
     const contactInfo = await this.usersService.getUsersContactInfoById(userId);
@@ -67,27 +94,27 @@ export class VerificationsService {
     if (!contactInfo.email)
       throw new NotFoundException('Email does not exist.');
 
-    const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?id=${verification.id}&token=${token}`;
+    const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?token=${value}`;
+
+    const html =
+      methodVerification === VerificationMethod.CODE
+        ? `Вот ваш код подтверждения - ${value}. <br/>Никому не сообщайте его. Он действует в течение 5 минут.`
+        : `Перейдите по ссылке чтобы подтвердить свою почту <br/>Вот ваша ссылка - ${link}`;
 
     return this.mailService.sendEmail({
       recipient: contactInfo.email,
       subject: `Верификация почты на сайте ${process.env.BASE_URL_CLIENT}`,
-      html: `Перейдите по ссылке чтобы подтвердить свою почту <br/>Вот ваша ссылка - ${link}`,
+      html,
     });
-
-    //отправка на почту но жто ссылка отправки на проверку
-    //ввероятно нам нуэно это ссылку отдать фронту чтобы она хранила ее так как ссылку которую будет открывать
-    // пользователь может быть ьссылка страницы фронта которая
-    // это выполняет
   }
 
-  async confirmEmail(userId: number, verificationId: number, token: string) {
-    const verification = await this.getVerificationById(verificationId, userId);
+  async confirmEmail(userId: number, value: string) {
+    const verification = await this.getVerificationEmailByUserId(userId);
 
     if (verification.expiresAt < new Date())
       throw new UnauthorizedException('Verification token has expired.');
 
-    const isValidToken = await bcrypt.compare(token, verification.valueHash);
+    const isValidToken = await bcrypt.compare(value, verification.valueHash);
     if (!isValidToken)
       throw new UnauthorizedException('Invalid verification token.');
 
@@ -96,17 +123,11 @@ export class VerificationsService {
       VerificationType.EMAIL,
       true,
     );
-    await this.remove(verificationId);
+    await this.remove(verification.id);
 
     return {
       success: true,
       message: 'Email successfully verified',
     };
-  }
-
-  remove(id: number) {
-    return this.prisma.verification.deleteMany({
-      where: { id },
-    });
   }
 }

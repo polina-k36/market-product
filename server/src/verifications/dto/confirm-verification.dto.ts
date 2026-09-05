@@ -1,11 +1,6 @@
-import { IsNumber, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export class ConfirmVerificationDto {
-  @Type(() => Number)
-  @IsNumber()
-  id: number;
-
   @IsString()
   token: string;
 }

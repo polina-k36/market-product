@@ -260,7 +260,6 @@ model User {
   id            Int           @id @default(autoincrement()) @map("id_user")
   name          String        @map("name") @db.VarChar(255)
   phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
-  phoneVerified Boolean       @map("phone_verified") @default(false) 
   email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
   emailVerified Boolean       @map("email_verified") @default(false) 
   passwordHash  String        @map("password") @db.Text
@@ -330,12 +329,13 @@ model Session {
 }
 
 model Verification {
-  id        Int              @id @default(autoincrement()) @map("id_verification")
-  valueHash String           @map("value_hash") @db.Text
-  type      VerificationEnum 
-  userId    Int              @map("id_user")
-  expiresAt DateTime         @map("expires_at") @db.DateTime(0)
-  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(0)
+  id        Int                    @id @default(autoincrement()) @map("id_verification")
+  valueHash String                 @map("value_hash") @db.Text
+  type      VerificationTypeEnum 
+  method    VerificationMethodEnum 
+  userId    Int                    @map("id_user")
+  expiresAt DateTime               @map("expires_at") @db.DateTime(0)
+  createdAt DateTime               @default(now()) @map("created_at") @db.Timestamp(0)
 
   user      User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_verification_ibfk_1")
 
@@ -344,7 +344,11 @@ model Verification {
   @@map("verification")
 }
 
-enum VerificationEnum {
+enum VerificationTypeEnum {
   EMAIL
-  PHONE
+}
+
+enum VerificationMethodEnum {
+  CODE
+  LINK
 }
