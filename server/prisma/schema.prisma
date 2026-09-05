@@ -259,10 +259,11 @@ model Unit {
 model User {
   id            Int           @id @default(autoincrement()) @map("id_user")
   name          String        @map("name") @db.VarChar(255)
+  urlAvatar     String?       @map("url_avatar") @db.Text
   phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
   email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
   emailVerified Boolean       @map("email_verified") @default(false) 
-  passwordHash  String        @map("password") @db.Text
+  passwordHash  String?       @map("password") @db.Text
   birthDate     DateTime?     @map("date_birth") @db.Date
   createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
