@@ -1,8 +1,7 @@
-import { Controller, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { VerificationsService } from './verifications.service.js';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { ConfirmVerificationDto } from './dto/confirm-verification.dto.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
 
 @UseGuards(JwtAuthGuard)
@@ -20,11 +19,8 @@ export class VerificationsController {
   }
 
   @Post('email/confirm')
-  confirmEmailVerification(
-    @Query() query: ConfirmVerificationDto,
-    @Req() req: Request,
-  ) {
+  confirmEmailVerification(@Query('value') value: string, @Req() req: Request) {
     const userId = req.user ? req.user.sub : 0;
-    return this.verificationsService.confirmEmail(userId, query.token);
+    return this.verificationsService.confirmEmail(userId, value);
   }
 }

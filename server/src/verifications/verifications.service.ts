@@ -77,8 +77,12 @@ export class VerificationsService {
         ? crypto.randomInt(100000, 1000000).toString()
         : crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
-    const verification = await this.upsert({
+    if (methodVerification === VerificationMethod.CODE)
+      expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+    else if (methodVerification === VerificationMethod.LINK)
+      expiresAt.setMinutes(expiresAt.getMinutes() + 20);
+
+    await this.upsert({
       userId,
       type: VerificationType.EMAIL,
       valueHash: await bcrypt.hash(value, 4),
@@ -94,12 +98,12 @@ export class VerificationsService {
     if (!contactInfo.email)
       throw new NotFoundException('Email does not exist.');
 
-    const link = `${process.env.BASE_URL_CLIENT}/verification/email/confirm?token=${value}`;
-
     const html =
       methodVerification === VerificationMethod.CODE
-        ? `Вот ваш код подтверждения - ${value}. <br/>Никому не сообщайте его. Он действует в течение 5 минут.`
-        : `Перейдите по ссылке чтобы подтвердить свою почту <br/>Вот ваша ссылка - ${link}`;
+        ? this.getEmailCodeTemplate(value)
+        : this.getEmailLinkTemplate(
+            `${process.env.BASE_URL_CLIENT}/verification/email/confirm?token=${value}`,
+          );
 
     return this.mailService.sendEmail({
       recipient: contactInfo.email,
@@ -129,5 +133,191 @@ export class VerificationsService {
       success: true,
       message: 'Email successfully verified',
     };
+  }
+
+  getEmailCodeTemplate(code: string) {
+    return `
+      <div style="
+        margin: 0;
+        padding: 40px 20px;
+        background-color: #f5f7fb;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1f2937;
+      ">
+        <div style="
+          max-width: 520px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 18px;
+          padding: 40px 32px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+          text-align: center;
+        ">
+          <div style="
+            display: inline-block;
+            padding: 8px 14px;
+            margin-bottom: 24px;
+            border-radius: 999px;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+          ">
+            Подтверждение email
+          </div>
+
+          <h1 style="
+            margin: 0 0 14px;
+            font-size: 28px;
+            line-height: 1.3;
+            color: #111827;
+          ">
+            Ваш код подтверждения
+          </h1>
+
+          <p style="
+            margin: 0 0 28px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #6b7280;
+          ">
+            Введите этот код на сайте, чтобы подтвердить свою электронную почту.
+          </p>
+
+          <div style="
+            display: inline-block;
+            padding: 18px 28px;
+            margin-bottom: 28px;
+            border-radius: 14px;
+            background-color: #f3f4f6;
+            color: #111827;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 8px;
+          ">
+            ${code}
+          </div>
+
+          <p style="
+            margin: 0 0 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #6b7280;
+          ">
+            Код действует в течение <strong>5 минут</strong>.
+          </p>
+
+          <p style="
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #9ca3af;
+          ">
+            Никому не сообщайте этот код. Если вы не запрашивали подтверждение,
+            просто проигнорируйте это письмо.
+          </p>
+        </div>
+      </div>
+    `;
+  }
+
+  getEmailLinkTemplate(link: string) {
+    return `
+      <div style="
+        margin: 0;
+        padding: 40px 20px;
+        background-color: #f5f7fb;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1f2937;
+      ">
+        <div style="
+          max-width: 520px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 18px;
+          padding: 40px 32px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+          text-align: center;
+        ">
+          <div style="
+            display: inline-block;
+            padding: 8px 14px;
+            margin-bottom: 24px;
+            border-radius: 999px;
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+          ">
+            Подтверждение email
+          </div>
+
+          <h1 style="
+            margin: 0 0 14px;
+            font-size: 28px;
+            line-height: 1.3;
+            color: #111827;
+          ">
+            Подтвердите свою почту
+          </h1>
+
+          <p style="
+            margin: 0 0 30px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #6b7280;
+          ">
+            Нажмите на кнопку ниже, чтобы завершить подтверждение электронной почты.
+          </p>
+
+          <a
+            href="${link}"
+            style="
+              display: inline-block;
+              padding: 14px 24px;
+              border-radius: 12px;
+              background-color: #4f46e5;
+              color: #ffffff;
+              text-decoration: none;
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 28px;
+            "
+          >
+            Подтвердить email
+          </a>
+
+          <p style="
+            margin: 0 0 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #6b7280;
+          ">
+            Ссылка действует в течение <strong>20 минут</strong>.
+          </p>
+
+          <p style="
+            margin: 0 0 18px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #9ca3af;
+          ">
+            Если кнопка не работает, скопируйте ссылку ниже и вставьте её в браузер:
+          </p>
+
+          <p style="
+            margin: 0;
+            word-break: break-all;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #6b7280;
+          ">
+            ${link}
+          </p>
+        </div>
+      </div>
+    `;
   }
 }
