@@ -12,6 +12,7 @@ import { SessionsService } from './sessions/sessions.service.js';
 import { SessionsModule } from './sessions/sessions.module.js';
 import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
+import { UserIdentitiesModule } from './user-identities/user-identities.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MailModule } from './mail/mail.module.js';
     SessionsModule,
     VerificationsModule,
     MailModule,
+    UserIdentitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService, SessionsService],

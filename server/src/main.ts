@@ -6,12 +6,16 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: '*',
+  });
+
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-    })
-  )
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000, () => {
     console.log(`Сервер запущен на порту - ${process.env.PORT ?? 3000}`);

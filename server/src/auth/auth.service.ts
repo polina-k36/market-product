@@ -11,6 +11,10 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/create-user.dto.js';
 import { SessionsService } from '../sessions/sessions.service.js';
 import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
+import { OAuth2Client } from 'google-auth-library';
+import { UserIdentitiesService } from '../user-identities/user-identities.service.js';
+import { AuthProviderEnum } from '../user-identities/enums/auth-provider.enum.js';
+import { User } from '../generated/prisma/client.js';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +22,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private sessionsService: SessionsService,
+    private userIdentitiesService: UserIdentitiesService,
   ) {}
 
   createAccessJwtToken(user: { id: number; role: string }) {
@@ -60,6 +65,8 @@ export class AuthService {
     const user = await this.usersService.getUserByLogin(userDto.login);
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user.passwordHash)
+      throw new UnauthorizedException('Invalid credentials');
 
     const isValidPass = await bcrypt.compare(
       userDto.password,
@@ -164,5 +171,74 @@ export class AuthService {
       return;
     }
     await this.sessionsService.remove(payload.sessionId, payload.sub);
+  }
+
+  async profile(userId: number) {
+    const user = await this.usersService.getUserById(userId);
+    console.log(userId);
+    if (!user) throw new NotFoundException();
+    return user;
+  }
+
+  async google(credential: string) {
+    const client = new OAuth2Client();
+
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) throw new UnauthorizedException();
+
+    if (!payload.sub) throw new UnauthorizedException();
+
+    if (!payload.email) throw new UnauthorizedException();
+
+    if (!payload.email_verified) throw new UnauthorizedException();
+
+    const userIdentity = await this.userIdentitiesService.getIdentityByGoogleId(
+      //сделать универсальным метод
+      payload.sub,
+    );
+
+    let user;
+
+    if (!userIdentity) {
+      user = await this.usersService.getUserByLogin(payload.email);
+      if (!user) {
+        user = (
+          await this.usersService.create({
+            name: payload.name ?? 'no-name',
+            email: payload.email,
+            emailVerified: payload.email_verified,
+            urlAvatar: payload.picture,
+          })
+        ).data;
+      }
+      await this.userIdentitiesService.create({
+        userId: user.id,
+        provider: AuthProviderEnum.GOOGLE,
+        providerAccountId: payload.sub,
+      });
+    } else {
+      user = await this.usersService.getUserById(userIdentity.userId);
+      if (!user) throw new UnauthorizedException();
+    }
+
+    const accessToken = this.createAccessJwtToken({
+      id: user.id,
+      role: user.role.title,
+    });
+    const refreshToken = await this.createRefreshJwtToken({
+      id: user.id,
+    });
+
+    return {
+      success: true,
+      accessToken,
+      refreshToken,
+    };
   }
 }

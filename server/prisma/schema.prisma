@@ -264,7 +264,7 @@ model User {
   email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
   emailVerified Boolean       @map("email_verified") @default(false) 
   passwordHash  String?       @map("password") @db.Text
-  birthDate     DateTime?     @map("date_birth") @db.Date
+  birthDate     DateTime?     @map("date_birth") @db.Date 
   createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
   isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
@@ -272,6 +272,7 @@ model User {
   isBanned      Boolean?      @default(false) @map("is_banned")
   bannedAt      DateTime?     @map("banned_at") @db.DateTime(0)
   banReason     String?       @map("ban_reason") @db.VarChar(255)
+  
   cart          Cart?
   orders        Order[]
   role          Role          @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role1")

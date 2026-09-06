@@ -13,7 +13,7 @@ import { VerificationType } from '../verifications/enums/verification-type.enum.
 
 interface ICreateDataUser {
   name: string;
-  passwordHash: string;
+  passwordHash?: string;
   phone?: string;
   email?: string;
 }
@@ -45,13 +45,17 @@ export class UsersService {
 
     const dataUser: ICreateDataUser = {
       name: createUserDto.name,
-      passwordHash: await bcrypt.hash(createUserDto.password, 5),
+      passwordHash: createUserDto.password
+        ? await bcrypt.hash(createUserDto.password, 5)
+        : undefined,
     };
 
-    if (isEmail(createUserDto.login)) {
-      dataUser.email = createUserDto.login;
-    } else if (isPhoneNumber(createUserDto.login, 'RU')) {
-      dataUser.phone = createUserDto.login;
+    if (createUserDto.login) {
+      if (isEmail(createUserDto.login)) {
+        dataUser.email = createUserDto.login;
+      } else if (isPhoneNumber(createUserDto.login, 'RU')) {
+        dataUser.phone = createUserDto.login;
+      }
     }
 
     const createdUser = await this.prisma.user.create({
