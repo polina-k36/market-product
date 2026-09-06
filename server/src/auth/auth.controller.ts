@@ -12,10 +12,10 @@ import { AuthService } from './auth.service.js';
 import { LoginUserDto } from './dto/login-user.dto.js';
 import type { Response, Request } from 'express';
 import { CreateUserDto } from '../users/dto/create-user.dto.js';
-import { Reflector } from '@nestjs/core';
 import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
 import { GoogleAuthDto } from './dto/google-auth.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
+import type { AuthenticatedRequest } from '../types/authenticated-request.js';
 
 @Controller('auth')
 export class AuthController {
@@ -74,8 +74,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async profile(@Req() req: Request) {
-    const userId = req.user?.sub ?? 0;
+  async profile(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.sub;
     return await this.authService.profile(userId);
   }
 

@@ -1,10 +1,12 @@
 import { Controller, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { VerificationsService } from './verifications.service.js';
-import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
+import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
+import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
+import type { AuthenticatedRequest } from '../types/authenticated-request.js';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, EmailVerifiedGuard)
 @Controller('verifications')
 export class VerificationsController {
   constructor(private readonly verificationsService: VerificationsService) {}
@@ -12,15 +14,19 @@ export class VerificationsController {
   @Post('email/send')
   sendEmailVerification(
     @Query('method') method: VerificationMethod,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = req.user ? req.user.sub : 0;
+    const userId = req.user.sub;
     return this.verificationsService.sendEmail(userId, method);
   }
 
+  @EmailVerified(false)
   @Post('email/confirm')
-  confirmEmailVerification(@Query('value') value: string, @Req() req: Request) {
-    const userId = req.user ? req.user.sub : 0;
+  confirmEmailVerification(
+    @Query('value') value: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.sub;
     return this.verificationsService.confirmEmail(userId, value);
   }
 }

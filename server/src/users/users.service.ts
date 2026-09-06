@@ -75,28 +75,6 @@ export class UsersService {
     });
   }
 
-  updateVerificationStatus(
-    id: number,
-    type: VerificationType,
-    verified: boolean,
-  ) {
-    if (type === VerificationType.EMAIL) {
-      return this.prisma.user.update({
-        where: { id },
-        data: {
-          emailVerified: verified,
-        },
-      });
-    }
-
-    return this.prisma.user.update({
-      where: { id },
-      data: {
-        phoneVerified: verified,
-      },
-    });
-  }
-
   getAll() {
     return `This action returns all users`;
   }
@@ -135,6 +113,30 @@ export class UsersService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+
+  updateVerificationStatus(
+    id: number,
+    type: VerificationType,
+    verified: boolean,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const client = tx ?? this.prisma;
+
+    switch (type) {
+      case VerificationType.EMAIL:
+        return client.user.update({
+          where: { id },
+          data: {
+            emailVerified: verified,
+          },
+          select: {
+            id: true,
+            emailVerified: true,
+            role: true,
+          },
+        });
+    }
   }
 
   remove(id: number) {

@@ -11,6 +11,8 @@ import { VerificationType } from './enums/verification-type.enum.js';
 import { UsersService } from '../users/users.service.js';
 import { MailService } from '../mail/mail.service.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
+import { Prisma } from '../generated/prisma/client.js';
+import { AuthService } from '../auth/auth.service.js';
 
 @Injectable()
 export class VerificationsService {
@@ -18,6 +20,7 @@ export class VerificationsService {
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
+    private readonly authService: AuthService,
   ) {}
 
   async getVerificationById(id: number, userId: number) {
@@ -65,8 +68,9 @@ export class VerificationsService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.verification.deleteMany({
+  remove(id: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.verification.deleteMany({
       where: { id },
     });
   }
@@ -122,16 +126,27 @@ export class VerificationsService {
     if (!isValidToken)
       throw new UnauthorizedException('Invalid verification token.');
 
-    await this.usersService.updateVerificationStatus(
-      userId,
-      VerificationType.EMAIL,
-      true,
-    );
-    await this.remove(verification.id);
+    const updateUser = await this.prisma.$transaction(async (tx) => {
+      const user = await this.usersService.updateVerificationStatus(
+        userId,
+        VerificationType.EMAIL,
+        true,
+        tx,
+      );
+      await this.remove(verification.id, tx);
+      return user;
+    });
+
+    const accessToken = this.authService.createAccessJwtToken({
+      id: updateUser.id,
+      role: updateUser.role.title,
+      emailVerified: updateUser.emailVerified,
+    });
 
     return {
       success: true,
-      message: 'Email successfully verified',
+      accessToken,
+      message: 'Email successfully verified.',
     };
   }
 

@@ -20,11 +20,11 @@ import { PrismaService } from '../prisma/prisma.service.js';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private sessionsService: SessionsService,
-    private userIdentitiesService: UserIdentitiesService,
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly sessionsService: SessionsService,
+    private readonly userIdentitiesService: UserIdentitiesService,
   ) {}
 
   createAccessJwtToken(user: {

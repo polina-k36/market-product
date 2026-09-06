@@ -1,12 +1,11 @@
+import { JwtPayload } from './jwt-payload.ts';
+
 export {};
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        sub: number;
-        role: string;
-      };
+      user?: JwtPayload;
     }
   }
 }

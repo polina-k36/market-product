@@ -14,7 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto.js';
 import { UpdateOrderDto } from './dto/update-order.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
-import type { Request } from 'express';
+import type { AuthenticatedRequest } from '../types/authenticated-request.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')
@@ -27,9 +27,9 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
-    const userId = req.user?.sub as number;
-    const role = req.user?.role as string;
+  findAll(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.sub;
+    const role = req.user.role;
     return this.ordersService.findAll(userId, role);
   }
 
