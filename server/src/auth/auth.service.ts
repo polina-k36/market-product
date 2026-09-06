@@ -198,8 +198,8 @@ export class AuthService {
 
     if (!payload.email_verified) throw new UnauthorizedException();
 
-    const userIdentity = await this.userIdentitiesService.getIdentityByGoogleId(
-      //сделать универсальным метод
+    const userIdentity = await this.userIdentitiesService.getIdentity(
+      AuthProviderEnum.GOOGLE,
       payload.sub,
     );
 
@@ -223,8 +223,7 @@ export class AuthService {
         providerAccountId: payload.sub,
       });
     } else {
-      user = await this.usersService.getUserById(userIdentity.userId);
-      if (!user) throw new UnauthorizedException();
+      user = userIdentity.user;
     }
 
     const accessToken = this.createAccessJwtToken({

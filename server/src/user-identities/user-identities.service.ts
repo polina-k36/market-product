@@ -21,6 +21,14 @@ export class UserIdentitiesService {
           providerAccountId,
         },
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            role: true,
+          },
+        },
+      },
     });
   }
 }
