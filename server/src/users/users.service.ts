@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt';
 import { isEmail, isPhoneNumber } from 'class-validator';
 import { NotFoundError } from 'rxjs';
 import { VerificationType } from '../verifications/enums/verification-type.enum.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 interface ICreateDataUser {
   name: string;
@@ -26,13 +27,16 @@ export class UsersService {
     id: true,
     name: true,
     email: true,
+    emailVerified: true,
     phone: true,
     passwordHash: true,
     role: true,
   };
 
-  async create(createUserDto: CreateUserDto) {
-    const user = await this.prisma.user.findFirst({
+  async create(createUserDto: CreateUserDto, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+
+    const user = await client.user.findFirst({
       where: {
         OR: [{ email: createUserDto.login }, { phone: createUserDto.login }],
       },
@@ -58,21 +62,17 @@ export class UsersService {
       }
     }
 
-    const createdUser = await this.prisma.user.create({
+    return client.user.create({
       data: dataUser,
       select: {
         id: true,
         name: true,
         email: true,
+        emailVerified: true,
         phone: true,
         role: true,
       },
     });
-
-    return {
-      success: true,
-      data: createdUser,
-    };
   }
 
   updateVerificationStatus(

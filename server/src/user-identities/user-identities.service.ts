@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserIdentityDto } from './dto/create-user-identity.dto.js';
 import { AuthProviderEnum } from './enums/auth-provider.enum.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class UserIdentitiesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dtoUserIdentity: CreateUserIdentityDto) {
-    return this.prisma.userIdentity.create({
+  create(
+    dtoUserIdentity: CreateUserIdentityDto,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const client = tx ?? this.prisma;
+
+    return client.userIdentity.create({
       data: dtoUserIdentity,
     });
   }

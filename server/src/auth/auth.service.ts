@@ -15,10 +15,12 @@ import { OAuth2Client } from 'google-auth-library';
 import { UserIdentitiesService } from '../user-identities/user-identities.service.js';
 import { AuthProviderEnum } from '../user-identities/enums/auth-provider.enum.js';
 import { User } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private prisma: PrismaService,
     private usersService: UsersService,
     private jwtService: JwtService,
     private sessionsService: SessionsService,
@@ -102,18 +104,18 @@ export class AuthService {
     const createdUser = await this.usersService.create(userDto);
 
     const accessToken = this.createAccessJwtToken({
-      id: createdUser.data.id,
-      role: createdUser.data.role.title,
+      id: createdUser.id,
+      role: createdUser.role.title,
     });
     const refreshToken = await this.createRefreshJwtToken({
-      id: createdUser.data.id,
+      id: createdUser.id,
     });
 
     return {
       success: true,
       accessToken,
       refreshToken,
-      data: createdUser.data,
+      data: createdUser,
     };
   }
 
@@ -190,13 +192,17 @@ export class AuthService {
 
     const payload = ticket.getPayload();
 
-    if (!payload) throw new UnauthorizedException();
+    if (!payload)
+      throw new UnauthorizedException('Google authentication data is missing.');
 
-    if (!payload.sub) throw new UnauthorizedException();
+    if (!payload.sub)
+      throw new UnauthorizedException('Google account identifier is missing.');
 
-    if (!payload.email) throw new UnauthorizedException();
+    if (!payload.email)
+      throw new UnauthorizedException('Google account email is missing.');
 
-    if (!payload.email_verified) throw new UnauthorizedException();
+    if (!payload.email_verified)
+      throw new UnauthorizedException('Google account email is not verified.');
 
     const userIdentity = await this.userIdentitiesService.getIdentity(
       AuthProviderEnum.GOOGLE,
@@ -208,20 +214,29 @@ export class AuthService {
     if (!userIdentity) {
       user = await this.usersService.getUserByLogin(payload.email);
       if (!user) {
-        user = (
-          await this.usersService.create({
+        user = await this.registerUserWithProvider(
+          {
             name: payload.name ?? 'no-name',
             email: payload.email,
             emailVerified: payload.email_verified,
             urlAvatar: payload.picture,
-          })
-        ).data;
+          },
+          AuthProviderEnum.GOOGLE,
+          payload.sub,
+        );
+      } else {
+        if (!user.emailVerified) {
+          throw new UnauthorizedException(
+            'This email is already associated with an unverified account. Please verify your email before linking Google.',
+          );
+        }
+
+        await this.userIdentitiesService.create({
+          userId: user.id,
+          provider: AuthProviderEnum.GOOGLE,
+          providerAccountId: payload.sub,
+        });
       }
-      await this.userIdentitiesService.create({
-        userId: user.id,
-        provider: AuthProviderEnum.GOOGLE,
-        providerAccountId: payload.sub,
-      });
     } else {
       user = userIdentity.user;
     }
@@ -239,5 +254,24 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async registerUserWithProvider(
+    dtoUser: CreateUserDto,
+    provider: AuthProviderEnum,
+    providerAccountId: string,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const user = await this.usersService.create(dtoUser, tx);
+      await this.userIdentitiesService.create(
+        {
+          userId: user.id,
+          provider,
+          providerAccountId,
+        },
+        tx,
+      );
+      return user;
+    });
   }
 }
