@@ -13,12 +13,12 @@ export class UserIdentitiesService {
     });
   }
 
-  getIdentityByGoogleId(id: string) {
+  getIdentity(provider: AuthProviderEnum, providerAccountId: string) {
     return this.prisma.userIdentity.findUnique({
       where: {
         provider_providerAccountId: {
-          provider: AuthProviderEnum.GOOGLE,
-          providerAccountId: id,
+          provider,
+          providerAccountId,
         },
       },
     });
