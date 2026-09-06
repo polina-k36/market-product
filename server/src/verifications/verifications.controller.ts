@@ -1,4 +1,11 @@
-import { Controller, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  ParseEnumPipe,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { VerificationsService } from './verifications.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
@@ -13,7 +20,8 @@ export class VerificationsController {
 
   @Post('email/send')
   sendEmailVerification(
-    @Query('method') method: VerificationMethod,
+    @Query('method', new ParseEnumPipe(VerificationMethod))
+    method: VerificationMethod,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.sub;

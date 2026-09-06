@@ -1,6 +1,5 @@
 import {
-  IsBoolean,
-  IsDateString,
+  IsDate,
   IsEmail,
   IsOptional,
   IsPhoneNumber,
@@ -8,41 +7,60 @@ import {
   IsStrongPassword,
   MaxLength,
 } from 'class-validator';
-import { IsEmailOrPhone } from '../../common/validators/email-or-phone.validator.js';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
+  @ApiProperty({
+    description: 'Имя пользователя',
+    maxLength: 255,
+    example: 'Алиса Орлова',
+  })
   @IsString()
   @MaxLength(255)
   name: string;
 
-  @IsOptional()
-  @IsEmailOrPhone()
-  login?: string;
-
-  @IsOptional()
+  @ApiProperty({
+    description: 'Пароль пользователя',
+    minLength: 6,
+    example: 'StrongPassword123!',
+  })
   @IsString()
   @IsStrongPassword({
     minLength: 6,
   })
-  password?: string;
+  password: string;
 
-  @IsOptional()
-  @IsBoolean()
-  emailVerified?: boolean;
-
+  @ApiPropertyOptional({
+    description: 'URL аватара пользователя',
+    example: 'https://example.com/avatar.jpg',
+  })
   @IsOptional()
   @IsString()
   urlAvatar?: string;
 
+  @ApiPropertyOptional({
+    description: 'Номер телефона пользователя',
+    example: '+7 900 000-00-00',
+  })
   @IsOptional()
   @IsPhoneNumber('RU')
   phone?: string;
 
+  @ApiPropertyOptional({
+    description: 'Электронная почта пользователя',
+    example: 'alice@example.com',
+  })
   @IsOptional()
   @IsEmail()
   email?: string;
 
+  @ApiPropertyOptional({
+    description: 'Дата рождения пользователя',
+    example: '2000-05-15',
+  })
   @IsOptional()
-  @IsDateString()
+  @Type(() => Date)
+  @IsDate()
   birthDate?: Date;
 }

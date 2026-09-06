@@ -16,6 +16,10 @@ import { UserIdentitiesService } from '../user-identities/user-identities.servic
 import { AuthProviderEnum } from '../user-identities/enums/auth-provider.enum.js';
 import { User } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { RegisterUserDto } from '../users/dto/register-user.dto copy.js';
+import { isEmail, isPhoneNumber } from 'class-validator';
+import { ICreateDataUser } from '../users/interfaces/create-data-user.interface.js';
+import { CreateUserFromProviderDto } from '../users/dto/create-user-from-provider.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -106,8 +110,17 @@ export class AuthService {
     };
   }
 
-  async register(userDto: CreateUserDto) {
-    const createdUser = await this.usersService.create(userDto);
+  async register(userDto: RegisterUserDto) {
+    const createData: ICreateDataUser = {
+      name: userDto.name,
+      password: userDto.password,
+    };
+    if (isEmail(userDto.login)) {
+      createData.email = userDto.login;
+    } else if (isPhoneNumber(userDto.login, 'RU')) {
+      createData.phone = userDto.login;
+    }
+    const createdUser = await this.usersService.create(createData);
 
     const accessToken = this.createAccessJwtToken({
       id: createdUser.id,
@@ -266,7 +279,7 @@ export class AuthService {
   }
 
   async registerUserWithProvider(
-    dtoUser: CreateUserDto,
+    dtoUser: CreateUserFromProviderDto,
     provider: AuthProviderEnum,
     providerAccountId: string,
   ) {

@@ -3,21 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import bcrypt from 'bcrypt';
-import { isEmail, isPhoneNumber } from 'class-validator';
-import { NotFoundError } from 'rxjs';
 import { VerificationType } from '../verifications/enums/verification-type.enum.js';
 import { Prisma } from '../generated/prisma/client.js';
-
-interface ICreateDataUser {
-  name: string;
-  passwordHash?: string;
-  phone?: string;
-  email?: string;
-}
+import { ICreateDataUser } from './interfaces/create-data-user.interface.js';
+import { unescape } from 'querystring';
 
 @Injectable()
 export class UsersService {
@@ -33,12 +25,18 @@ export class UsersService {
     role: true,
   };
 
-  async create(createUserDto: CreateUserDto, tx?: Prisma.TransactionClient) {
+  async create(createData: ICreateDataUser, tx?: Prisma.TransactionClient) {
     const client = tx ?? this.prisma;
-
     const user = await client.user.findFirst({
       where: {
-        OR: [{ email: createUserDto.login }, { phone: createUserDto.login }],
+        OR: [
+          {
+            email: createData.email,
+          },
+          {
+            phone: createData.phone,
+          },
+        ],
       },
     });
 
@@ -47,23 +45,13 @@ export class UsersService {
         'This email or phone number is already in use.',
       );
 
-    const dataUser: ICreateDataUser = {
-      name: createUserDto.name,
-      passwordHash: createUserDto.password
-        ? await bcrypt.hash(createUserDto.password, 5)
-        : undefined,
-    };
-
-    if (createUserDto.login) {
-      if (isEmail(createUserDto.login)) {
-        dataUser.email = createUserDto.login;
-      } else if (isPhoneNumber(createUserDto.login, 'RU')) {
-        dataUser.phone = createUserDto.login;
-      }
-    }
+    const { password, ...createDataWithoutPassword } = createData;
 
     return client.user.create({
-      data: dataUser,
+      data: {
+        passwordHash: password ? await bcrypt.hash(password, 4) : null,
+        ...createDataWithoutPassword,
+      },
       select: {
         id: true,
         name: true,
