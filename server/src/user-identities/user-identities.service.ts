@@ -32,6 +32,7 @@ export class UserIdentitiesService {
           select: {
             id: true,
             role: true,
+            emailVerified: true,
           },
         },
       },

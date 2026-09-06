@@ -27,10 +27,15 @@ export class AuthService {
     private userIdentitiesService: UserIdentitiesService,
   ) {}
 
-  createAccessJwtToken(user: { id: number; role: string }) {
+  createAccessJwtToken(user: {
+    id: number;
+    role: string;
+    emailVerified: boolean;
+  }) {
     const payload = {
       sub: user.id,
       role: user.role,
+      emailVerified: user.emailVerified,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -87,6 +92,7 @@ export class AuthService {
     const accessToken = this.createAccessJwtToken({
       id: validUser.id,
       role: validUser.role.title,
+      emailVerified: validUser.emailVerified,
     });
     const refreshToken = await this.createRefreshJwtToken({
       id: validUser.id,
@@ -106,6 +112,7 @@ export class AuthService {
     const accessToken = this.createAccessJwtToken({
       id: createdUser.id,
       role: createdUser.role.title,
+      emailVerified: createdUser.emailVerified,
     });
     const refreshToken = await this.createRefreshJwtToken({
       id: createdUser.id,
@@ -151,6 +158,7 @@ export class AuthService {
     const accessToken = this.createAccessJwtToken({
       id: payload.sub,
       role: user.role.title,
+      emailVerified: user.emailVerified,
     });
 
     return {
@@ -244,6 +252,7 @@ export class AuthService {
     const accessToken = this.createAccessJwtToken({
       id: user.id,
       role: user.role.title,
+      emailVerified: user.emailVerified,
     });
     const refreshToken = await this.createRefreshJwtToken({
       id: user.id,
