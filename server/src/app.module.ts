@@ -12,6 +12,7 @@ import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
 import { UserIdentitiesModule } from './user-identities/user-identities.module.js';
 import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.module.js';
+import { InvoiceTypeModule } from './invoice-type/invoice-types.module.js';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.modul
     MailModule,
     UserIdentitiesModule,
     DeliveryMethodsModule,
+    InvoiceTypeModule,
   ],
   providers: [SessionsService],
 })
