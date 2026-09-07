@@ -129,6 +129,7 @@ model InvoiceItem {
 model InvoiceType {
   id        Int       @id @default(autoincrement()) @map("id_invoice_type")
   title     String    @unique(map: "title_invoice_type_UNIQUE") @map("title_invoice_type") @db.VarChar(45)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   invoices  Invoice[]
@@ -140,6 +141,7 @@ model Nds {
   id        Int       @id @default(autoincrement()) @map("id_nds")
   rate      Decimal   @unique(map: "rate_UNIQUE") @db.Decimal(5, 2)
   titleRate String    @unique(map: "title_UNIQUE") @map("title_rate") @db.VarChar(150)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   products  Product[]
@@ -165,6 +167,7 @@ model OrderItem {
 model PaymentMethod {
   id        Int      @id @default(autoincrement()) @map("id_payment_method")
   title     String   @unique(map: "title_payment_method_UNIQUE") @map("title_payment_method") @db.VarChar(255)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
   orders    Order[]
@@ -216,6 +219,7 @@ model Shop {
   street    String    @map("shop_street") @db.VarChar(200)
   house     String    @map("shop_house") @db.VarChar(20)
   phone     String    @unique(map: "phone_UNIQUE") @db.VarChar(20)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   orders    Order[]
@@ -228,6 +232,7 @@ model Shop {
 model Status {
   id        Int      @id @default(autoincrement()) @map("id_status")
   title     String   @unique(map: "title_status_UNIQUE") @map("title_status") @db.VarChar(255)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
   orders    Order[]
@@ -238,6 +243,7 @@ model Status {
 model Supplier {
   id        Int       @id @default(autoincrement()) @map("id_supplier")
   title     String    @unique(map: "title_supplier_UNIQUE") @map("title_supplier") @db.VarChar(255)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   invoices  Invoice[]
