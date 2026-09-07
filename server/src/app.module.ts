@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ProductsModule } from './products/products.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
@@ -30,7 +28,6 @@ import { UserIdentitiesModule } from './user-identities/user-identities.module.j
     MailModule,
     UserIdentitiesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, SessionsService],
+  providers: [SessionsService],
 })
 export class AppModule {}
