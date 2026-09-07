@@ -113,7 +113,7 @@ export class CategoriesController {
     status: 404,
     description: 'Категория не найдена.',
   })
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findById(@Param('id', ParseIntPipe) id: number) {
     return {
       success: true,
       data: await this.categoriesService.findById(id),

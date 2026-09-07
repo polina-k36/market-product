@@ -81,6 +81,7 @@ model Order {
 model DeliveryMethod {
   id        Int      @id @default(autoincrement()) @map("id_delivery_method")
   title     String   @unique(map: "title_delivery_method_UNIQUE") @map("title_delivery_method") @db.VarChar(150)
+  isDeleted Boolean  @default(false) @map("is_deleted")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
   orders    Order[]

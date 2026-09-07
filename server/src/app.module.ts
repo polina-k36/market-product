@@ -11,6 +11,7 @@ import { SessionsModule } from './sessions/sessions.module.js';
 import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
 import { UserIdentitiesModule } from './user-identities/user-identities.module.js';
+import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserIdentitiesModule } from './user-identities/user-identities.module.j
     VerificationsModule,
     MailModule,
     UserIdentitiesModule,
+    DeliveryMethodsModule,
   ],
   providers: [SessionsService],
 })
