@@ -18,6 +18,6 @@ import { UserIdentitiesService } from '../user-identities/user-identities.servic
   ],
   controllers: [AuthController],
   providers: [AuthService, UsersService, UserIdentitiesService],
-  exports: [JwtModule],
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule {}
