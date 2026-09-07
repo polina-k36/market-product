@@ -36,7 +36,7 @@ model CartItem {
 model Category {
   id        Int       @id @default(autoincrement()) @map("id_category")
   title     String    @map("title_category") @db.VarChar(150)
-  isDeleted Int       @default(0) @map("is_deleted") @db.TinyInt
+  isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   products  Product[]
@@ -178,7 +178,7 @@ model Product {
   composition   String        @db.Text
   thumbnail     String        @db.VarChar(255)
   price         Decimal       @db.Decimal(10, 2)
-  isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
+  isDeleted     Boolean       @default(false) @map("is_deleted")
   categoryId    Int           @map("id_category")
   unitId        Int           @map("id_unit")
   ndsId         Int           @map("id_nds")
@@ -267,7 +267,7 @@ model User {
   birthDate     DateTime?     @map("date_birth") @db.Date 
   createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
-  isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
+  isDeleted     Boolean       @default(false) @map("is_deleted")
   roleId        Int           @default(2) @map("id_role")
   isBanned      Boolean       @default(false) @map("is_banned")
   bannedAt      DateTime?     @map("banned_at") @db.DateTime(0)

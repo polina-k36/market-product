@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,10 +10,18 @@ import bcrypt from 'bcrypt';
 import { VerificationType } from '../verifications/enums/verification-type.enum.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { ICreateDataUser } from './interfaces/create-data-user.interface.js';
+import { SessionsService } from '../sessions/sessions.service.js';
+import { VerificationsService } from '../verifications/verifications.service.js';
+import { UserIdentitiesService } from '../user-identities/user-identities.service.js';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sessionsService: SessionsService,
+    private readonly verificationsService: VerificationsService,
+    private readonly userIdentitiesService: UserIdentitiesService,
+  ) {}
 
   fields = {
     id: true,
@@ -37,7 +46,7 @@ export class UsersService {
             phone: createData.phone,
           },
         ],
-        isDeleted: 0,
+        isDeleted: false,
       },
     });
 
@@ -67,13 +76,13 @@ export class UsersService {
 
   getAll() {
     return this.prisma.user.findMany({
-      where: { isDeleted: 0 },
+      where: { isDeleted: false },
     });
   }
 
   getUserById(id: number) {
     const user = this.prisma.user.findUnique({
-      where: { id, isDeleted: 0 },
+      where: { id, isDeleted: false },
       select: this.fields,
     });
     if (!user) throw new NotFoundException('User not found.');
@@ -82,7 +91,7 @@ export class UsersService {
 
   getUsersContactInfoById(id: number) {
     const user = this.prisma.user.findUnique({
-      where: { id, isDeleted: 0 },
+      where: { id, isDeleted: false },
       select: {
         phone: true,
         email: true,
@@ -96,7 +105,7 @@ export class UsersService {
     const user = this.prisma.user.findFirst({
       where: {
         OR: [{ email: login }, { phone: login }],
-        isDeleted: 0,
+        isDeleted: false,
       },
       select: this.fields,
     });
@@ -104,8 +113,33 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id, isDeleted: true },
+      select: {
+        email: true,
+        isBanned: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    if (user.isBanned) {
+      throw new ForbiddenException('Your account has been banned.');
+    }
+
+    const emailChanged =
+      updateUserDto.email !== undefined && updateUserDto.email !== user.email;
+
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...updateUserDto,
+        emailVerified: emailChanged ? false : undefined,
+      },
+    });
   }
 
   updateVerificationStatus(
@@ -119,7 +153,7 @@ export class UsersService {
     switch (type) {
       case VerificationType.EMAIL:
         return client.user.update({
-          where: { id, isDeleted: 0 },
+          where: { id, isDeleted: false },
           data: {
             emailVerified: verified,
           },
@@ -133,6 +167,17 @@ export class UsersService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    //добавить удаление адресов и подумать над картами но они хранятся в заказе пожтому стоит быть аккуратнее(возможно оставлять данные о карте пустыми и все)
+    this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        data: { isDeleted: true },
+        where: {
+          id,
+        },
+      });
+      await this.sessionsService.removeByUserId(id, tx);
+      await this.verificationsService.removeByUserId(id, tx);
+      await this.userIdentitiesService.removeByUserId(id, tx);
+    });
   }
 }

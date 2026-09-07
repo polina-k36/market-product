@@ -75,6 +75,13 @@ export class VerificationsService {
     });
   }
 
+  removeByUserId(userId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.verification.deleteMany({
+      where: { userId },
+    });
+  }
+
   async sendEmail(userId: number, methodVerification: VerificationMethod) {
     const value =
       methodVerification === VerificationMethod.CODE

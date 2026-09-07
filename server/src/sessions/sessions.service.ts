@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateSessionDto } from './dto/create-session.dto.js';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class SessionsService {
@@ -51,9 +52,18 @@ export class SessionsService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        throw new NotFoundException('');
+        throw new NotFoundException('Session not found.');
       }
       throw error;
     }
+  }
+
+  async removeByUserId(userId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return await client.session.deleteMany({
+      where: {
+        userId,
+      },
+    });
   }
 }

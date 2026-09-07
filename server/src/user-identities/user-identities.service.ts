@@ -39,4 +39,11 @@ export class UserIdentitiesService {
       },
     });
   }
+
+  removeByUserId(userId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.userIdentity.deleteMany({
+      where: { userId },
+    });
+  }
 }

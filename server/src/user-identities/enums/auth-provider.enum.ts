@@ -1,3 +1,3 @@
 export enum AuthProviderEnum {
-  GOOGLE = 'GOOGLE',
+  GOOGLE,
 }
