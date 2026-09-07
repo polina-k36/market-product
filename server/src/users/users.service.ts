@@ -37,6 +37,7 @@ export class UsersService {
             phone: createData.phone,
           },
         ],
+        isDeleted: 0,
       },
     });
 
@@ -69,7 +70,7 @@ export class UsersService {
 
   getUserById(id: number) {
     const user = this.prisma.user.findUnique({
-      where: { id },
+      where: { id, isDeleted: 0 },
       select: this.fields,
     });
     if (!user) throw new NotFoundException('User not found.');
@@ -78,7 +79,7 @@ export class UsersService {
 
   getUsersContactInfoById(id: number) {
     const user = this.prisma.user.findUnique({
-      where: { id },
+      where: { id, isDeleted: 0 },
       select: {
         phone: true,
         email: true,
@@ -92,6 +93,7 @@ export class UsersService {
     const user = this.prisma.user.findFirst({
       where: {
         OR: [{ email: login }, { phone: login }],
+        isDeleted: 0,
       },
       select: this.fields,
     });
@@ -114,7 +116,7 @@ export class UsersService {
     switch (type) {
       case VerificationType.EMAIL:
         return client.user.update({
-          where: { id },
+          where: { id, isDeleted: 0 },
           data: {
             emailVerified: verified,
           },
