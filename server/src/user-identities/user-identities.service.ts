@@ -33,6 +33,7 @@ export class UserIdentitiesService {
             id: true,
             role: true,
             emailVerified: true,
+            isBanned: true,
           },
         },
       },

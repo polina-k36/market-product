@@ -269,7 +269,7 @@ model User {
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
   isDeleted     Int           @default(0) @map("is_deleted") @db.TinyInt
   roleId        Int           @default(2) @map("id_role")
-  isBanned      Boolean?      @default(false) @map("is_banned")
+  isBanned      Boolean       @default(false) @map("is_banned")
   bannedAt      DateTime?     @map("banned_at") @db.DateTime(0)
   banReason     String?       @map("ban_reason") @db.VarChar(255)
   

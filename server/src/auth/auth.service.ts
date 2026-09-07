@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -78,6 +79,9 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('Invalid credentials');
     if (!user.passwordHash)
       throw new UnauthorizedException('Invalid credentials');
+
+    if (user.isBanned)
+      throw new ForbiddenException('Your account has been banned.');
 
     const isValidPass = await bcrypt.compare(
       userDto.password,
@@ -167,6 +171,8 @@ export class AuthService {
     const user = await this.usersService.getUserById(payload.sub);
 
     if (!user) throw new UnauthorizedException('Invalid refresh token.');
+    if (user.isBanned)
+      throw new ForbiddenException('Your account has been banned.');
 
     const accessToken = this.createAccessJwtToken({
       id: payload.sub,
@@ -198,7 +204,7 @@ export class AuthService {
 
   async profile(userId: number) {
     const user = await this.usersService.getUserById(userId);
-    console.log(userId);
+
     if (!user) throw new NotFoundException();
     return user;
   }
@@ -246,6 +252,9 @@ export class AuthService {
           payload.sub,
         );
       } else {
+        if (user.isBanned)
+          throw new ForbiddenException('Your account has been banned.');
+
         if (!user.emailVerified) {
           throw new UnauthorizedException(
             'This email is already associated with an unverified account. Please verify your email before linking Google.',
@@ -260,6 +269,8 @@ export class AuthService {
       }
     } else {
       user = userIdentity.user;
+      if (user.isBanned)
+        throw new ForbiddenException('Your account has been banned.');
     }
 
     const accessToken = this.createAccessJwtToken({

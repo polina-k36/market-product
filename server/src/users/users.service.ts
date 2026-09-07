@@ -9,7 +9,6 @@ import bcrypt from 'bcrypt';
 import { VerificationType } from '../verifications/enums/verification-type.enum.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { ICreateDataUser } from './interfaces/create-data-user.interface.js';
-import { unescape } from 'querystring';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +22,7 @@ export class UsersService {
     phone: true,
     passwordHash: true,
     role: true,
+    isBanned: true,
   };
 
   async create(createData: ICreateDataUser, tx?: Prisma.TransactionClient) {
@@ -60,12 +60,15 @@ export class UsersService {
         emailVerified: true,
         phone: true,
         role: true,
+        isBanned: true,
       },
     });
   }
 
   getAll() {
-    return `This action returns all users`;
+    return this.prisma.user.findMany({
+      where: { isDeleted: 0 },
+    });
   }
 
   getUserById(id: number) {
