@@ -13,6 +13,8 @@ import { MailModule } from './mail/mail.module.js';
 import { UserIdentitiesModule } from './user-identities/user-identities.module.js';
 import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.module.js';
 import { InvoiceTypeModule } from './invoice-type/invoice-types.module.js';
+import { NestModule } from './nest/nest.module.js';
+import { NdsModule } from './nds/nds.module.js';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { InvoiceTypeModule } from './invoice-type/invoice-types.module.js';
     UserIdentitiesModule,
     DeliveryMethodsModule,
     InvoiceTypeModule,
+    NestModule,
+    NdsModule,
   ],
   providers: [SessionsService],
 })
