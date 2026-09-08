@@ -141,7 +141,7 @@ model Nds {
   id        Int       @id @default(autoincrement()) @map("id_nds")
   rate      Decimal   @unique(map: "rate_UNIQUE") @db.Decimal(5, 2)
   titleRate String    @unique(map: "title_UNIQUE") @map("title_rate") @db.VarChar(150)
-  isDeleted Boolean  @default(false) @map("is_deleted")
+  isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   products  Product[]
@@ -219,7 +219,7 @@ model Shop {
   street    String    @map("shop_street") @db.VarChar(200)
   house     String    @map("shop_house") @db.VarChar(20)
   phone     String    @unique(map: "phone_UNIQUE") @db.VarChar(20)
-  isDeleted Boolean  @default(false) @map("is_deleted")
+  isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   orders    Order[]

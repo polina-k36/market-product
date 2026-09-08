@@ -4,10 +4,10 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -21,13 +21,14 @@ import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
 
 @ApiTags('Payment Methods')
-@UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
-@Roles('ADMIN')
+@UseGuards(JwtAuthGuard)
 @Controller('payment-methods')
 export class PaymentMethodsController {
   constructor(private readonly paymentMethodsService: PaymentMethodsService) {}
 
   @Post()
+  @UseGuards(RolesGuard, EmailVerifiedGuard)
+  @Roles('ADMIN')
   @EmailVerified(true)
   @ApiOperation({ summary: 'Создать способ оплаты' })
   @ApiResponse({
@@ -67,10 +68,6 @@ export class PaymentMethodsController {
     status: 401,
     description: 'Пользователь не авторизован',
   })
-  @ApiResponse({
-    status: 403,
-    description: 'Недостаточно прав',
-  })
   async findAll() {
     return {
       success: true,
@@ -94,10 +91,6 @@ export class PaymentMethodsController {
     description: 'Пользователь не авторизован',
   })
   @ApiResponse({
-    status: 403,
-    description: 'Недостаточно прав',
-  })
-  @ApiResponse({
     status: 404,
     description: 'Способ оплаты не найден',
   })
@@ -109,6 +102,8 @@ export class PaymentMethodsController {
   }
 
   @Patch(':id')
+  @UseGuards(RolesGuard, EmailVerifiedGuard)
+  @Roles('ADMIN')
   @EmailVerified(true)
   @ApiOperation({ summary: 'Обновить способ оплаты' })
   @ApiParam({
@@ -151,6 +146,8 @@ export class PaymentMethodsController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard, EmailVerifiedGuard)
+  @Roles('ADMIN')
   @EmailVerified(true)
   @ApiOperation({ summary: 'Удалить способ оплаты' })
   @ApiParam({
