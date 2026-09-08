@@ -13,13 +13,12 @@ import { MailModule } from './mail/mail.module.js';
 import { UserIdentitiesModule } from './user-identities/user-identities.module.js';
 import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.module.js';
 import { InvoiceTypeModule } from './invoice-type/invoice-types.module.js';
-import { NestModule } from './nest/nest.module.js';
 import { NdsModule } from './nds/nds.module.js';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module.js';
 import { ShopsModule } from './shops/shops.module.js';
 import { StatusesModule } from './statuses/statuses.module.js';
-import { SupplierModule } from './supplier/supplier.module.js';
 import { SuppliersModule } from './suppliers/suppliers.module.js';
+import { UnitsModule } from './units/units.module.js';
 
 @Module({
   imports: [
@@ -38,13 +37,12 @@ import { SuppliersModule } from './suppliers/suppliers.module.js';
     UserIdentitiesModule,
     DeliveryMethodsModule,
     InvoiceTypeModule,
-    NestModule,
     NdsModule,
     PaymentMethodsModule,
     ShopsModule,
     StatusesModule,
-    SupplierModule,
     SuppliersModule,
+    UnitsModule,
   ],
   providers: [SessionsService],
 })

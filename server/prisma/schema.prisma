@@ -255,7 +255,7 @@ model Unit {
   id         Int       @id @default(autoincrement()) @map("id_unit")
   shortTitle String    @unique(map: "title_unit_short_UNIQUE") @map("title_unit_short") @db.VarChar(10)
   fullTitle  String    @unique(map: "title_unit_full_UNIQUE") @map("title_unit_full") @db.VarChar(150)
-  isDeleted  Int       @default(0) @map("is_deleted") @db.TinyInt
+  isDeleted  Boolean   @default(false) @map("is_deleted") @db.TinyInt
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   products   Product[]
