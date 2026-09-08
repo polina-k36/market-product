@@ -17,6 +17,7 @@ import { NestModule } from './nest/nest.module.js';
 import { NdsModule } from './nds/nds.module.js';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module.js';
 import { ShopsModule } from './shops/shops.module.js';
+import { StatusesModule } from './statuses/statuses.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ShopsModule } from './shops/shops.module.js';
     NdsModule,
     PaymentMethodsModule,
     ShopsModule,
+    StatusesModule,
   ],
   providers: [SessionsService],
 })
