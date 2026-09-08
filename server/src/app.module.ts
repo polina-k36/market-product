@@ -18,6 +18,8 @@ import { NdsModule } from './nds/nds.module.js';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module.js';
 import { ShopsModule } from './shops/shops.module.js';
 import { StatusesModule } from './statuses/statuses.module.js';
+import { SupplierModule } from './supplier/supplier.module.js';
+import { SuppliersModule } from './suppliers/suppliers.module.js';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { StatusesModule } from './statuses/statuses.module.js';
     PaymentMethodsModule,
     ShopsModule,
     StatusesModule,
+    SupplierModule,
+    SuppliersModule,
   ],
   providers: [SessionsService],
 })

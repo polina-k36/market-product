@@ -243,7 +243,7 @@ model Status {
 model Supplier {
   id        Int       @id @default(autoincrement()) @map("id_supplier")
   title     String    @unique(map: "title_supplier_UNIQUE") @map("title_supplier") @db.VarChar(255)
-  isDeleted Boolean  @default(false) @map("is_deleted")
+  isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   invoices  Invoice[]
