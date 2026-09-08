@@ -15,6 +15,7 @@ import { DeliveryMethodsModule } from './delivery-methods/delivery-methods.modul
 import { InvoiceTypeModule } from './invoice-type/invoice-types.module.js';
 import { NestModule } from './nest/nest.module.js';
 import { NdsModule } from './nds/nds.module.js';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module.js';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { NdsModule } from './nds/nds.module.js';
     InvoiceTypeModule,
     NestModule,
     NdsModule,
+    PaymentMethodsModule,
   ],
   providers: [SessionsService],
 })
