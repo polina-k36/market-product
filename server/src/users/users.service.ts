@@ -11,7 +11,6 @@ import { VerificationType } from '../verifications/enums/verification-type.enum.
 import { Prisma } from '../generated/prisma/client.js';
 import { ICreateDataUser } from './interfaces/create-data-user.interface.js';
 import { SessionsService } from '../sessions/sessions.service.js';
-import { VerificationsService } from '../verifications/verifications.service.js';
 import { UserIdentitiesService } from '../user-identities/user-identities.service.js';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly sessionsService: SessionsService,
-    private readonly verificationsService: VerificationsService,
     private readonly userIdentitiesService: UserIdentitiesService,
   ) {}
 
@@ -176,7 +174,9 @@ export class UsersService {
         },
       });
       await this.sessionsService.removeByUserId(id, tx);
-      await this.verificationsService.removeByUserId(id, tx);
+      tx.verification.deleteMany({
+        where: { userId: id },
+      });
       await this.userIdentitiesService.removeByUserId(id, tx);
     });
   }
