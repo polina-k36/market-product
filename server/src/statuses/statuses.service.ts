@@ -14,6 +14,7 @@ export class StatusesService {
     const status = await this.prisma.status.findUnique({
       where: {
         title: createStatusDto.title,
+        isDeleted: false,
       },
     });
     if (status)
@@ -24,12 +25,14 @@ export class StatusesService {
   }
 
   findAll() {
-    return this.prisma.status.findMany();
+    return this.prisma.status.findMany({
+      where: { isDeleted: false },
+    });
   }
 
   async findById(id: number) {
     const status = await this.prisma.status.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
     if (!status) throw new NotFoundException('Status not found');
     return status;
@@ -39,20 +42,22 @@ export class StatusesService {
     const status = await this.prisma.status.findUnique({
       where: {
         title: updateStatusDto.title,
+        isDeleted: false,
+        NOT: { id },
       },
     });
     if (status)
       throw new ConflictException('Status with this title already exists');
     return this.prisma.status.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: updateStatusDto,
     });
   }
 
   remove(id: number) {
     return this.prisma.status.update({
-      where: { id },
-      data: { isDeleted: true },
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
   }
 }

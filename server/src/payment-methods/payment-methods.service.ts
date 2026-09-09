@@ -11,12 +11,13 @@ export class PaymentMethodsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createPaymentMethodDto: CreateUpdatePaymentMethodDto) {
-    const payment = await this.prisma.paymentMethod.findUnique({
+    const method = await this.prisma.paymentMethod.findUnique({
       where: {
         title: createPaymentMethodDto.title,
+        isDeleted: false,
       },
     });
-    if (payment)
+    if (method)
       throw new ConflictException(
         'Payment method with this title already exists',
       );
@@ -26,31 +27,44 @@ export class PaymentMethodsService {
   }
 
   findAll() {
-    return this.prisma.paymentMethod.findMany();
+    return this.prisma.paymentMethod.findMany({
+      where: { isDeleted: false },
+    });
   }
 
   async findById(id: number) {
-    const paymentMethod = await this.prisma.paymentMethod.findUnique({
-      where: { id },
+    const method = await this.prisma.paymentMethod.findUnique({
+      where: { id, isDeleted: false },
     });
-    if (!paymentMethod) throw new NotFoundException('Payment method not found');
-    return paymentMethod;
+    if (!method) throw new NotFoundException('Payment method not found');
+    return method;
   }
 
   async update(
     id: number,
     updatePaymentMethodDto: CreateUpdatePaymentMethodDto,
   ) {
+    const method = await this.prisma.paymentMethod.findUnique({
+      where: {
+        title: updatePaymentMethodDto.title,
+        isDeleted: false,
+        NOT: { id },
+      },
+    });
+    if (method)
+      throw new ConflictException(
+        'Payment method with this title already exists',
+      );
     return await this.prisma.paymentMethod.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: updatePaymentMethodDto,
     });
   }
 
   async remove(id: number) {
     return await this.prisma.paymentMethod.update({
-      where: { id },
-      data: { isDeleted: true },
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
   }
 }

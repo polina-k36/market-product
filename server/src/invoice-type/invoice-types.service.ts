@@ -14,37 +14,54 @@ export class InvoiceTypeService {
     const type = await this.prisma.invoiceType.findUnique({
       where: {
         title: createInvoiceTypeDto.title,
+        isDeleted: false,
       },
     });
-    if (type) throw new ConflictException('Invoice type must be unique.');
+    if (type)
+      throw new ConflictException(
+        'Invoice type with this title already exists.',
+      );
     return this.prisma.invoiceType.create({
       data: createInvoiceTypeDto,
     });
   }
 
   async findAll() {
-    return this.prisma.invoiceType.findMany();
+    return this.prisma.invoiceType.findMany({
+      where: { isDeleted: false },
+    });
   }
 
   async findById(id: number) {
     const type = await this.prisma.invoiceType.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
-    if (!type) throw new NotFoundException('Invoice type is not found.');
+    if (!type) throw new NotFoundException('Invoice type not found.');
     return type;
   }
 
-  update(id: number, updateInvoiceTypeDto: CreateUpdateInvoiceTypeDto) {
+  async update(id: number, updateInvoiceTypeDto: CreateUpdateInvoiceTypeDto) {
+    const type = await this.prisma.invoiceType.findUnique({
+      where: {
+        title: updateInvoiceTypeDto.title,
+        isDeleted: false,
+        NOT: { id },
+      },
+    });
+    if (type)
+      throw new ConflictException(
+        'Invoice type with this title already exists.',
+      );
     return this.prisma.invoiceType.update({
       data: updateInvoiceTypeDto,
-      where: { id },
+      where: { id, isDeleted: false },
     });
   }
 
   remove(id: number) {
     return this.prisma.invoiceType.update({
-      data: { isDeleted: true },
-      where: { id },
+      data: { isDeleted: true, deletedAt: new Date() },
+      where: { id, isDeleted: false },
     });
   }
 }

@@ -19,6 +19,7 @@ import { ShopsModule } from './shops/shops.module.js';
 import { StatusesModule } from './statuses/statuses.module.js';
 import { SuppliersModule } from './suppliers/suppliers.module.js';
 import { UnitsModule } from './units/units.module.js';
+import { UserAddressesModule } from './user-addresses/user-addresses.module.js';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { UnitsModule } from './units/units.module.js';
     StatusesModule,
     SuppliersModule,
     UnitsModule,
+    UserAddressesModule,
   ],
   providers: [SessionsService],
 })

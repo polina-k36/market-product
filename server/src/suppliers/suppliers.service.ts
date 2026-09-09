@@ -18,9 +18,8 @@ export class SuppliersService {
       },
     });
 
-    if (supplier) {
+    if (supplier)
       throw new ConflictException('Supplier with this title already exists');
-    }
 
     return this.prisma.supplier.create({
       data: createSupplierDto,
@@ -29,18 +28,13 @@ export class SuppliersService {
 
   findAll() {
     return this.prisma.supplier.findMany({
-      where: {
-        isDeleted: false,
-      },
+      where: { isDeleted: false },
     });
   }
 
   async findById(id: number) {
     const supplier = await this.prisma.supplier.findFirst({
-      where: {
-        id,
-        isDeleted: false,
-      },
+      where: { id, isDeleted: false },
     });
 
     if (!supplier) {
@@ -51,34 +45,27 @@ export class SuppliersService {
   }
 
   async update(id: number, updateSupplierDto: CreateUpdateSupplierDto) {
-    const supplier = await this.findById(id);
-
-    const duplicate = await this.prisma.supplier.findFirst({
+    const supplier = await this.prisma.supplier.findFirst({
       where: {
         title: updateSupplierDto.title,
         isDeleted: false,
-        NOT: {
-          id: supplier.id,
-        },
+        NOT: { id },
       },
     });
 
-    if (duplicate) {
+    if (supplier)
       throw new ConflictException('Supplier with this title already exists');
-    }
 
     return this.prisma.supplier.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: updateSupplierDto,
     });
   }
 
   async remove(id: number) {
-    await this.findById(id);
-
     return this.prisma.supplier.update({
-      where: { id },
-      data: { isDeleted: true },
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
   }
 }

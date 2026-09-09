@@ -13,41 +13,53 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({
       where: {
         title: createCategoryDto.title,
+        isDeleted: false,
       },
     });
 
-    if (category) throw new ConflictException('Category title must be unique.');
+    if (category)
+      throw new ConflictException('Category with this title already exists.');
     return this.prisma.category.create({
       data: createCategoryDto,
     });
   }
 
   findAll() {
-    return this.prisma.category.findMany();
+    return this.prisma.category.findMany({
+      where: { isDeleted: false },
+    });
   }
 
   async findById(id: number) {
     const category = await this.prisma.category.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
 
-    if (!category) throw new NotFoundException('Category is not found');
+    if (!category) throw new NotFoundException('Category not found');
     return category;
   }
 
-  update(id: number, updateCategoryDto: CreateUpdateCategoryDto) {
+  async update(id: number, updateCategoryDto: CreateUpdateCategoryDto) {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        title: updateCategoryDto.title,
+        isDeleted: false,
+        NOT: { id },
+      },
+    });
+
+    if (category)
+      throw new ConflictException('Category with this title already exists.');
     return this.prisma.category.update({
       data: updateCategoryDto,
-      where: { id },
+      where: { id, isDeleted: false },
     });
   }
 
   remove(id: number) {
     return this.prisma.category.update({
-      data: {
-        isDeleted: true,
-      },
-      where: { id },
+      data: { isDeleted: true, deletedAt: new Date() },
+      where: { id, isDeleted: false },
     });
   }
 }

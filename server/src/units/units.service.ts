@@ -18,13 +18,12 @@ export class UnitsService {
         OR: [
           {
             shortTitle: createUnitDto.shortTitle,
-            isDeleted: false,
           },
           {
             fullTitle: createUnitDto.fullTitle,
-            isDeleted: false,
           },
         ],
+        isDeleted: false,
       },
     });
 
@@ -41,18 +40,13 @@ export class UnitsService {
 
   findAll() {
     return this.prisma.unit.findMany({
-      where: {
-        isDeleted: false,
-      },
+      where: { isDeleted: false },
     });
   }
 
   async findById(id: number) {
     const unit = await this.prisma.unit.findFirst({
-      where: {
-        id,
-        isDeleted: false,
-      },
+      where: { id, isDeleted: false },
     });
 
     if (!unit) {
@@ -63,34 +57,29 @@ export class UnitsService {
   }
 
   async update(id: number, updateUnitDto: UpdateUnitDto) {
-    const unit = await this.findById(id);
-
-    const duplicate = await this.prisma.unit.findFirst({
+    const unit = await this.prisma.unit.findFirst({
       where: {
         OR: [
           {
             shortTitle: updateUnitDto.shortTitle,
-            isDeleted: false,
           },
           {
             fullTitle: updateUnitDto.fullTitle,
-            isDeleted: false,
           },
         ],
-        NOT: {
-          id: unit.id,
-        },
+        isDeleted: false,
+        NOT: { id },
       },
     });
 
-    if (duplicate) {
+    if (unit) {
       throw new ConflictException(
         'Unit with this short or full title already exists',
       );
     }
 
     return this.prisma.unit.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: updateUnitDto,
     });
   }
@@ -99,10 +88,8 @@ export class UnitsService {
     await this.findById(id);
 
     return this.prisma.unit.update({
-      where: { id },
-      data: {
-        isDeleted: true,
-      },
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
   }
 }

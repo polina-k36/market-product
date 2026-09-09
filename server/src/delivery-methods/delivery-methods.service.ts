@@ -12,39 +12,63 @@ export class DeliveryMethodsService {
 
   async create(createDeliveryMethodDto: CreateUpdateDeliveryMethodDto) {
     const method = await this.prisma.deliveryMethod.findUnique({
-      where: { title: createDeliveryMethodDto.title },
+      where: {
+        title: createDeliveryMethodDto.title,
+        isDeleted: false,
+      },
     });
 
-    if (method) throw new ConflictException('Method title must be unique.');
+    if (method)
+      throw new ConflictException(
+        'Delivery method with this title already exists.',
+      );
     return this.prisma.deliveryMethod.create({
       data: createDeliveryMethodDto,
     });
   }
 
   findAll() {
-    return this.prisma.deliveryMethod.findMany();
+    return this.prisma.deliveryMethod.findMany({
+      where: { isDeleted: false },
+    });
   }
 
   async findById(id: number) {
     const method = await this.prisma.deliveryMethod.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
 
-    if (!method) throw new NotFoundException('');
-    return `This action returns a #${id} deliveryMethod`;
+    if (!method) throw new NotFoundException('Delivery method not found');
+    return method;
   }
 
-  update(id: number, updateDeliveryMethodDto: CreateUpdateDeliveryMethodDto) {
+  async update(
+    id: number,
+    updateDeliveryMethodDto: CreateUpdateDeliveryMethodDto,
+  ) {
+    const method = await this.prisma.deliveryMethod.findUnique({
+      where: {
+        title: updateDeliveryMethodDto.title,
+        isDeleted: false,
+        NOT: { id },
+      },
+    });
+
+    if (method)
+      throw new ConflictException(
+        'Delivery method with this title already exists.',
+      );
+
     return this.prisma.deliveryMethod.update({
       data: updateDeliveryMethodDto,
-      where: { id },
+      where: { id, isDeleted: false },
     });
   }
 
   remove(id: number) {
     return this.prisma.deliveryMethod.update({
-      data: { isDeleted: true },
-      where: { id },
+      data: { isDeleted: true, deletedAt: new Date() },
+      where: { id, isDeleted: false },
     });
   }
 }

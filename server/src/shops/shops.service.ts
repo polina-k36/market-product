@@ -26,6 +26,7 @@ export class ShopsService {
             phone: createShopDto.phone,
           },
         ],
+        isDeleted: false,
       },
     });
     if (shop) {
@@ -38,18 +39,13 @@ export class ShopsService {
 
   findAll() {
     return this.prisma.shop.findMany({
-      where: {
-        isDeleted: false,
-      },
+      where: { isDeleted: false },
     });
   }
 
   async findById(id: number) {
     const shop = await this.prisma.shop.findUnique({
-      where: {
-        id,
-        isDeleted: false,
-      },
+      where: { id, isDeleted: false },
     });
     if (!shop) throw new NotFoundException('Shop not found');
 
@@ -71,29 +67,23 @@ export class ShopsService {
             phone: updateShopDto.phone,
           },
         ],
+        isDeleted: false,
+        NOT: { id },
       },
     });
     if (shop) {
       throw new ConflictException('Shop with this address already exists');
     }
     return this.prisma.shop.update({
-      where: {
-        id,
-        isDeleted: false,
-      },
+      where: { id, isDeleted: false },
       data: updateShopDto,
     });
   }
 
   remove(id: number) {
     return this.prisma.shop.update({
-      where: {
-        id,
-        isDeleted: false,
-      },
-      data: {
-        isDeleted: true,
-      },
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
   }
 }
