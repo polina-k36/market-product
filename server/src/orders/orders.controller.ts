@@ -14,7 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto.js';
 import { UpdateOrderDto } from './dto/update-order.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
-import type { AuthenticatedRequest } from '../types/authenticated-request.js';
+import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')

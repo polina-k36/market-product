@@ -15,7 +15,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
-import type { AuthenticatedRequest } from '../types/authenticated-request.js';
+import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';

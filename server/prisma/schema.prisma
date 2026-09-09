@@ -9,9 +9,12 @@ datasource db {
 
 model Cart {
   id        Int        @id @default(autoincrement()) @map("id_cart")
+
   userId    Int        @unique(map: "id_user") @map("id_user")
+
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
+
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_carts_user")
   cartItems CartItem[]
 
@@ -20,11 +23,14 @@ model Cart {
 
 model CartItem {
   id        Int      @id @default(autoincrement()) @map("id_cart_item")
+  quantity  Int
+
   cartId    Int      @map("id_cart")
   productId Int      @map("id_product")
-  quantity  Int
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
   cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_cart_items_cart")
   product   Product  @relation(fields: [productId], references: [id], onUpdate: NoAction, map: "fk_cart_items_product")
 
@@ -36,10 +42,12 @@ model CartItem {
 model Category {
   id        Int       @id @default(autoincrement()) @map("id_category")
   title     String    @unique(map: "title_category_UNIQUE") @map("title_category") @db.VarChar(150)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   products  Product[]
 
   @@map("category")
@@ -52,15 +60,18 @@ model Order {
   deliveryStreet    String?        @map("delivery_street") @db.VarChar(255)
   deliveryHouse     String?        @map("delivery_house") @db.VarChar(20)
   deliveryApartment String?        @map("delivery_apartment") @db.VarChar(20)
+  totalPrice        Decimal?       @map("total_price") @db.Decimal(10, 2)
+
   shopId            Int            @map("id_shop")
   statusId          Int            @map("id_status")
   paymentMethodId   Int            @map("id_payment_method")
   userId            Int            @map("id_user")
   deliveryMethodId  Int            @map("id_delivery_method")
   userCardId        Int?           @map("id_user_card")
-  totalPrice        Decimal?       @map("total_price") @db.Decimal(10, 2)
+
   createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+
   deliveryMethod    DeliveryMethod @relation(fields: [deliveryMethodId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_delivery_method1")
   paymentMethod     PaymentMethod  @relation(fields: [paymentMethodId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_payment_method1")
   shop              Shop           @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_shop1")
@@ -82,10 +93,12 @@ model Order {
 model DeliveryMethod {
   id        Int       @id @default(autoincrement()) @map("id_delivery_method")
   title     String    @unique(map: "title_delivery_method_UNIQUE") @map("title_delivery_method") @db.VarChar(150)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   orders    Order[]
 
   @@map("delivery_method")
@@ -94,12 +107,15 @@ model DeliveryMethod {
 model Invoice {
   id            Int           @id @default(autoincrement()) @map("id_invoice")
   date          DateTime      @db.DateTime(0)
+
   supplierId    Int?          @map("id_supplier")
   invoiceTypeId Int           @map("id_invoice_type")
   orderId       Int?          @map("id_custom_order")
   shopId        Int           @map("id_shop")
+
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+
   invoiceType   InvoiceType   @relation(fields: [invoiceTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_invoice_type1")
   order         Order?        @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_order1")
   shop          Shop          @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_shop1")
@@ -117,8 +133,10 @@ model InvoiceItem {
   id        Int     @id @default(autoincrement()) @map("id_invoice_item")
   price     Decimal @db.Decimal(10, 2)
   quantity  Decimal @db.Decimal(10, 3)
+
   productId Int     @map("id_product")
   invoiceId Int     @map("id_invoice")
+
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_item_invoice1")
   product   Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_item_product1")
 
@@ -131,10 +149,12 @@ model InvoiceItem {
 model InvoiceType {
   id        Int       @id @default(autoincrement()) @map("id_invoice_type")
   title     String    @unique(map: "title_invoice_type_UNIQUE") @map("title_invoice_type") @db.VarChar(45)
+  
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   invoices  Invoice[]
 
   @@map("invoice_type")
@@ -144,10 +164,12 @@ model Nds {
   id        Int       @id @default(autoincrement()) @map("id_nds")
   rate      Decimal   @unique(map: "rate_UNIQUE") @db.Decimal(5, 2)
   titleRate String    @unique(map: "title_UNIQUE") @map("title_rate") @db.VarChar(150)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   products  Product[]
 
   @@map("nds")
@@ -157,8 +179,10 @@ model OrderItem {
   id        Int     @id @default(autoincrement()) @map("id_order_item")
   price     Decimal @db.Decimal(10, 2)
   quantity  Decimal @db.Decimal(10, 3)
+
   orderId   Int     @map("id_custom_order")
   productId Int     @map("id_product")
+
   order     Order   @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_order1")
   product   Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_product1")
 
@@ -171,10 +195,12 @@ model OrderItem {
 model PaymentMethod {
   id        Int       @id @default(autoincrement()) @map("id_payment_method")
   title     String    @unique(map: "title_payment_method_UNIQUE") @map("title_payment_method") @db.VarChar(255)
+
   isDeleted Boolean   @default(false) @map("is_deleted")  
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  
   orders    Order[]
 
   @@map("payment_method")
@@ -187,15 +213,17 @@ model Product {
   composition   String        @db.Text
   thumbnail     String        @db.VarChar(255)
   price         Decimal       @db.Decimal(10, 2)
-  isDeleted     Boolean       @default(false) @map("is_deleted")
   categoryId    Int           @map("id_category")
   unitId        Int           @map("id_unit")
   ndsId         Int           @map("id_nds")
   stock         Int           @default(0)
   reservedStock Int           @default(0) @map("reserved_stock")
+
+  isDeleted     Boolean       @default(false) @map("is_deleted")
   deletedAt     DateTime?     @map("deleted_at") @db.DateTime(0)
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+
   cartItems     CartItem[]
   invoiceItems  InvoiceItem[]
   orderItems    OrderItem[]
@@ -212,8 +240,10 @@ model Product {
 model Role {
   id        Int      @id @default(autoincrement()) @map("id_role")
   title     String   @unique(map: "title_role_UNIQUE") @map("title_role") @db.VarChar(150)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
   users     User[]
 
   @@map("role")
@@ -225,10 +255,12 @@ model Shop {
   street    String    @map("shop_street") @db.VarChar(200)
   house     String    @map("shop_house") @db.VarChar(20)
   phone     String    @unique(map: "phone_UNIQUE") @db.VarChar(20)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   orders    Order[]
   invoices  Invoice[]
 
@@ -239,10 +271,12 @@ model Shop {
 model Status {
   id        Int       @id @default(autoincrement()) @map("id_status")
   title     String    @unique(map: "title_status_UNIQUE") @map("title_status") @db.VarChar(255)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   orders    Order[]
 
   @@map("status")
@@ -251,10 +285,12 @@ model Status {
 model Supplier {
   id        Int       @id @default(autoincrement()) @map("id_supplier")
   title     String    @unique(map: "title_supplier_UNIQUE") @map("title_supplier") @db.VarChar(255)
+
   isDeleted Boolean   @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   invoices  Invoice[]
 
   @@map("supplier")
@@ -264,10 +300,12 @@ model Unit {
   id         Int       @id @default(autoincrement()) @map("id_unit")
   shortTitle String    @unique(map: "title_unit_short_UNIQUE") @map("title_unit_short") @db.VarChar(10)
   fullTitle  String    @unique(map: "title_unit_full_UNIQUE") @map("title_unit_full") @db.VarChar(150)
+
   isDeleted  Boolean   @default(false) @map("is_deleted") @db.TinyInt
   deletedAt  DateTime? @map("deleted_at") @db.DateTime(0)
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
   products   Product[]
 
   @@map("unit")
@@ -282,6 +320,7 @@ model User {
   emailVerified Boolean       @map("email_verified") @default(false) 
   passwordHash  String?       @map("password") @db.Text
   birthDate     DateTime?     @map("date_birth") @db.Date 
+  
   createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime?     @updatedAt @map("updated_at") @db.DateTime(0)
   isDeleted     Boolean       @default(false) @map("is_deleted")
@@ -323,6 +362,7 @@ model UserAddress {
   street    String   @db.VarChar(200)
   house     String   @db.VarChar(20)
   apartment String?  @db.VarChar(20)
+
   userId    Int      @map("id_user")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
@@ -334,19 +374,21 @@ model UserAddress {
 }
 
 model UserCard {
-  id         Int       @id @default(autoincrement()) @map("id_user_card")
-  cardNumber String?   @map("card_number") @db.Text
-  expireDate String?   @map("expire_date") @db.VarChar(10)
-  userId     Int       @map("id_user")
-  isDeleted  Boolean   @default(false) @map("is_deleted")
-  deletedAt  DateTime? @map("deleted_at") @db.DateTime(0)
-  cardLast4  String?   @map("card_last4") @db.VarChar(4)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
-  orders     Order[]
-  user       User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_card_ibfk_1")
+  id          Int       @id @default(autoincrement()) @map("id_user_card")
+  expireMonth Int       @map("expire_month")
+  expireYear  Int       @map("expire_year")
+  cardLast4   String    @map("card_last4") @db.VarChar(4)
+  cardBrand   CardBrand @default(MIR) @map("card_brand")
 
-  @@unique([userId, cardLast4], map: "unique_user_card")
+  userId      Int       @map("id_user")
+  isDeleted   Boolean   @default(false) @map("is_deleted")
+  deletedAt   DateTime? @map("deleted_at") @db.DateTime(0)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  orders      Order[]
+  user        User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_card_ibfk_1")
+
   @@index([userId], map: "id_user")
   @@map("user_card")
 }
@@ -391,4 +433,10 @@ enum VerificationMethod {
 
 enum AuthProvider {
   GOOGLE
+}
+
+enum CardBrand {
+  MIR
+  VISA
+  MASTERCARD
 }

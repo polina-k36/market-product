@@ -13,7 +13,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
-import type { AuthenticatedRequest } from '../types/authenticated-request.js';
+import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 
 @ApiTags('Verifications')
 @UseGuards(JwtAuthGuard, EmailVerifiedGuard)

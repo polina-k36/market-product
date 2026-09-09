@@ -20,6 +20,7 @@ import { StatusesModule } from './statuses/statuses.module.js';
 import { SuppliersModule } from './suppliers/suppliers.module.js';
 import { UnitsModule } from './units/units.module.js';
 import { UserAddressesModule } from './user-addresses/user-addresses.module.js';
+import { UserCardsModule } from './user-cards/user-cards.module.js';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { UserAddressesModule } from './user-addresses/user-addresses.module.js';
     SuppliersModule,
     UnitsModule,
     UserAddressesModule,
+    UserCardsModule,
   ],
   providers: [SessionsService],
 })

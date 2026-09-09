@@ -19,7 +19,7 @@ import type { Response, Request } from 'express';
 import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from './constants/auth.constants.js';
 import { GoogleAuthDto } from './dto/google-auth.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
-import type { AuthenticatedRequest } from '../types/authenticated-request.js';
+import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 import { RegisterUserDto } from '../users/dto/register-user.dto copy.js';
 
 @ApiTags('Auth')

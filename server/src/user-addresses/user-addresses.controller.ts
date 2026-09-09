@@ -17,7 +17,7 @@ import { CreateUserAddressDto } from './dto/create-user-address.dto.js';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto.js';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import type { AuthenticatedRequest } from '../types/authenticated-request.js';
+import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 
 @ApiTags('User Addresses')
 @UseGuards(JwtAuthGuard)
