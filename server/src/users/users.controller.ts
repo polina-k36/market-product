@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -21,6 +22,7 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
+import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
 
 @ApiTags('Users')
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
@@ -78,11 +80,8 @@ export class UsersController {
     description: 'Недостаточно прав для просмотра списка пользователей.',
   })
   @Get()
-  async findAll() {
-    return {
-      success: true,
-      data: await this.usersService.getAll(),
-    };
+  findAll(@Query() query: GetUsersQueryDto) {
+    return this.usersService.getAll(query);
   }
 
   @ApiOperation({

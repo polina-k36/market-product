@@ -12,6 +12,9 @@ import { Prisma } from '../generated/prisma/client.js';
 import { ICreateDataUser } from './interfaces/create-data-user.interface.js';
 import { SessionsService } from '../sessions/sessions.service.js';
 import { UserIdentitiesService } from '../user-identities/user-identities.service.js';
+import { FilterUsersDto } from './dto/filter-users.dto.js';
+import { normalizePhone } from '../common/utils/phone.util.js';
+import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
 
 @Injectable()
 export class UsersService {
@@ -72,10 +75,47 @@ export class UsersService {
     });
   }
 
-  getAll() {
-    return this.prisma.user.findMany({
-      where: { isDeleted: false },
-    });
+  async getAll(query: GetUsersQueryDto) {
+    const { page, limit, ...filters } = query;
+
+    const where = this.buildFilters(filters);
+
+    const [total, users] = await Promise.all([
+      this.prisma.user.count({ where }),
+      this.prisma.user.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages,
+      data: users,
+    };
+  }
+
+  buildFilters(filters: FilterUsersDto): Prisma.UserWhereInput {
+    const { name, phone, email, emailVerified, roleId, isBanned } = filters;
+
+    const where: Prisma.UserWhereInput = {
+      isDeleted: false,
+      email,
+      emailVerified,
+      roleId,
+      isBanned,
+      phone: phone ? normalizePhone(phone) : undefined,
+      name: {
+        contains: name,
+      },
+    };
+    return where;
   }
 
   getUserById(id: number) {
