@@ -23,6 +23,7 @@ import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
 import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
+import { UpdatePasswordDto } from './dto/update-password.dto.js';
 
 @ApiTags('Users')
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
@@ -152,6 +153,37 @@ export class UsersController {
 
     return this.usersService.update(id, updateUserDto);
   }
+
+  @Patch('password')
+  @ApiOperation({
+    summary: 'Change user password',
+    description:
+      'Changes the password of the currently authenticated user. The current password must be provided for verification.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Пароль успешно изменён.',
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Новый пароль и подтверждение пароля не совпадают или текущий пароль указан неверно.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  async updatePassword(
+    @Req() req: AuthenticatedRequest,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const userId = req.user.sub;
+    return {
+      success: true,
+      data: await this.usersService.updatePassword(userId, updatePasswordDto),
+    };
+  }
+
   @ApiOperation({
     summary: 'Обновление пользователя',
     description:

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -16,6 +17,7 @@ import { FilterUsersDto } from './dto/filter-users.dto.js';
 import { normalizePhone } from '../common/utils/phone.util.js';
 import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
 import { UserAddressesService } from '../user-addresses/user-addresses.service.js';
+import { UpdatePasswordDto } from './dto/update-password.dto.js';
 
 @Injectable()
 export class UsersService {
@@ -63,7 +65,7 @@ export class UsersService {
 
     return client.user.create({
       data: {
-        passwordHash: password ? await bcrypt.hash(password, 4) : null,
+        passwordHash: password ? await bcrypt.hash(password, 10) : null,
         phone: phone ? normalizePhone(phone) : null,
         ...createDataWithoutPasswordAndPhone,
       },
@@ -209,6 +211,42 @@ export class UsersService {
           },
         });
     }
+  }
+
+  async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto) {
+    const { currentPassword, newPassword, confirmPassword } = updatePasswordDto;
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(
+        'New password and confirmation password do not match',
+      );
+    }
+
+    if (currentPassword === newPassword) {
+      throw new BadRequestException(
+        'New password must be different from the current password',
+      );
+    }
+
+    const user = await this.getUserById(id);
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user?.passwordHash ?? '',
+    );
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        passwordHash: newPasswordHash,
+      },
+    });
   }
 
   remove(id: number) {
