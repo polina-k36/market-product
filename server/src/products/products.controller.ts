@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,8 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { GetProductsQueryDto } from './dto/get-products-query.dto.js';
 
 @ApiTags('Products')
 @Controller('products')
@@ -64,11 +67,8 @@ export class ProductsController {
     status: 200,
     description: 'Список товаров успешно получен',
   })
-  async findAll() {
-    return {
-      success: true,
-      data: await this.productsService.findAll(),
-    };
+  findAll(@Query() query: GetProductsQueryDto) {
+    return this.productsService.findAll(query);
   }
 
   @Get(':id')

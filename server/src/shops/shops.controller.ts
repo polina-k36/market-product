@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,7 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
+import { GetShopsQueryDto } from './dto/get-shops-query.dto.js';
 
 @ApiTags('Shops')
 @Controller('shops')
@@ -60,11 +62,8 @@ export class ShopsController {
     status: 200,
     description: 'Список магазинов',
   })
-  async findAll() {
-    return {
-      success: true,
-      data: await this.shopsService.findAll(),
-    };
+  findAll(@Query() query: GetShopsQueryDto) {
+    return this.shopsService.findAll(query);
   }
 
   @Get(':id')

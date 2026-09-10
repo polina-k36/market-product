@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { IOrderItem } from '../order-items/interfaces/order-item.interface.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { GetProductStockQueryDto } from './dto/get-product-stock-query.dto.js';
+import { FilterProductStockDto } from './dto/filter-product-stock.dto.js';
 
 @Injectable()
 export class ProductStockService {
@@ -119,5 +121,55 @@ export class ProductStockService {
         },
       });
     }
+  }
+
+  async getAll(query: GetProductStockQueryDto) {
+    const { page, limit, ...filters } = query;
+
+    const where = this.buildFilters(filters);
+
+    const [total, productStocks] = await Promise.all([
+      this.prisma.productStock.count({ where }),
+      this.prisma.productStock.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages,
+      data: productStocks,
+    };
+  }
+
+  buildFilters(filters: FilterProductStockDto): Prisma.ProductStockWhereInput {
+    const { quantityFrom, quantityTo, productId, shopId } = filters;
+    const where: Prisma.ProductStockWhereInput = {
+      productId,
+      shopId,
+    };
+
+    if (quantityFrom !== undefined || quantityTo !== undefined) {
+      where.quantity = {
+        lte: quantityTo,
+        gte: quantityFrom,
+      };
+    }
+
+    return where;
+  }
+
+  removeByShopId(shopId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.productStock.deleteMany({
+      where: { shopId },
+    });
   }
 }
