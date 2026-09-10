@@ -17,7 +17,7 @@ import { UserIdentitiesService } from '../user-identities/user-identities.servic
 import { AuthProviderEnum } from '../user-identities/enums/auth-provider.enum.js';
 import { User } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { RegisterUserDto } from '../users/dto/register-user.dto copy.js';
+import { RegisterUserDto } from '../users/dto/register-user.dto.js';
 import { isEmail, isPhoneNumber } from 'class-validator';
 import { ICreateDataUser } from '../users/interfaces/create-data-user.interface.js';
 import { CreateUserFromProviderDto } from '../users/dto/create-user-from-provider.dto.js';

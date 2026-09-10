@@ -20,6 +20,8 @@ import { SuppliersModule } from './suppliers/suppliers.module.js';
 import { UnitsModule } from './units/units.module.js';
 import { UserAddressesModule } from './user-addresses/user-addresses.module.js';
 import { UserCardsModule } from './user-cards/user-cards.module.js';
+import { OrderItemsModule } from './order-items/order-items.module.js';
+import { ProductStockModule } from './product-stock/product-stock.module.js';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { UserCardsModule } from './user-cards/user-cards.module.js';
     UnitsModule,
     UserAddressesModule,
     UserCardsModule,
+    OrderItemsModule,
+    ProductStockModule,
   ],
 })
 export class AppModule {}

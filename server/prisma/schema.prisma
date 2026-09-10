@@ -241,7 +241,7 @@ model Product {
 model ProductStock {
   id                Int      @id @default(autoincrement()) @map("id_product_stock")
   quantity          Decimal  @default(0) @db.Decimal(10, 3)
-  reserved_quantity Decimal  @default(0) @db.Decimal(10, 3) @map("reserved_quantity")
+  reservedQuantity Decimal  @default(0) @db.Decimal(10, 3) @map("reserved_quantity")
 
   productId         Int      @map("id_product")
   shopId            Int      @map("id_shop")

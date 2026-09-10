@@ -10,10 +10,8 @@ export class LoginUserDto {
   login: string;
   @ApiProperty({
     description: 'Пароль пользователя',
-    minLength: 6,
     example: 'StrongPassword123!',
   })
   @IsString()
-  @IsStrongPassword({ minLength: 6 })
   password: string;
 }
