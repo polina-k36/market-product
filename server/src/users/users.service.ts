@@ -15,6 +15,7 @@ import { UserIdentitiesService } from '../user-identities/user-identities.servic
 import { FilterUsersDto } from './dto/filter-users.dto.js';
 import { normalizePhone } from '../common/utils/phone.util.js';
 import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
+import { UserAddressesService } from '../user-addresses/user-addresses.service.js';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly sessionsService: SessionsService,
     private readonly userIdentitiesService: UserIdentitiesService,
+    private readonly userAddressService: UserAddressesService,
   ) {}
 
   fields = {
@@ -210,19 +212,24 @@ export class UsersService {
   }
 
   remove(id: number) {
-    //добавить удаление адресов и подумать над картами но они хранятся в заказе пожтому стоит быть аккуратнее(возможно оставлять данные о карте пустыми и все)
+    //подумать над картами но они хранятся в заказе пожтому стоит быть аккуратнее(возможно оставлять данные о карте пустыми и все)
     this.prisma.$transaction(async (tx) => {
-      await tx.user.update({
+      const user = await tx.user.update({
         data: { isDeleted: true },
-        where: {
-          id,
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
         },
       });
       await this.sessionsService.removeByUserId(id, tx);
-      tx.verification.deleteMany({
+      await tx.verification.deleteMany({
         where: { userId: id },
       });
       await this.userIdentitiesService.removeByUserId(id, tx);
+      await this.userAddressService.removeByUserId(id, tx);
+      return user;
     });
   }
 }

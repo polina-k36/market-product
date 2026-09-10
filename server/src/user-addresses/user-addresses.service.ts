@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserAddressDto } from './dto/create-user-address.dto.js';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class UserAddressesService {
@@ -50,7 +51,7 @@ export class UserAddressesService {
     return address;
   }
 
-  async update(
+  update(
     id: number,
     userId: number,
     updateUserAddressDto: UpdateUserAddressDto,
@@ -61,7 +62,14 @@ export class UserAddressesService {
     });
   }
 
-  async remove(id: number, userId: number) {
+  removeByUserId(userId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.userAddress.deleteMany({
+      where: { userId },
+    });
+  }
+
+  remove(id: number, userId: number) {
     return this.prisma.userAddress.delete({
       where: { id, userId },
     });
