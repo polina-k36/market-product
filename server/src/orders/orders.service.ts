@@ -111,10 +111,10 @@ export class OrdersService {
     });
   }
 
-  cancelOrder(id: number) {
+  cancelOrder(id: number, userId: number) {
     return this.prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({
-        where: { id },
+        where: { id, userId },
         include: { orderItems: true },
       });
       if (!order) throw new NotFoundException('Order not found.');
@@ -129,7 +129,7 @@ export class OrdersService {
         );
       await this.productStockService.releaseStock(order.shopId, products, tx);
       const updatedOrder = await tx.order.update({
-        where: { id },
+        where: { id, userId },
         data: { statusId: 6 },
         include: { orderItems: true },
       });
@@ -137,7 +137,7 @@ export class OrdersService {
     });
   }
 
-  returnOrder() {}
+  async returnOrder(id: number, userId: number) {}
 
   async findById(id: number, userId: number, role: string) {
     const order = await this.prisma.order.findUnique({
