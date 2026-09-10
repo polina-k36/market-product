@@ -56,12 +56,14 @@ export class UsersService {
         'This email or phone number is already in use.',
       );
 
-    const { password, ...createDataWithoutPassword } = createData;
+    const { password, phone, ...createDataWithoutPasswordAndPhone } =
+      createData;
 
     return client.user.create({
       data: {
         passwordHash: password ? await bcrypt.hash(password, 4) : null,
-        ...createDataWithoutPassword,
+        phone: phone ? normalizePhone(phone) : null,
+        ...createDataWithoutPasswordAndPhone,
       },
       select: {
         id: true,
@@ -176,6 +178,9 @@ export class UsersService {
       data: {
         ...updateUserDto,
         emailVerified: emailChanged ? false : undefined,
+        phone: updateUserDto.phone
+          ? normalizePhone(updateUserDto.phone)
+          : undefined,
       },
     });
   }
