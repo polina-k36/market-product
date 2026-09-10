@@ -211,13 +211,14 @@ model Product {
   title         String        @unique(map: "title_product_UNIQUE") @map("title_product") @db.VarChar(255)
   description   String        @db.Text
   composition   String        @db.Text
-  thumbnail     String        @db.VarChar(255)
+  imageKey      String        @default("") @db.VarChar(255) @map("image_key")
   price         Decimal       @db.Decimal(10, 2)
+  stock         Int           @default(0)
+  reservedStock Int           @default(0) @map("reserved_stock")
+  
   categoryId    Int           @map("id_category")
   unitId        Int           @map("id_unit")
   ndsId         Int           @map("id_nds")
-  stock         Int           @default(0)
-  reservedStock Int           @default(0) @map("reserved_stock")
 
   isDeleted     Boolean       @default(false) @map("is_deleted")
   deletedAt     DateTime?     @map("deleted_at") @db.DateTime(0)
@@ -314,7 +315,7 @@ model Unit {
 model User {
   id            Int           @id @default(autoincrement()) @map("id_user")
   name          String        @map("name") @db.VarChar(255)
-  urlAvatar     String?       @map("url_avatar") @db.Text
+  avatarUrl     String?       @map("avatar_url") @db.Text
   phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
   email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
   emailVerified Boolean       @map("email_verified") @default(false) 

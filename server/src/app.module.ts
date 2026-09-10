@@ -6,7 +6,6 @@ import { UsersModule } from './users/users.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module.js';
-import { SessionsService } from './sessions/sessions.service.js';
 import { SessionsModule } from './sessions/sessions.module.js';
 import { VerificationsModule } from './verifications/verifications.module.js';
 import { MailModule } from './mail/mail.module.js';
@@ -48,6 +47,5 @@ import { UserCardsModule } from './user-cards/user-cards.module.js';
     UserAddressesModule,
     UserCardsModule,
   ],
-  providers: [SessionsService],
 })
 export class AppModule {}

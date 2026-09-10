@@ -1,26 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createProductDto: CreateProductDto) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        title: createProductDto.title,
+        isDeleted: false,
+      },
+    });
+    if (product)
+      throw new ConflictException('Product with this title already exists');
+    return this.prisma.product.create({
+      data: createProductDto,
+    });
   }
 
   findAll() {
-    return `This action returns all products`;
+    return this.prisma.product.findMany({
+      where: { isDeleted: false },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findById(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id, isDeleted: false },
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        title: updateProductDto.title,
+        isDeleted: false,
+        NOT: { id },
+      },
+    });
+
+    if (product)
+      throw new ConflictException('Product with this title already exists');
+
+    return this.prisma.product.update({
+      where: { id, isDeleted: false },
+      data: updateProductDto,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} product`;
+    return this.prisma.product.update({
+      where: { id, isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
+    });
   }
 }
