@@ -6,6 +6,7 @@ import {
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class ProductsService {
@@ -29,6 +30,18 @@ export class ProductsService {
     return this.prisma.product.findMany({
       where: { isDeleted: false },
     });
+  }
+
+  getProductPriceById(id: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    const product = client.product.findUnique({
+      where: { id, isDeleted: false },
+      select: { id: true, price: true },
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
   }
 
   async findById(id: number) {
