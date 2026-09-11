@@ -153,7 +153,7 @@ export class UsersService {
       },
       select: this.fields,
     });
-    if (!user) throw new NotFoundException('');
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
@@ -198,7 +198,7 @@ export class UsersService {
     const client = tx ?? this.prisma;
 
     switch (type) {
-      case VerificationType.EMAIL:
+      case VerificationType.EMAIL_VERIFICATION:
         return client.user.update({
           where: { id, isDeleted: false },
           data: {
@@ -245,6 +245,33 @@ export class UsersService {
       where: { id },
       data: {
         passwordHash: newPasswordHash,
+      },
+    });
+  }
+
+  async resetPassword(
+    id: number,
+    newPassword: string,
+    confirmPassword: string,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const client = tx ?? this.prisma;
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(
+        'New password and confirmation password do not match',
+      );
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    return client.user.update({
+      where: { id },
+      data: {
+        passwordHash: newPasswordHash,
+      },
+      select: {
+        id: true,
+        email: true,
       },
     });
   }

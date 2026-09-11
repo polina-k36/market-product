@@ -13,6 +13,7 @@ import { MailService } from '../mail/mail.service.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { AuthService } from '../auth/auth.service.js';
+import { JwtTokensService } from '../jwt-tokens/jwt-tokens.service.js';
 
 @Injectable()
 export class VerificationsService {
@@ -20,7 +21,7 @@ export class VerificationsService {
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
-    private readonly authService: AuthService,
+    private readonly jwtTokensService: JwtTokensService,
   ) {}
 
   async getVerificationById(id: number, userId: number) {
@@ -36,12 +37,25 @@ export class VerificationsService {
     return verification;
   }
 
+  async getVerificationByIdAndType(id: number, type: VerificationType) {
+    const verification = await this.prisma.verification.findUnique({
+      where: {
+        id,
+        type,
+      },
+    });
+
+    if (!verification) throw new NotFoundException('Verification not found.');
+
+    return verification;
+  }
+
   async getVerificationEmailByUserId(userId: number) {
     const verification = await this.prisma.verification.findUnique({
       where: {
         userId_type: {
           userId,
-          type: VerificationType.EMAIL,
+          type: VerificationType.EMAIL_VERIFICATION,
         },
       },
     });
@@ -66,6 +80,46 @@ export class VerificationsService {
       },
       create: verificationDto,
     });
+  }
+
+  async completePasswordResetVerification(id: number, tokenHash: string) {
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+    return this.prisma.verification.update({
+      where: { id, type: VerificationType.PASSWORD_RESET },
+      data: {
+        valueHash: null,
+        resetTokenHash: tokenHash,
+        expiresAt,
+      },
+    });
+  }
+
+  async verifyResetToken(id: number, token: string) {
+    const verification = await this.prisma.verification.findUnique({
+      where: { id, type: VerificationType.PASSWORD_RESET },
+    });
+    if (!verification)
+      throw new UnauthorizedException('Invalid verification id.');
+
+    if (!verification.resetTokenHash)
+      throw new UnauthorizedException('Invalid reset token.');
+
+    if (verification.expiresAt < new Date()) {
+      throw new UnauthorizedException('Reset token has expired.');
+    }
+
+    const isValidToken = await bcrypt.compare(
+      token,
+      verification.resetTokenHash,
+    );
+
+    if (!isValidToken) throw new UnauthorizedException('Invalid reset token.');
+
+    return {
+      success: true,
+      userId: verification.userId,
+    };
   }
 
   remove(id: number, tx?: Prisma.TransactionClient) {
@@ -95,7 +149,7 @@ export class VerificationsService {
 
     await this.upsert({
       userId,
-      type: VerificationType.EMAIL,
+      type: VerificationType.EMAIL_VERIFICATION,
       valueHash: await bcrypt.hash(value, 4),
       expiresAt,
       method: methodVerification,
@@ -129,14 +183,17 @@ export class VerificationsService {
     if (verification.expiresAt < new Date())
       throw new UnauthorizedException('Verification token has expired.');
 
-    const isValidToken = await bcrypt.compare(value, verification.valueHash);
+    const isValidToken = await bcrypt.compare(
+      value,
+      verification.valueHash ?? '',
+    );
     if (!isValidToken)
       throw new UnauthorizedException('Invalid verification token.');
 
     const updateUser = await this.prisma.$transaction(async (tx) => {
       const user = await this.usersService.updateVerificationStatus(
         userId,
-        VerificationType.EMAIL,
+        VerificationType.EMAIL_VERIFICATION,
         true,
         tx,
       );
@@ -144,7 +201,10 @@ export class VerificationsService {
       return user;
     });
 
-    const accessToken = this.authService.createAccessJwtToken({
+    if (!updateUser)
+      throw new UnauthorizedException('Invalid verification token.');
+
+    const accessToken = this.jwtTokensService.createAccessJwtToken({
       id: updateUser.id,
       role: updateUser.role.title,
       emailVerified: updateUser.emailVerified,
@@ -157,7 +217,7 @@ export class VerificationsService {
     };
   }
 
-  getEmailCodeTemplate(code: string) {
+  private getEmailCodeTemplate(code: string) {
     return `
       <div style="
         margin: 0;
@@ -244,7 +304,7 @@ export class VerificationsService {
     `;
   }
 
-  getEmailLinkTemplate(link: string) {
+  private getEmailLinkTemplate(link: string) {
     return `
       <div style="
         margin: 0;

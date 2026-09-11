@@ -429,15 +429,16 @@ model Session {
 }
 
 model Verification {
-  id        Int                    @id @default(autoincrement()) @map("id_verification")
-  valueHash String                 @map("value_hash") @db.Text
-  type      VerificationType 
-  method    VerificationMethod 
-  userId    Int                    @map("id_user")
-  expiresAt DateTime               @map("expires_at") @db.DateTime(0)
-  createdAt DateTime               @default(now()) @map("created_at") @db.Timestamp(0)
+  id             Int                    @id @default(autoincrement()) @map("id_verification")
+  valueHash      String?                @map("value_hash") @db.Text
+  resetTokenHash String?                @map("reset_token_hash") @db.Text
+  type           VerificationType 
+  method         VerificationMethod      
+  userId         Int                    @map("id_user")
+  expiresAt      DateTime               @map("expires_at") @db.DateTime(0)
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamp(0)
 
-  user      User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_verification_ibfk_1")
+  user           User                   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_verification_ibfk_1")
 
   @@unique([userId, type])
   @@index([userId], map: "id_user")
@@ -445,7 +446,8 @@ model Verification {
 }
 
 enum VerificationType {
-  EMAIL
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }
 
 enum VerificationMethod {

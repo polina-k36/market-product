@@ -16,7 +16,7 @@ export class CreateVerificationDto {
   @ApiProperty({
     description: 'Тип верификации',
     enum: VerificationType,
-    example: VerificationType.EMAIL,
+    example: VerificationType.EMAIL_VERIFICATION,
   })
   @IsEnum(VerificationType)
   type: VerificationType;

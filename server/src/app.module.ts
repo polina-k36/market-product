@@ -22,6 +22,7 @@ import { UserAddressesModule } from './user-addresses/user-addresses.module.js';
 import { UserCardsModule } from './user-cards/user-cards.module.js';
 import { OrderItemsModule } from './order-items/order-items.module.js';
 import { ProductStockModule } from './product-stock/product-stock.module.js';
+import { JwtTokensModule } from './jwt-tokens/jwt-tokens.module.js';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ProductStockModule } from './product-stock/product-stock.module.js';
     UserCardsModule,
     OrderItemsModule,
     ProductStockModule,
+    JwtTokensModule,
   ],
 })
 export class AppModule {}

@@ -4,7 +4,7 @@ import { SendEmailDto } from './dto/send-email.dto.js';
 
 @Injectable()
 export class MailService {
-  getEmailTransport() {
+  private getEmailTransport() {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: Number(process.env.EMAIL_PORT),
