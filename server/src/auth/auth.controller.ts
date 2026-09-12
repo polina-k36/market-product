@@ -21,6 +21,9 @@ import { GoogleAuthDto } from './dto/google-auth.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import type { AuthenticatedRequest } from '../common/types/authenticated-request.js';
 import { RegisterUserDto } from '../users/dto/register-user.dto.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
+import { VerifyResetCodeDto } from './dto/verify-reset-code.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -132,6 +135,73 @@ export class AuthController {
       success: true,
       message: 'Successfully logged out.',
     };
+  }
+
+  @ApiOperation({
+    summary: 'Запросить восстановление пароля',
+    description:
+      'Проверяет наличие пользователя с указанным email и отправляет на подтверждённый email шестизначный код для восстановления пароля.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Код восстановления пароля успешно отправлен на email пользователя.',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'Пользователь не найден или электронная почта пользователя не подтверждена.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Не удалось отправить код восстановления на email.',
+  })
+  @Post('forgot-password')
+  forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.forgotPassword(body);
+  }
+
+  @ApiOperation({
+    summary: 'Проверить код восстановления пароля',
+    description:
+      'Проверяет шестизначный код восстановления по ID верификации. При успешной проверке создаётся одноразовый токен для установки нового пароля.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Код восстановления успешно подтверждён. Получен токен для сброса пароля.',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'Верификация не найдена, срок действия кода истёк или код указан неверно.',
+  })
+  @Post('verify-reset-code')
+  verifyResetCode(@Body() body: VerifyResetCodeDto) {
+    return this.authService.verifyResetCode(body);
+  }
+
+  @ApiOperation({
+    summary: 'Восстановить пароль',
+    description:
+      'Устанавливает новый пароль пользователя с использованием одноразового токена, полученного после успешной проверки кода восстановления.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Пароль пользователя успешно изменён.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Новый пароль и подтверждение пароля не совпадают.',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'Токен восстановления недействителен или срок его действия истёк.',
+  })
+  @Post('reset-password')
+  resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body);
   }
 
   @ApiOperation({
