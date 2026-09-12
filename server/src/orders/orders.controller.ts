@@ -26,6 +26,8 @@ import type { AuthenticatedRequest } from '../common/types/authenticated-request
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
+import { ChangeOrderStatusDto } from './dto/change-order-status.dto.js';
+import { ReturnOrderDto } from './dto/return-order.dto.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
 @ApiTags('Orders')
@@ -147,19 +149,6 @@ export class OrdersController {
     example: 15,
     type: Number,
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        statusId: {
-          type: 'number',
-          example: 4,
-          description: 'ID нового статуса заказа',
-        },
-      },
-      required: ['statusId'],
-    },
-  })
   @ApiResponse({
     status: 200,
     description: 'Статус заказа успешно изменён.',
@@ -182,11 +171,11 @@ export class OrdersController {
   })
   async changeStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body('statusId') statusId: number,
+    @Body() dtoChangeStatus: ChangeOrderStatusDto,
   ) {
     return {
       success: true,
-      data: await this.ordersService.changeOrderStatus(id, statusId),
+      data: await this.ordersService.changeOrderStatus(id, dtoChangeStatus),
     };
   }
 
@@ -271,12 +260,12 @@ export class OrdersController {
   async returnOrder(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
+    @Body() dtoReturnOrder: ReturnOrderDto,
   ) {
     const userId = req.user.sub;
-
     return {
       success: true,
-      data: await this.ordersService.returnOrder(id, userId),
+      data: await this.ordersService.returnOrder(id, userId, dtoReturnOrder),
     };
   }
 
