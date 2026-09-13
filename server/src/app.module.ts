@@ -25,11 +25,13 @@ import { ProductStockModule } from './product-stock/product-stock.module.js';
 import { JwtTokensModule } from './jwt-tokens/jwt-tokens.module.js';
 import { InvoicesModule } from './invoices/invoices.module.js';
 import { InvoiceItemsModule } from './invoice-items/invoice-items.module.js';
+import { envSchema } from './common/config/env.validation.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.env`,
+      isGlobal: true,
+      validationSchema: envSchema,
     }),
     AuthModule,
     ProductsModule,

@@ -22,7 +22,10 @@ export class JwtTokensService {
       emailVerified: user.emailVerified,
     };
 
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: '15m',
+    });
 
     return accessToken;
   }
@@ -50,5 +53,17 @@ export class JwtTokensService {
     await this.sessionsService.updateTokenHash(session.id, user.id, tokenHash);
 
     return refreshToken;
+  }
+
+  verifyAccessToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: process.env.JWT_ACCESS_SECRET,
+    });
+  }
+
+  verifyRefreshToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: process.env.JWT_REFRESH_SECRET,
+    });
   }
 }

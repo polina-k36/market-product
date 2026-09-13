@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto.js';
 import { UsersService } from '../users/users.service.js';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { SessionsService } from '../sessions/sessions.service.js';
@@ -34,7 +33,6 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
     private readonly sessionsService: SessionsService,
     private readonly verificationsService: VerificationsService,
     private readonly userIdentitiesService: UserIdentitiesService,
@@ -116,9 +114,7 @@ export class AuthService {
     if (!refreshToken)
       throw new UnauthorizedException('Refresh token is missing.');
 
-    const payload = this.jwtService.verify(refreshToken, {
-      secret: process.env.JWT_REFRESH_SECRET,
-    });
+    const payload = this.jwtTokensService.verifyRefreshToken(refreshToken);
 
     const session = await this.sessionsService.getSessionById(
       payload.sessionId,
@@ -162,9 +158,7 @@ export class AuthService {
 
     let payload;
     try {
-      payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
-      });
+      payload = this.jwtTokensService.verifyRefreshToken(refreshToken);
     } catch {
       return;
     }

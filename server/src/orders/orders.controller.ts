@@ -99,6 +99,26 @@ export class OrdersController {
     return this.ordersService.findAll(query);
   }
 
+  @Get('me')
+  @ApiOperation({
+    summary: 'Получить заказы текущего пользователя',
+    description:
+      'Возвращает список всех заказов, созданных текущим авторизованным пользователем.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список заказов пользователя успешно получен.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  async getOrdersByUserId(@Req() req: AuthenticatedRequest) {
+    const id = req.user.sub;
+
+    return this.ordersService.getByUserId(id);
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Получить заказ по ID',
@@ -136,11 +156,6 @@ export class OrdersController {
     };
   }
 
-  @Get('me')
-  getItemsByUserId(@Req() req: AuthenticatedRequest) {
-    const id = req.user.sub;
-    return this.ordersService.getByUserId(id);
-  }
   @Roles('ADMIN')
   @EmailVerified(true)
   @Patch(':id/status')
