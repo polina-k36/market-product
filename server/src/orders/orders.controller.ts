@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ChangeOrderStatusDto } from './dto/change-order-status.dto.js';
 import { ReturnOrderDto } from './dto/return-order.dto.js';
+import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
 @ApiTags('Orders')
@@ -75,10 +77,11 @@ export class OrdersController {
   }
 
   @Get()
+  @Roles('ADMIN')
   @ApiOperation({
     summary: 'Получить список заказов',
     description:
-      'Возвращает список заказов текущего пользователя. Администратор получает список всех заказов.',
+      'Возвращает список заказов с поддержкой пагинации и фильтрации. Доступно только авторизованному администратору.',
   })
   @ApiResponse({
     status: 200,
@@ -88,14 +91,12 @@ export class OrdersController {
     status: 401,
     description: 'Пользователь не авторизован.',
   })
-  async findAll(@Req() req: AuthenticatedRequest) {
-    const userId = req.user.sub;
-    const role = req.user.role;
-
-    return {
-      success: true,
-      data: await this.ordersService.findAll(userId, role),
-    };
+  @ApiResponse({
+    status: 403,
+    description: 'Доступ разрешён только администратору.',
+  })
+  async findAll(@Query() query: GetOrdersQueryDto) {
+    return this.ordersService.findAll(query);
   }
 
   @Get(':id')
@@ -135,6 +136,11 @@ export class OrdersController {
     };
   }
 
+  @Get('me')
+  getItemsByUserId(@Req() req: AuthenticatedRequest) {
+    const id = req.user.sub;
+    return this.ordersService.getByUserId(id);
+  }
   @Roles('ADMIN')
   @EmailVerified(true)
   @Patch(':id/status')

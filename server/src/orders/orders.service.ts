@@ -13,6 +13,9 @@ import { InvoicesService } from '../invoices/invoices.service.js';
 import { OrderStatusEnum } from '../common/enums/order-status.enum.js';
 import { ChangeOrderStatusDto } from './dto/change-order-status.dto.js';
 import { ReturnOrderDto } from './dto/return-order.dto.js';
+import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
+import { FilterOrdersDto } from './dto/filter-orders.dto.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 @Injectable()
 export class OrdersService {
@@ -72,11 +75,62 @@ export class OrdersService {
     });
   }
 
-  findAll(userId: number, role: string) {
+  async findAll(query: GetOrdersQueryDto) {
+    const { page, limit, ...filters } = query;
+    const where = this.buildFilters(filters);
+
+    const [total, orders] = await Promise.all([
+      this.prisma.order.count({ where }),
+      this.prisma.order.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = total / limit;
+
+    return {
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages,
+      data: orders,
+    };
+  }
+
+  buildFilters(filters: FilterOrdersDto): Prisma.OrderWhereInput {
+    const {
+      shopId,
+      statusId,
+      paymentMethodId,
+      userId,
+      dateFrom,
+      dateTo,
+      deliveryMethodId,
+    } = filters;
+
+    const where: Prisma.OrderWhereInput = {
+      shopId,
+      statusId,
+      paymentMethodId,
+      userId,
+      deliveryMethodId,
+    };
+
+    if (dateFrom || dateTo) {
+      where.date = {
+        lte: dateTo,
+        gte: dateFrom,
+      };
+    }
+    return where;
+  }
+
+  getByUserId(userId: number) {
     return this.prisma.order.findMany({
-      where: {
-        userId: role === 'ADMIN' ? undefined : userId,
-      },
+      where: { userId },
     });
   }
 

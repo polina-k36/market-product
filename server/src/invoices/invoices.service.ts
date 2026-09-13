@@ -7,6 +7,8 @@ import { CreateIncomingInvoiceDto } from './dto/create-incoming-invoice.dto.js';
 import { CreateReturnInvoiceDto } from './dto/create-return-invoice.dto.js';
 import { InvoiceItemsService } from '../invoice-items/invoice-items.service.js';
 import { Prisma } from '../generated/prisma/client.js';
+import { GetInvoicesQueryDto } from './dto/get-invoices-query.dto.js';
+import { FilterInvoicesDto } from './dto/filter-invoices.dto.js';
 
 @Injectable()
 export class InvoicesService {
@@ -90,8 +92,53 @@ export class InvoicesService {
   async getById(id: number) {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id },
+      include: { invoiceItems: true },
     });
     if (!invoice) throw new NotFoundException('Invoice not found.');
     return invoice;
+  }
+
+  async getAll(query: GetInvoicesQueryDto) {
+    const { page, limit, ...filters } = query;
+
+    const where = this.buildFilters(filters);
+
+    const [total, invoices] = await Promise.all([
+      this.prisma.invoice.count({ where }),
+      this.prisma.invoice.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages,
+      data: invoices,
+    };
+  }
+
+  buildFilters(filters: FilterInvoicesDto): Prisma.InvoiceWhereInput {
+    const { supplierId, invoiceTypeId, shopId, dateFrom, dateTo } = filters;
+    const where: Prisma.InvoiceWhereInput = {
+      supplierId,
+      invoiceTypeId,
+      shopId,
+    };
+
+    if (dateFrom || dateTo) {
+      where.date = {
+        lte: dateTo,
+        gte: dateFrom,
+      };
+    }
+
+    return where;
   }
 }

@@ -23,14 +23,9 @@ export class OrderItemsService {
     });
   }
 
-  getAll() {
-    //сортировка фильтрация
-    return this.prisma.orderItem.findMany();
-  }
-
-  getById(id: number) {
-    return this.prisma.orderItem.findUnique({
-      where: { id },
+  getAllByOrderId(orderId: number) {
+    return this.prisma.orderItem.findMany({
+      where: { orderId },
     });
   }
 }
