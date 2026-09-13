@@ -84,7 +84,7 @@ export class InvoicesController {
     };
   }
 
-  @Post()
+  @Post('incoming')
   @EmailVerified(true)
   @ApiOperation({
     summary: 'Создать приходную накладную',
