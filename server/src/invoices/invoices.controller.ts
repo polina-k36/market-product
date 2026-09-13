@@ -111,7 +111,9 @@ export class InvoicesController {
   async createIncomingInvoice(@Body() body: CreateIncomingInvoiceDto) {
     return {
       success: true,
-      data: await this.invoicesService.createIncomingInvoice(body),
+      data: await this.invoicesService.createIncomingInvoiceAndChangeStock(
+        body,
+      ),
     };
   }
 }

@@ -9,12 +9,14 @@ import { InvoiceItemsService } from '../invoice-items/invoice-items.service.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { GetInvoicesQueryDto } from './dto/get-invoices-query.dto.js';
 import { FilterInvoicesDto } from './dto/filter-invoices.dto.js';
+import { ProductStockService } from '../product-stock/product-stock.service.js';
 
 @Injectable()
 export class InvoicesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly invoiceItemsService: InvoiceItemsService,
+    private readonly productStock: ProductStockService,
   ) {}
 
   createOutgoingInvoice(
@@ -24,11 +26,20 @@ export class InvoicesService {
     return this.create(createInvoice, InvoiceTypeEnum.OUTGOING, tx);
   }
 
-  createIncomingInvoice(
-    createInvoice: CreateIncomingInvoiceDto,
-    tx?: Prisma.TransactionClient,
-  ) {
-    return this.create(createInvoice, InvoiceTypeEnum.INCOMING, tx);
+  createIncomingInvoiceAndRestock(createInvoice: CreateIncomingInvoiceDto) {
+    return this.prisma.$transaction(async (tx) => {
+      const invoice = await this.create(
+        createInvoice,
+        InvoiceTypeEnum.INCOMING,
+        tx,
+      );
+      await this.productStock.restock(
+        createInvoice.shopId,
+        createInvoice.products,
+        tx,
+      );
+      return invoice;
+    });
   }
 
   createReturnInvoice(
