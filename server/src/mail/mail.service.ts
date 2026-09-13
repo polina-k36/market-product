@@ -1,17 +1,27 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SendEmailDto } from './dto/send-email.dto.js';
+import mailConfig from '../common/config/mail.config.js';
+import type { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
+  constructor(
+    @Inject(mailConfig.KEY)
+    private readonly config: ConfigType<typeof mailConfig>,
+  ) {}
   private getEmailTransport() {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT),
+      host: this.config.host,
+      port: this.config.port,
       secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
+        user: this.config.user,
+        pass: this.config.password,
       },
     });
 
@@ -24,7 +34,7 @@ export class MailService {
     const transport = this.getEmailTransport();
 
     const options: nodemailer.SendMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: this.config.user,
       to: recipient,
       subject,
       html,

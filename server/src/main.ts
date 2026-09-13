@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'dotenv/config';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,8 +33,11 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000, () => {
-    console.log(`Сервер запущен на порту - ${process.env.PORT ?? 3000}`);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('app.port') ?? 5000;
+
+  await app.listen(port, () => {
+    console.log(`Сервер запущен на порту - ${port}`);
   });
 }
 await bootstrap();

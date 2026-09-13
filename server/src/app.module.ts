@@ -26,11 +26,17 @@ import { JwtTokensModule } from './jwt-tokens/jwt-tokens.module.js';
 import { InvoicesModule } from './invoices/invoices.module.js';
 import { InvoiceItemsModule } from './invoice-items/invoice-items.module.js';
 import { envSchema } from './common/config/env.validation.js';
+import appConfig from './common/config/app.config.js';
+import databaseConfig from './common/config/database.config.js';
+import jwtConfig from './common/config/jwt.config.js';
+import mailConfig from './common/config/mail.config.js';
+import googleConfig from './common/config/google.config.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [appConfig, databaseConfig, jwtConfig, mailConfig, googleConfig],
       validationSchema: envSchema,
     }),
     AuthModule,

@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,12 +13,15 @@ import { UsersService } from '../users/users.service.js';
 import { MailService } from '../mail/mail.service.js';
 import { VerificationMethod } from './enums/verification-method.enum.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { AuthService } from '../auth/auth.service.js';
 import { JwtTokensService } from '../jwt-tokens/jwt-tokens.service.js';
+import appConfig from '../common/config/app.config.js';
+import type { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class VerificationsService {
   constructor(
+    @Inject(appConfig.KEY)
+    private readonly config: ConfigType<typeof appConfig>,
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
@@ -167,12 +171,12 @@ export class VerificationsService {
       methodVerification === VerificationMethod.CODE
         ? this.getEmailCodeTemplate(value)
         : this.getEmailLinkTemplate(
-            `${process.env.BASE_URL_CLIENT}/verification/email/confirm?token=${value}`,
+            `${this.config.clientUrl}/verification/email/confirm?token=${value}`,
           );
 
     return this.mailService.sendEmail({
       recipient: contactInfo.email,
-      subject: `Верификация почты на сайте ${process.env.BASE_URL_CLIENT}`,
+      subject: `Верификация почты на сайте ${this.config.clientUrl}`,
       html,
     });
   }

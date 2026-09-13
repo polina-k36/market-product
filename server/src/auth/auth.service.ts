@@ -1,6 +1,7 @@
 import {
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -27,10 +28,17 @@ import { VerificationType } from '../verifications/enums/verification-type.enum.
 import { VerificationMethod } from '../verifications/enums/verification-method.enum.js';
 import { JwtTokensService } from '../jwt-tokens/jwt-tokens.service.js';
 import { VerificationsService } from '../verifications/verifications.service.js';
+import googleConfig from '../common/config/google.config.js';
+import type { ConfigType } from '@nestjs/config';
+import appConfig from '../common/config/app.config.js';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(googleConfig.KEY)
+    private readonly configGoogle: ConfigType<typeof googleConfig>,
+    @Inject(appConfig.KEY)
+    private readonly configApp: ConfigType<typeof appConfig>,
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
     private readonly sessionsService: SessionsService,
@@ -177,7 +185,7 @@ export class AuthService {
 
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: this.configGoogle.clientId,
     });
 
     const payload = ticket.getPayload();
@@ -289,7 +297,7 @@ export class AuthService {
 
     const sendEmail = await this.mailService.sendEmail({
       recipient: email,
-      subject: `Восстановление пароля на сайте ${process.env.BASE_URL_CLIENT}`,
+      subject: `Восстановление пароля на сайте ${this.configApp.clientUrl}`,
       html: this.getPasswordResetCodeTemplate(code.toString()),
     });
 

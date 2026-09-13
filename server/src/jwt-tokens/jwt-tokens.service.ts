@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { REFRESH_TOKEN_EXPIRES_IN_DAYS } from '../auth/constants/auth.constants.js';
 import { SessionsService } from '../sessions/sessions.service.js';
 import * as bcrypt from 'bcrypt';
+import jwtConfig from '../common/config/jwt.config.js';
+import type { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class JwtTokensService {
   constructor(
+    @Inject(jwtConfig.KEY)
+    private readonly config: ConfigType<typeof jwtConfig>,
     private readonly jwtService: JwtService,
     private readonly sessionsService: SessionsService,
   ) {}
@@ -23,7 +27,7 @@ export class JwtTokensService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
+      secret: this.config.accessSecret,
       expiresIn: '15m',
     });
 
@@ -45,7 +49,7 @@ export class JwtTokensService {
     };
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
+      secret: this.config.refreshSecret,
       expiresIn: `${REFRESH_TOKEN_EXPIRES_IN_DAYS}d`,
     });
 
@@ -57,13 +61,13 @@ export class JwtTokensService {
 
   verifyAccessToken(token: string) {
     return this.jwtService.verify(token, {
-      secret: process.env.JWT_ACCESS_SECRET,
+      secret: this.config.accessSecret,
     });
   }
 
   verifyRefreshToken(token: string) {
     return this.jwtService.verify(token, {
-      secret: process.env.JWT_REFRESH_SECRET,
+      secret: this.config.refreshSecret,
     });
   }
 }
