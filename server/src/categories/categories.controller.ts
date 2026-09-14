@@ -22,13 +22,13 @@ import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
 
 @ApiTags('Categories')
-@UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
-@Roles('ADMIN')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
   @EmailVerified(true)
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({
     summary: 'Создание категории',
@@ -120,7 +120,9 @@ export class CategoriesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
   @EmailVerified(true)
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({
     summary: 'Обновление категории',
@@ -167,7 +169,9 @@ export class CategoriesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
   @EmailVerified(true)
+  @Roles('ADMIN')
   @Delete(':id')
   @ApiOperation({
     summary: 'Удаление категории',

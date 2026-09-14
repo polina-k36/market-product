@@ -30,6 +30,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('login')
   @ApiOperation({
     summary: 'Вход пользователя',
     description:
@@ -44,7 +45,6 @@ export class AuthController {
     status: 401,
     description: 'Неверный логин или пароль.',
   })
-  @Post('login')
   async login(
     @Body() dtoLoginUser: LoginUserDto,
     @Res({ passthrough: true }) res: Response,
@@ -61,6 +61,7 @@ export class AuthController {
     return loginData;
   }
 
+  @Post('register')
   @ApiOperation({
     summary: 'Регистрация пользователя',
     description:
@@ -76,7 +77,6 @@ export class AuthController {
     description:
       'Пользователь с указанным email или номером телефона уже существует.',
   })
-  @Post('register')
   async register(
     @Body() dtoRegUser: RegisterUserDto,
     @Res({ passthrough: true }) res: Response,

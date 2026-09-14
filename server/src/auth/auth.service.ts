@@ -55,9 +55,6 @@ export class AuthService {
     if (!user.passwordHash)
       throw new UnauthorizedException('Invalid credentials');
 
-    if (user.isBanned)
-      throw new ForbiddenException('Your account has been banned.');
-
     const isValidPass = await bcrypt.compare(
       userDto.password,
       user.passwordHash,
