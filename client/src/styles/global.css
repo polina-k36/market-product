@@ -38,6 +38,8 @@
   /* Accent */
 
   --color-accent: #f39a3f;
+
+  --color-focus: #4b91d1;
 }
 
 .dark {
@@ -64,4 +66,6 @@
   --color-info: #69a9df;
 
   --color-accent: #f6ad5a;
+
+  --color-focus: #69a9df;
 }
