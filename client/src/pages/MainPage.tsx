@@ -14,7 +14,7 @@ const MainPage = () => {
     <>
       <MainLayout>
         <HeroBanner />
-        <HorizontalScroll className=" md:grid md:grid-cols-2 md:grid-rows-2 md:p-0 lg:flex">
+        <HorizontalScroll className="md:grid md:grid-cols-2 md:grid-rows-2 md:p-0 lg:flex">
           {features.map((feature) => (
             <FeatureCard key={feature.id} {...feature} />
           ))}

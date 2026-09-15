@@ -1,9 +1,4 @@
-export interface Category {
+export interface ICategory {
   id: number;
   title: string;
-}
-
-export interface CategoriesResponse {
-  success: true;
-  data: Category[];
 }

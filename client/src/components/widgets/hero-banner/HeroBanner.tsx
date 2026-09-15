@@ -4,11 +4,7 @@ import Button from '@/components/ui/buttons/Button';
 
 const HeroBanner = () => {
   return (
-    <section
-      className="relative overflow-hidden rounded-2xl bg-primary px-5 py-8 text-text-inverse
-        sm:px-8 sm:py-10 md:rounded-3xl md:px-12 md:py-14 lg:px-16 lg:py-16
-      "
-    >
+    <section className="relative overflow-hidden rounded-2xl bg-primary px-5 py-8 text-text-inverse sm:px-8 sm:py-10 md:rounded-3xl md:px-12 md:py-14 lg:px-16 lg:py-16">
       <img
         src={BgHome}
         alt=""
@@ -19,15 +15,12 @@ const HeroBanner = () => {
       <div className="absolute inset-0 bg-primary/50" />
 
       <div className="relative max-w-2xl">
-        <div
-          className="mb-5 inline-flex items-center gap-2 rounded-full bg-surface/15
-            px-3 py-1.5 text-xs font-semibold backdrop-blur-sm sm:mb-6 sm:px-4 sm:py-2 sm:text-sm"
-        >
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-surface/15 px-3 py-1.5 text-xs font-semibold backdrop-blur-sm sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
           <span className="size-2 rounded-full bg-accent" />
           Акция недели
         </div>
 
-        <h1 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl md:text-5xl lg:text-6xl">
+        <h1 className="max-w-xl text-3xl leading-tight font-extrabold sm:text-4xl md:text-5xl lg:text-6xl">
           Скидки до 50% на свежие фрукты и овощи
         </h1>
 

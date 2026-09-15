@@ -16,13 +16,13 @@ const HorizontalScroll = ({
   return (
     <div className="relative mt-4">
       <div
-        className={`flex items-center ${gap ?? 'gap-3'} overflow-x-auto scrollbar-none pr-6 ${className}`}
+        className={`flex items-center ${gap ?? 'gap-3'} scrollbar-none overflow-x-auto pr-6 ${className}`}
       >
         {children}
       </div>
 
       {fade && (
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-linear-to-l from-background to-transparent md:hidden" />
+        <div className="pointer-events-none absolute top-0 right-0 h-full w-10 bg-linear-to-l from-background to-transparent md:hidden" />
       )}
     </div>
   );

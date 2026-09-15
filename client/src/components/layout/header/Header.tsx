@@ -9,9 +9,9 @@ const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
 
   return (
-    <header className="sticky bg-surface shadow-sm top-0 w-full z-40 p-2">
+    <header className="sticky top-0 z-40 w-full bg-surface p-2 shadow-sm">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center justify-start gap-4 flex-1">
+        <div className="flex flex-1 items-center justify-start gap-4">
           <FullLogo />
           <SearchInput className="hidden md:block" />
         </div>
@@ -21,7 +21,7 @@ const Header = () => {
             onClick={() => {
               setActiveSearch((state) => !state);
             }}
-            className={`md:hidden transition-transform duration-300 ease-in-out ${
+            className={`transition-transform duration-300 ease-in-out md:hidden ${
               activeSearch ? 'rotate-180' : 'rotate-0'
             }`}
           >

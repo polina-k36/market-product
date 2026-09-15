@@ -1,6 +1,6 @@
 const CategoryListSkeleton = () => {
   return (
-    <div className="mt-4 flex gap-2 overflow-x-auto scrollbar-none">
+    <div className="mt-4 flex scrollbar-none gap-2 overflow-x-auto">
       {Array.from({ length: 6 }).map((_, index) => (
         <div
           key={index}

@@ -8,7 +8,7 @@ const FullLogo = () => {
       </div>
       <a
         href="/"
-        className="m-0 text-xl font-extrabold leading-6 text-text-primary"
+        className="m-0 text-xl leading-6 font-extrabold text-text-primary"
       >
         <span>FreshMart</span>
       </a>

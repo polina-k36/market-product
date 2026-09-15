@@ -5,14 +5,14 @@ import { LogIn, User2 } from 'lucide-react';
 const GuestDropdown = () => {
   return (
     <Dropdown>
-      <div className="flex flex-col items-center g-4 text-center mb-4">
-        <div className="flex items-center justify-center size-16 bg-surface-muted rounded-full mb-4">
+      <div className="g-4 mb-4 flex flex-col items-center text-center">
+        <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-surface-muted">
           <User2 className="size-8 text-text-primary" />
         </div>
-        <h3 className="text-text-primary font-semibold text-base">
+        <h3 className="text-base font-semibold text-text-primary">
           Войдите в аккаунт
         </h3>
-        <p className="text-text-secondary text-[0.875rem]">
+        <p className="text-[0.875rem] text-text-secondary">
           Получите доступ к истории заказов и настройкам
         </p>
       </div>

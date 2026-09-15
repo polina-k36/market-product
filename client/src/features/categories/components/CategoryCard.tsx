@@ -31,15 +31,12 @@ const CategoryCard = ({ id, name }: ICategoryCardProps) => {
 
   return (
     <button
-      className={`
-      pt-2 pb-2 pl-4 pr-4 border w-fit rounded-3xl font-semibold cursor-pointer whitespace-nowrap
-      ${
+      className={`w-fit cursor-pointer rounded-3xl border pt-2 pr-4 pb-2 pl-4 font-semibold whitespace-nowrap ${
         (id === undefined && searchParams.get('category') === null) ||
         Number(searchParams.get('category')) === id
           ? 'bg-primary text-text-inverse'
-          : 'bg-surface border-border hover:bg-primary-soft hover:text-primary'
-      }
-      `}
+          : 'border-border bg-surface hover:bg-primary-soft hover:text-primary'
+      } `}
       onClick={changeCategory}
     >
       {name}
