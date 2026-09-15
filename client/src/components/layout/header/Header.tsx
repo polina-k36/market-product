@@ -9,11 +9,13 @@ const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
 
   return (
-    <header className="stricky bg-surface shadow-sm top-0 z-40 p-2">
+    <header className="sticky bg-surface shadow-sm top-0 w-full z-40 p-2">
       <div className="flex items-center justify-between gap-4">
-        <FullLogo />
-        <SearchInput className="hidden md:block" />
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-4 flex-1">
+          <FullLogo />
+          <SearchInput className="hidden md:block" />
+        </div>
+        <div className="flex items-center justify-between gap-1">
           <ButtonIcon
             isActive={activeSearch}
             onClick={() => {

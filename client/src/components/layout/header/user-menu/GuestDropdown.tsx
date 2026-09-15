@@ -16,7 +16,7 @@ const GuestDropdown = () => {
           Получите доступ к истории заказов и настройкам
         </p>
       </div>
-      <Button variant="primary">
+      <Button variant="primary" className="w-full">
         <LogIn />
         Вход/Регистрация
       </Button>

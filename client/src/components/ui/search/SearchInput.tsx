@@ -6,7 +6,9 @@ interface ISearchInputProps {
 
 const SearchInput = ({ className }: ISearchInputProps) => {
   return (
-    <div className={`relative flex items-start w-full ${className ?? ''}`}>
+    <div
+      className={`relative flex items-start w-full max-w-4xl ${className ?? ''}`}
+    >
       <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-text-muted" />
       <input
         type="text"

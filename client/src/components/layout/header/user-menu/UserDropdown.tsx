@@ -18,7 +18,7 @@ const UserDropdown = () => {
       </div>
 
       <div className="menu-items">
-        <Button variant="transparent" className="justify-start">
+        <Button variant="transparent" className="justify-start w-full">
           <Settings />
           <a href="" className="display-block text-left">
             <p className="font-semibold text-text-primary">Мой аккаунт</p>
@@ -27,7 +27,7 @@ const UserDropdown = () => {
             </p>
           </a>
         </Button>
-        <Button variant="transparent" className="justify-start">
+        <Button variant="transparent" className="justify-start w-full">
           <Settings />
           <a href="" className="display-block text-left">
             <p className="font-semibold text-text-primary">Мой аккаунт</p>
@@ -37,7 +37,7 @@ const UserDropdown = () => {
           </a>
         </Button>
         <hr className="border-0 border-t mb-2 mt-2 border-border-strong" />
-        <Button variant="danger" className="justify-start">
+        <Button variant="danger" className="justify-start w-full">
           <LogOut />
           <a href="" className="display-block text-left">
             Выйти
