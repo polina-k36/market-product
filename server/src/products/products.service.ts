@@ -40,6 +40,18 @@ export class ProductsService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        select: {
+          id: true,
+          imageKey: true,
+          title: true,
+          price: true,
+          category: {
+            select: { title: true },
+          },
+          unit: {
+            select: { fullTitle: true, shortTitle: true },
+          },
+        },
       }),
     ]);
 
@@ -51,7 +63,10 @@ export class ProductsService {
       limit,
       total,
       totalPages,
-      data: products,
+      data: products.map((product) => ({
+        ...product,
+        category: product.category.title,
+      })),
     };
   }
 
