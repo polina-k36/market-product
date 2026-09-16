@@ -29,10 +29,12 @@ const HeroBanner = () => {
         </p>
 
         <div className="mt-6 flex flex-col gap-4 sm:mt-8 sm:flex-row sm:items-center">
-          <Button variant="transparent" width="fit">
-            <span className="text-primary">Смотреть товары</span>
-            <ArrowRight className="size-5 text-primary" />
-          </Button>
+          <a href="#product-grid">
+            <Button variant="transparent" className="w-fit">
+              <span className="text-primary">Смотреть товары</span>
+              <ArrowRight className="size-5 text-primary" />
+            </Button>
+          </a>
 
           <div className="flex items-center gap-2 text-sm">
             <Truck className="size-5 shrink-0" />

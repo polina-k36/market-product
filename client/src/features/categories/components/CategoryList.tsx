@@ -1,4 +1,4 @@
-import { useCategories } from '../hooks/useCategories';
+import { useCategories } from '../hooks/use-categories';
 import CategoryCard from './CategoryCard';
 import HorizontalScroll from '@/components/layout/horizontal-scroll/HorizontalScroll';
 

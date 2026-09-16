@@ -3,6 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* Colors */
   --color-background: #fafcfb;
   --color-surface: #ffffff;
   --color-surface-muted: #f3f7f4;
@@ -31,6 +32,9 @@
   --color-green: #16a34a;
   --color-purple: #9333ea;
   --color-red: #dc2626;
+
+  /* Animate */
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
 }
 
 .dark {
@@ -58,4 +62,14 @@
   --color-accent: #f6ad5a;
 
   --color-focus: #69a9df;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
 }

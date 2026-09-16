@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { categoriesApi } from '../api/categories.api';
 
-export const CATEGORIES_QUERY_KEY = ['categories'];
+export const CATEGORIES_QUERY_KEY = ['categories'] as const;
 
 export function useCategories() {
   return useSuspenseQuery({

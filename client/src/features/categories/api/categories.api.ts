@@ -4,7 +4,7 @@ import type { ICategory } from '../types/categories.types';
 
 export const categoriesApi = {
   getCategories: async (): Promise<ICategory[]> => {
-    const { data } = await api.get<IResponse<ICategory>>('/categories');
+    const { data } = await api.get<IResponse<ICategory[]>>('/categories');
     return data.data;
   },
 };

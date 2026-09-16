@@ -6,6 +6,7 @@ import HeroBanner from '@/components/widgets/hero-banner/HeroBanner';
 import CategoryList from '@/features/categories/components/CategoryList';
 import CategoryListError from '@/features/categories/components/CategoryListError';
 import CategoryListSkeleton from '@/features/categories/components/CategoryListSkeleton';
+import ProductGrid from '@/features/products/components/ProductGrid';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -25,6 +26,9 @@ const MainPage = () => {
             <CategoryList />
           </Suspense>
         </ErrorBoundary>
+
+        <ProductGrid />
+        
       </MainLayout>
     </>
   );
