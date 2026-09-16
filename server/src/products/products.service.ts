@@ -122,11 +122,33 @@ export class ProductsService {
   async findById(id: number) {
     const product = await this.prisma.product.findUnique({
       where: { id, isDeleted: false },
+      select: {
+        id: true,
+        title: true,
+        imageKey: true,
+        description: true,
+        composition: true,
+        price: true,
+        category: {
+          select: {
+            title: true,
+          },
+        },
+        unit: {
+          select: {
+            fullTitle: true,
+            shortTitle: true,
+          },
+        },
+      },
     });
 
     if (!product) throw new NotFoundException('Product not found');
 
-    return product;
+    return {
+      ...product,
+      category: product.category.title,
+    };
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
