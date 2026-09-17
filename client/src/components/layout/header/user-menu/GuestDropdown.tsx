@@ -4,7 +4,7 @@ import { LogIn, User2 } from 'lucide-react';
 
 const GuestDropdown = () => {
   return (
-    <Dropdown>
+    <Dropdown side="right">
       <div className="g-4 mb-4 flex flex-col items-center text-center">
         <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-surface-muted">
           <User2 className="size-8 text-text-primary" />

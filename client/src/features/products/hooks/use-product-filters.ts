@@ -42,14 +42,29 @@ export function useProductFilters() {
   const setSearch = (search?: string) => {
     changeSearchParams('search', search);
   };
-  const setPriceFrom = (price?: number) => {
-    const value = price !== undefined ? `${price}` : undefined;
-    changeSearchParams('priceFrom', value);
+
+  const setPriceRange = (priceFrom?: number, priceTo?: number) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+
+      if (priceFrom !== undefined) {
+        next.set('priceFrom', String(priceFrom));
+      } else {
+        next.delete('priceFrom');
+      }
+
+      if (priceTo !== undefined) {
+        next.set('priceTo', String(priceTo));
+      } else {
+        next.delete('priceTo');
+      }
+
+      next.set('page', '1');
+
+      return next;
+    });
   };
-  const setPriceTo = (price?: number) => {
-    const value = price !== undefined ? `${price}` : undefined;
-    changeSearchParams('priceTo', value);
-  };
+
   const setCategoryId = (id?: number) => {
     const value = id !== undefined && id > 0 ? `${id}` : undefined;
     changeSearchParams('categoryId', value);
@@ -66,8 +81,7 @@ export function useProductFilters() {
     actions: {
       setPage,
       setSearch,
-      setPriceFrom,
-      setPriceTo,
+      setPriceRange,
       setCategoryId,
     },
   };

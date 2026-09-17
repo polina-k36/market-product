@@ -18,7 +18,7 @@ const CategoryCard = ({ id, name }: ICategoryCardProps) => {
         (id === undefined && filters.categoryId === undefined) ||
         filters.categoryId === id
           ? 'bg-primary text-text-inverse'
-          : 'border-border bg-surface hover:bg-primary-soft hover:text-primary'
+          : 'border-border bg-surface text-text-primary hover:bg-primary-soft hover:text-primary'
       } `}
       onClick={changeCategory}
     >

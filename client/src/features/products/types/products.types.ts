@@ -10,6 +10,20 @@ export interface IPromoProduct {
   };
 }
 
+export interface IFullProduct {
+  id: number;
+  title: string;
+  composition: string;
+  description: string;
+  imageKey: string;
+  price: string;
+  category: string;
+  unit: {
+    fullTitle: string;
+    shortTitle: string;
+  };
+}
+
 export interface IProductFilters {
   page: number;
   limit: number;

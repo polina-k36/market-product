@@ -1,9 +1,9 @@
-import MainPage from './pages/MainPage';
+import ProductPage from './pages/ProductPage';
 
 function App() {
   return (
     <>
-      <MainPage />
+      <ProductPage />
     </>
   );
 }

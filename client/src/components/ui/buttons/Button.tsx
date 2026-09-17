@@ -21,7 +21,7 @@ const Button = ({
   return (
     <button
       {...attributes}
-      className={`flex cursor-pointer items-center justify-center gap-4 rounded-xl border-none pt-3 pr-5 pb-3 pl-5 text-[0.875rem] font-semibold transition-colors duration-200 ease-in focus:outline-none ${variants[variant]} ${className ?? ''}`}
+      className={`flex cursor-pointer items-center justify-center gap-4 rounded-xl pt-3 pr-5 pb-3 pl-5 text-[0.875rem] font-semibold transition-colors duration-200 ease-in focus:outline-none ${variants[variant]} ${className ?? ''}`}
     >
       {children}
     </button>

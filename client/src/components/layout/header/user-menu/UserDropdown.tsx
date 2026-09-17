@@ -4,7 +4,7 @@ import { LogOut, Settings, User2 } from 'lucide-react';
 
 const UserDropdown = () => {
   return (
-    <Dropdown>
+    <Dropdown side="right">
       <div className="mb-4 flex items-center justify-start gap-4 text-center">
         <div className="flex size-16 items-center justify-center rounded-full bg-surface-muted">
           <User2 className="size-8 text-text-primary" />
