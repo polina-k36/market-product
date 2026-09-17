@@ -65,6 +65,21 @@ export function useProductFilters() {
     });
   };
 
+  const clearAllFilters = () => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+
+      next.delete('priceTo');
+      next.delete('priceFrom');
+      next.delete('search');
+      next.delete('categoryId');
+
+      next.set('page', '1');
+
+      return next;
+    });
+  };
+
   const setCategoryId = (id?: number) => {
     const value = id !== undefined && id > 0 ? `${id}` : undefined;
     changeSearchParams('categoryId', value);
@@ -83,6 +98,7 @@ export function useProductFilters() {
       setSearch,
       setPriceRange,
       setCategoryId,
+      clearAllFilters,
     },
   };
 }

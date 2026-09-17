@@ -1,12 +1,12 @@
 import { User2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import GuestDropdown from './GuestDropdown';
 import UserDropdown from './UserDropdown';
 import ButtonIcon from '@/components/ui/buttons/ButtonIcon';
 
 const UserMenu = () => {
   const [activeDropdown, setActiveDropdown] = useState(false);
-  const isAuthenticated = false;
+  const isAuthenticated = true;
   const dropdown = isAuthenticated ? <UserDropdown /> : <GuestDropdown />;
   return (
     <div className="relative inline-block">

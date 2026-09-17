@@ -15,8 +15,8 @@ const Button = ({
     primary:
       'bg-primary text-text-inverse hover:bg-primary-hover focus:ring-2 focus:ring-primary/50',
     transparent:
-      'bg-surface text-text-primary border border-border hover:bg-surface-muted',
-    danger: 'bg-surface text-danger hover:bg-danger/10',
+      'bg-surface text-text-primary border-border hover:bg-surface-muted',
+    danger: 'bg-transparent text-danger border-danger hover:bg-danger/10',
   };
   return (
     <button

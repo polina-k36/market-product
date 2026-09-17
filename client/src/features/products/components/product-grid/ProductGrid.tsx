@@ -5,9 +5,10 @@ import ProductCard from './ProductCard';
 import ProductCardSkeleton from './ProductCardSkeleton';
 import ProductGridError from './ProductGridError';
 import FilterPanel from './FilterPanel';
+import ProductGridEmpty from './ProductGridEmpty';
 
 const ProductGrid = () => {
-  const { filters } = useProductFilters();
+  const { filters, actions } = useProductFilters();
   const {
     data: products,
     isPending,
@@ -25,6 +26,9 @@ const ProductGrid = () => {
     <>
       <FilterPanel />
       {isError && <ProductGridError onRetry={refetchData} />}
+      {isSuccess && products.data.length === 0 && (
+        <ProductGridEmpty onClearFilters={actions.clearAllFilters} />
+      )}
       <div
         className={`mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`}
       >
@@ -33,6 +37,7 @@ const ProductGrid = () => {
             <ProductCardSkeleton key={index} />
           ))}
         {isSuccess &&
+          products.data.length !== 0 &&
           products.data.map((product) => (
             <ProductCard
               key={product.id}

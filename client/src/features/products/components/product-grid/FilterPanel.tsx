@@ -1,5 +1,5 @@
 import Dropdown from '@/components/ui/dropdown/Dropdown';
-import { ChevronDown, Minus, Settings2, X } from 'lucide-react';
+import { ChevronDown, Minus, SlidersHorizontal, X } from 'lucide-react';
 import { useState } from 'react';
 import { useProductFilters } from '../../hooks/use-product-filters';
 import Button from '@/components/ui/buttons/Button';
@@ -43,7 +43,7 @@ const FilterPanel = () => {
         className="transform-all mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-surface pt-2 pr-4 pb-2 pl-4 text-text-primary duration-200 hover:shadow-md hover:shadow-primary-hover/20"
         onClick={() => setIsOpen((state) => !state)}
       >
-        <Settings2 />
+        <SlidersHorizontal className="size-4" />
         <span className="font-semibold">Фильтры</span>
         <ChevronDown
           className={`rotate-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
