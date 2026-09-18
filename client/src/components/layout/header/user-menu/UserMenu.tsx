@@ -11,6 +11,7 @@ const UserMenu = () => {
   return (
     <div className="relative inline-block">
       <ButtonIcon
+        variant="transparent"
         isActive={activeDropdown}
         onClick={() => setActiveDropdown((state) => !state)}
       >

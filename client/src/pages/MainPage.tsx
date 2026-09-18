@@ -7,19 +7,25 @@ import CategoryList from '@/features/categories/components/CategoryList';
 import CategoryListError from '@/features/categories/components/CategoryListError';
 import CategoryListSkeleton from '@/features/categories/components/CategoryListSkeleton';
 import ProductGrid from '@/features/products/components/product-grid/ProductGrid';
+import { useProductFilters } from '@/features/products/hooks/use-product-filters';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 const MainPage = () => {
+  const { filters } = useProductFilters();
   return (
     <>
       <MainLayout>
-        <HeroBanner />
-        <HorizontalScroll className="md:grid md:grid-cols-2 md:grid-rows-2 md:p-0 lg:flex">
-          {features.map((feature) => (
-            <FeatureCard key={feature.id} {...feature} />
-          ))}
-        </HorizontalScroll>
+        {!filters.search && (
+          <>
+            <HeroBanner />
+            <HorizontalScroll className="md:grid md:grid-cols-2 md:grid-rows-2 md:p-0 lg:flex">
+              {features.map((feature) => (
+                <FeatureCard key={feature.id} {...feature} />
+              ))}
+            </HorizontalScroll>
+          </>
+        )}
 
         <ErrorBoundary FallbackComponent={CategoryListError}>
           <Suspense fallback={<CategoryListSkeleton />}>
