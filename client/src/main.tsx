@@ -9,6 +9,7 @@ import MainPage from './pages/MainPage';
 import ProductPage from './pages/ProductPage';
 import AuthPage from './pages/AuthPage';
 import AuthBootstrap from './app/bootstrap/AuthBootstrap';
+import ProfilePage from './pages/ProfilePage';
 
 const queryClient = new QueryClient({
   // defaultOptions: {
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/products/:id" element={<ProductPage />} />
           <Route path="/auth" element={<AuthPage />} />
         </Routes>

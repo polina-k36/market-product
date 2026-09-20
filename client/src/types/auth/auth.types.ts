@@ -20,5 +20,5 @@ export interface IAuthState {
   setAccessToken: (accessToken: string | null) => void;
   setAuthStatus: (status: AuthStatus) => void;
   setUser: (user: IAuthUser | null) => void;
-  logout: () => void;
+  clearAuth: () => void;
 }

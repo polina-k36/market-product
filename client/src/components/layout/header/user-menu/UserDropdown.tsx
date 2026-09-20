@@ -1,6 +1,9 @@
 import Button from '@/components/ui/buttons/Button';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
+import { useLogout } from '@/features/auth/hooks/use-logout';
+import { useAuthStore } from '@/stores/auth/auth.store';
 import { LogOut, Package, Settings, User2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 interface IUserDropdownProps {
   user: {
@@ -10,6 +13,16 @@ interface IUserDropdownProps {
 }
 
 const UserDropdown = ({ user }: IUserDropdownProps) => {
+  const navigate = useNavigate();
+  const { mutate } = useLogout();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const logout = () => {
+    mutate(undefined, {
+      onSuccess: () => {
+        clearAuth();
+      },
+    });
+  };
   return (
     <Dropdown side="right">
       <div className="mb-4 flex items-center justify-start gap-4 text-center">
@@ -29,7 +42,11 @@ const UserDropdown = ({ user }: IUserDropdownProps) => {
       </div>
 
       <div className="menu-items">
-        <Button variant="transparent" className="w-full justify-start">
+        <Button
+          variant="transparent"
+          className="w-full justify-start"
+          onClick={() => navigate('/profile?mode=settings')}
+        >
           <Settings className="size-5" />
           <a href="" className="display-block text-left">
             <p className="font-semibold text-text-primary">Мой аккаунт</p>
@@ -38,7 +55,11 @@ const UserDropdown = ({ user }: IUserDropdownProps) => {
             </p>
           </a>
         </Button>
-        <Button variant="transparent" className="w-full justify-start">
+        <Button
+          variant="transparent"
+          className="w-full justify-start"
+          onClick={() => navigate('/profile?mode=orders')}
+        >
           <Package className="size-5" />
           <a href="" className="display-block text-left">
             <p className="font-semibold text-text-primary">Мои заказы</p>
@@ -46,11 +67,13 @@ const UserDropdown = ({ user }: IUserDropdownProps) => {
           </a>
         </Button>
         <hr className="mt-2 mb-2 border-0 border-t border-border-strong" />
-        <Button variant="danger" className="w-full justify-start">
+        <Button
+          variant="danger"
+          className="w-full justify-start"
+          onClick={logout}
+        >
           <LogOut className="size-5" />
-          <a href="" className="display-block text-left">
-            Выйти
-          </a>
+          Выйти
         </Button>
       </div>
     </Dropdown>

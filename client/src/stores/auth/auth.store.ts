@@ -19,7 +19,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
     set({ status });
   },
 
-  logout: () => {
+  clearAuth: () => {
     set({
       accessToken: null,
       user: null,
