@@ -1,13 +1,11 @@
 export interface IAuthUser {
   id: number;
-  email: string | null;
-  emailVerified: boolean;
-  phone: string | null;
   role: IUserRole;
   isBanned: boolean;
 }
 
 export type UserRoles = 'CLIENT' | 'ADMIN';
+export type AuthStatus = 'unknown' | 'authenticated' | 'unauthenticated';
 
 export interface IUserRole {
   id: number;
@@ -17,8 +15,10 @@ export interface IUserRole {
 export interface IAuthState {
   accessToken: string | null;
   user: IAuthUser | null;
+  status: AuthStatus;
 
-  setAccessToken: (accessToken: string) => void;
-  setUser: (user: IAuthUser) => void;
+  setAccessToken: (accessToken: string | null) => void;
+  setAuthStatus: (status: AuthStatus) => void;
+  setUser: (user: IAuthUser | null) => void;
   logout: () => void;
 }

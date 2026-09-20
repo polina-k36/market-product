@@ -35,7 +35,7 @@ const Header = () => {
     <header className="sticky top-0 z-40 w-full bg-surface p-2 shadow-sm">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-1 items-center justify-start gap-4">
-          <FullLogo />
+          <FullLogo variant="primary" />
 
           <div className="hidden flex-1 items-center gap-2 md:flex">
             <Input

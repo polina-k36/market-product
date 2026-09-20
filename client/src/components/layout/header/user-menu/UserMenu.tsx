@@ -3,11 +3,26 @@ import { useState } from 'react';
 import GuestDropdown from './GuestDropdown';
 import UserDropdown from './UserDropdown';
 import ButtonIcon from '@/components/ui/buttons/ButtonIcon';
+import { useAuthStore } from '@/stores/auth/auth.store';
+import { useUserProfile } from '@/features/auth/hooks/use-user-profile';
 
 const UserMenu = () => {
   const [activeDropdown, setActiveDropdown] = useState(false);
-  const isAuthenticated = true;
-  const dropdown = isAuthenticated ? <UserDropdown /> : <GuestDropdown />;
+  const { status } = useAuthStore();
+  const { data } = useUserProfile();
+  const dropdown =
+    status === 'authenticated' ? (
+      <UserDropdown
+        user={{
+          name: data?.name || '',
+          email: data?.email,
+        }}
+      />
+    ) : status === 'unauthenticated' ? (
+      <GuestDropdown />
+    ) : (
+      'загрузка информации о входе.'
+    );
   return (
     <div className="relative inline-block">
       <ButtonIcon

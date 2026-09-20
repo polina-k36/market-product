@@ -35,6 +35,7 @@
 
   /* Animate */
   --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-field-error: field-error 300ms ease-out;
 }
 
 .dark {
@@ -71,5 +72,17 @@
 
   to {
     transform: translateX(100%);
+  }
+}
+
+@keyframes field-error {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

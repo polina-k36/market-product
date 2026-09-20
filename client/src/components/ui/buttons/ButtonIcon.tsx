@@ -16,7 +16,7 @@ const ButtonIcon = ({
   const variants = {
     primary:
       'bg-primary text-text-inverse shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md focus:ring-2 focus:ring-primary/40 focus:outline-none',
-    transparent: `${isActive ? 'bg-surface-muted outline-none' : 'bg-transparent hover:bg-surface-muted'}`,
+    transparent: `${isActive ? 'bg-transparent outline-none' : 'bg-transparent hover:bg-surface-muted'}`,
   };
   return (
     <button

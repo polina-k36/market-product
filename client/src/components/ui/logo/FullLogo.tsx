@@ -1,19 +1,51 @@
 import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router';
 
-const FullLogo = () => {
+interface IFullLogoProps {
+  variant: 'primary' | 'white';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+const FullLogo = ({ variant, size = 'md', className }: IFullLogoProps) => {
+  const variants = {
+    primary: {
+      icon: 'bg-primary text-text-inverse',
+      link: 'text-text-primary',
+    },
+    white: {
+      icon: 'bg-surface/20 backdrop-blur-sm text-text-inverse',
+      link: 'text-text-inverse',
+    },
+  };
+
+  const sizes = {
+    sm: {
+      link: 'text-base font-extrabold',
+      icon: 'size-8',
+    },
+    md: {
+      link: 'text-xl font-extrabold',
+      icon: 'size-10',
+    },
+    lg: {
+      link: 'text-3xl font-bold ',
+      icon: 'size-12',
+    },
+  };
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
-        <ShoppingCart className="size-5 text-white" strokeWidth={2} />
-      </div>
-      <Link
-        to="/"
-        className="m-0 text-xl leading-6 font-extrabold text-text-primary"
+    <Link to="/" className={`flex w-fit items-center gap-2 ${className}`}>
+      <div
+        className={`flex items-center justify-center rounded-xl p-2.5 ${variants[variant].icon} ${sizes[size].icon}`}
       >
-        <span>FreshMart</span>
-      </Link>
-    </div>
+        <ShoppingCart strokeWidth={2} />
+      </div>
+      <span
+        className={`m-0 leading-6 ${variants[variant].link} ${sizes[size].link}`}
+      >
+        FreshMart
+      </span>
+    </Link>
   );
 };
 

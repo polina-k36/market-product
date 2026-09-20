@@ -1,8 +1,10 @@
 import Button from '@/components/ui/buttons/Button';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { LogIn, User2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const GuestDropdown = () => {
+  const navigate = useNavigate();
   return (
     <Dropdown side="right">
       <div className="g-4 mb-4 flex flex-col items-center text-center">
@@ -16,7 +18,11 @@ const GuestDropdown = () => {
           Получите доступ к истории заказов и настройкам
         </p>
       </div>
-      <Button variant="primary" className="w-full">
+      <Button
+        variant="primary"
+        className="w-full"
+        onClick={() => navigate('/auth')}
+      >
         <LogIn />
         Вход/Регистрация
       </Button>
