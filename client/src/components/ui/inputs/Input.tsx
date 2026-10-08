@@ -24,7 +24,7 @@ const Input = ({
     <div
       className={`relative flex w-full max-w-4xl items-start ${className ?? ''}`}
     >
-      <Icon className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-text-muted" />
+      <Icon className="absolute top-1/2 left-4 size-4.5 -translate-y-1/2 text-text-muted" />
 
       <input
         className={`w-full rounded-xl border-2 bg-surface-muted pt-2 pr-10 pb-2 pl-12 text-base transition-all duration-200 focus:bg-surface focus:outline-none ${validStyles}`}
