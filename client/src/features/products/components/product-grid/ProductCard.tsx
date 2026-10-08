@@ -1,3 +1,5 @@
+import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
+import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
 import { Image, Plus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router';
 
@@ -8,6 +10,7 @@ interface IProductCardProps {
   price: string;
   unit: string;
   category: string;
+  cartQuantity: number;
 }
 
 const ProductCard = ({
@@ -16,7 +19,13 @@ const ProductCard = ({
   price,
   unit,
   category,
+  cartQuantity,
 }: IProductCardProps) => {
+  const { add, increment, decrement, setQuantity } = useCartItemOperations(
+    id,
+    cartQuantity,
+  );
+
   return (
     <Link
       to={`/products/${id}`}
@@ -45,10 +54,25 @@ const ProductCard = ({
               </span>
             </div>
           </div>
-          <button className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-none bg-surface-muted p-2 text-primary transition-all duration-200 ease-in hover:bg-primary-hover hover:text-text-inverse">
-            <ShoppingCart />
-            <Plus />
-          </button>
+          {!cartQuantity && cartQuantity === 0 ? (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                add();
+              }}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-none bg-surface-muted p-2 text-primary transition-all duration-200 ease-in hover:bg-primary-hover hover:text-text-inverse"
+            >
+              <ShoppingCart />
+              <Plus />
+            </button>
+          ) : (
+            <CartItemQuantityControl
+              quantity={cartQuantity}
+              onIncrement={increment}
+              onDecrement={decrement}
+              onSetQuantity={setQuantity}
+            />
+          )}
         </div>
       </div>
     </Link>

@@ -1,16 +1,40 @@
-import { Image, Tag, PackageCheck, ShoppingCartPlus } from 'lucide-react';
-import { useProduct } from '../../hooks/use-product';
+import {
+  Image,
+  Tag,
+  PackageCheck,
+  ShoppingCartPlus,
+  ShoppingCart,
+  Trash,
+} from 'lucide-react';
 import NavButton from '@/components/ui/buttons/NavButton';
 import { useNavigate } from 'react-router';
+import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
+import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
 
 interface IProductDetailsProps {
-  id: number;
+  product: {
+    id: number;
+    title: string;
+    composition: string;
+    description: string;
+    imageKey: string;
+    price: string;
+    category: string;
+    unit: {
+      fullTitle: string;
+      shortTitle: string;
+    };
+    cartQuantity: number;
+  };
 }
 
-const ProductDetails = ({ id }: IProductDetailsProps) => {
-  const { data: product } = useProduct(id);
+const ProductDetails = ({ product }: IProductDetailsProps) => {
+  const { add, increment, decrement, remove, setQuantity } =
+    useCartItemOperations(product.id, product.cartQuantity);
+
   const navigate = useNavigate();
   const ingredients = product.composition.split(',');
+
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2 md:items-start lg:gap-30">
@@ -46,67 +70,64 @@ const ProductDetails = ({ id }: IProductDetailsProps) => {
             </span>
           </div>
 
-          <div className="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-3 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                <PackageCheck className="size-5" />
-              </div>
-              <p className="text-sm font-semibold text-text-primary">
-                Доступен к заказу
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-primary text-text-inverse shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md focus:ring-2 focus:ring-primary/40 focus:outline-none"
-            >
-              <ShoppingCartPlus className="size-5" />
-            </button>
-          </div>
-
-          {/* <div className="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-primary/20 bg-primary-soft/30 p-3 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-text-inverse shadow-sm">
-                <ShoppingCart className="size-5" />
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-text-primary">
-                  В корзине
-                </span>
-
-                <span className="text-xs text-text-secondary">2 шт.</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center rounded-xl border border-border bg-surface p-1 shadow-sm">
-                <button
-                  type="button"
-                  className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-danger/80 hover:text-text-inverse focus:ring-2 focus:ring-danger/30 focus:outline-none"
-                >
-                  <Minus className="size-4" />
-                </button>
-
-                <span className="flex min-w-10 items-center justify-center px-1 text-sm font-bold text-text-primary">
-                  2
-                </span>
-                <button
-                  type="button"
-                  className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-primary-hover/80 hover:text-text-inverse focus:ring-2 focus:ring-primary/40 focus:outline-none"
-                >
-                  <Plus className="size-4" />
-                </button>
+          {product.cartQuantity === 0 ? (
+            <div className="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                  <PackageCheck className="size-5" />
+                </div>
+                <p className="text-sm font-semibold text-text-primary">
+                  Доступен к заказу
+                </p>
               </div>
 
               <button
                 type="button"
-                className="cursor-pointers flex size-10 items-center justify-center rounded-xl text-text-muted transition-all duration-200 hover:bg-danger/10 hover:text-danger focus:ring-2 focus:ring-danger/30 focus:outline-none"
+                onClick={() => {
+                  add();
+                }}
+                className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-primary text-text-inverse shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md focus:ring-2 focus:ring-primary/40 focus:outline-none"
               >
-                <Trash className="size-4.5" />
+                <ShoppingCartPlus className="size-5" />
               </button>
             </div>
-          </div> */}
+          ) : (
+            <div className="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-primary/20 bg-primary-soft/30 p-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-text-inverse shadow-sm">
+                  <ShoppingCart className="size-5" />
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-text-primary">
+                    В корзине
+                  </span>
+
+                  <span className="text-xs text-text-secondary">
+                    {product.cartQuantity} {product.unit.shortTitle}.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <CartItemQuantityControl
+                  quantity={product.cartQuantity}
+                  onDecrement={decrement}
+                  onIncrement={increment}
+                  onSetQuantity={setQuantity}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    remove();
+                  }}
+                  className="cursor-pointers flex size-10 items-center justify-center rounded-xl text-text-muted transition-all duration-200 hover:bg-danger/10 hover:text-danger focus:ring-2 focus:ring-danger/30 focus:outline-none"
+                >
+                  <Trash className="size-4.5" />
+                </button>
+              </div>
+            </div>
+          )}
 
           <section className="mt-6">
             <h2 className="text-xl font-bold text-text-primary">Описание</h2>

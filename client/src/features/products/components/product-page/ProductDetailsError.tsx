@@ -2,11 +2,9 @@ import Button from '@/components/ui/buttons/Button';
 import { AlertCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router';
 interface IProductDetailsErrorProps {
-  resetErrorBoundary: () => void;
+  resetError: () => void;
 }
-const ProductDetailsError = ({
-  resetErrorBoundary,
-}: IProductDetailsErrorProps) => {
+const ProductDetailsError = ({ resetError }: IProductDetailsErrorProps) => {
   const navigate = useNavigate();
 
   return (
@@ -25,11 +23,7 @@ const ProductDetailsError = ({
         </p>
 
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button
-            variant="primary"
-            className="group"
-            onClick={resetErrorBoundary}
-          >
+          <Button variant="primary" className="group" onClick={resetError}>
             <RotateCcw className="size-4 transition-transform duration-400 group-hover:-rotate-360" />
             Повторить
           </Button>

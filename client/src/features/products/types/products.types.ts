@@ -8,6 +8,7 @@ export interface IPromoProduct {
     fullTitle: string;
     shortTitle: string;
   };
+  cartQuantity: number;
 }
 
 export interface IFullProduct {
@@ -22,6 +23,7 @@ export interface IFullProduct {
     fullTitle: string;
     shortTitle: string;
   };
+  cartQuantity: number;
 }
 
 export interface IProductFilters {

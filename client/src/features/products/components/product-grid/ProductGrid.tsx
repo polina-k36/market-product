@@ -48,6 +48,7 @@ const ProductGrid = () => {
               unit={product.unit.shortTitle}
               category={product.category}
               imgUrl={product.imageKey}
+              cartQuantity={product.cartQuantity}
             />
           ))}
       </div>
