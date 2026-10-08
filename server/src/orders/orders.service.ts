@@ -128,9 +128,36 @@ export class OrdersService {
     return where;
   }
 
-  getByUserId(userId: number) {
-    return this.prisma.order.findMany({
+  async getByUserId(userId: number) {
+    const orders = await this.prisma.order.findMany({
       where: { userId },
+      select: {
+        id: true,
+        date: true,
+        deliveryCity: true,
+        deliveryApartment: true,
+        deliveryHouse: true,
+        deliveryStreet: true,
+        status: {
+          select: {
+            title: true,
+          },
+        },
+        totalPrice: true,
+        _count: {
+          select: {
+            orderItems: true,
+          },
+        },
+      },
+    });
+    return orders.map((order) => {
+      const { _count, status, ...dataOrder } = order;
+      return {
+        ...dataOrder,
+        status: status.title,
+        itemCount: _count.orderItems,
+      };
     });
   }
 
@@ -304,6 +331,69 @@ export class OrdersService {
     if (!order) throw new NotFoundException('Order not found');
 
     return order;
+  }
+
+  async findByIdForUser(id: number, userId: number, role: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id, userId: role === 'ADMIN' ? undefined : userId },
+      select: {
+        id: true,
+        date: true,
+        status: {
+          select: {
+            title: true,
+          },
+        },
+        deliveryApartment: true,
+        deliveryCity: true,
+        deliveryHouse: true,
+        deliveryStreet: true,
+        deliveryMethod: {
+          select: {
+            title: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            title: true,
+          },
+        },
+        userCard: {
+          select: {
+            cardBrand: true,
+            cardLast4: true,
+          },
+        },
+        orderItems: {
+          select: {
+            id: true,
+            quantity: true,
+            price: true,
+            product: {
+              select: {
+                title: true,
+                description: true,
+                imageKey: true,
+                unit: {
+                  select: {
+                    shortTitle: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new NotFoundException('Order not found');
+
+    return {
+      ...order,
+      deliveryMethod: order.deliveryMethod.title,
+      paymentMethod: order.paymentMethod.title,
+      status: order.status.title,
+    };
   }
 
   remove(id: number) {

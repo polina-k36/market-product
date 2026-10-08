@@ -116,7 +116,10 @@ export class OrdersController {
   async getOrdersByUserId(@Req() req: AuthenticatedRequest) {
     const id = req.user.sub;
 
-    return this.ordersService.getByUserId(id);
+    return {
+      success: true,
+      data: await this.ordersService.getByUserId(id),
+    };
   }
 
   @Get(':id')
@@ -152,7 +155,7 @@ export class OrdersController {
 
     return {
       success: true,
-      data: await this.ordersService.findById(id, userId, role),
+      data: await this.ordersService.findByIdForUser(id, userId, role),
     };
   }
 
