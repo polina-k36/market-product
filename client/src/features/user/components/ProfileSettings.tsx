@@ -203,7 +203,7 @@ const ProfileSettings = () => {
               {user.cards.map((card) => (
                 <div
                   key={card.id}
-                  className="group flex items-center gap-3 rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-violet-500/20 hover:bg-violet-500/[0.03]"
+                  className="group flex items-center gap-3 rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-violet-500/20 hover:bg-violet-500/3"
                 >
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface text-[0.625rem] font-bold text-text-secondary shadow-sm">
                     <CreditCard />
