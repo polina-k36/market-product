@@ -8,7 +8,6 @@ import { UpdateProductDto } from './dto/update-product.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { GetProductsQueryDto } from './dto/get-products-query.dto.js';
-import { fileURLToPath } from 'url';
 import { FilterProductsDto } from './dto/filter-products.dto.js';
 
 @Injectable()
@@ -29,11 +28,27 @@ export class ProductsService {
     });
   }
 
-  async findAll(query: GetProductsQueryDto) {
+  async findAll(query: GetProductsQueryDto, userId?: number) {
     const { page, limit, ...filters } = query;
 
     const where = this.buildFilters(filters);
+    const cart = userId
+      ? await this.prisma.cart.findUnique({
+          where: { userId },
+          select: { id: true },
+        })
+      : { id: -1 };
 
+    const cartItemSelect = cart
+      ? {
+          where: {
+            cartId: cart?.id,
+          },
+          select: {
+            quantity: true,
+          },
+        }
+      : undefined;
     const [total, products] = await Promise.all([
       this.prisma.product.count({ where }),
       this.prisma.product.findMany({
@@ -51,6 +66,7 @@ export class ProductsService {
           unit: {
             select: { fullTitle: true, shortTitle: true },
           },
+          cartItems: cartItemSelect,
         },
       }),
     ]);
@@ -63,10 +79,14 @@ export class ProductsService {
       limit,
       total,
       totalPages,
-      data: products.map((product) => ({
-        ...product,
-        category: product.category.title,
-      })),
+      data: products.map((product) => {
+        const { category, cartItems, ...dataProduct } = product;
+        return {
+          ...dataProduct,
+          category: category.title,
+          cartQuantity: cartItems[0]?.quantity ?? 0,
+        };
+      }),
     };
   }
 
@@ -119,7 +139,24 @@ export class ProductsService {
     return product;
   }
 
-  async findById(id: number) {
+  async findById(id: number, userId?: number) {
+    const cart = userId
+      ? await this.prisma.cart.findUnique({
+          where: { userId },
+          select: { id: true },
+        })
+      : { id: -1 };
+
+    const cartItemSelect = cart
+      ? {
+          where: {
+            cartId: cart.id,
+          },
+          select: {
+            quantity: true,
+          },
+        }
+      : undefined;
     const product = await this.prisma.product.findUnique({
       where: { id, isDeleted: false },
       select: {
@@ -140,14 +177,17 @@ export class ProductsService {
             shortTitle: true,
           },
         },
+        cartItems: cartItemSelect,
       },
     });
 
     if (!product) throw new NotFoundException('Product not found');
 
+    const { category, cartItems, ...dataProduct } = product;
     return {
-      ...product,
-      category: product.category.title,
+      ...dataProduct,
+      category: category.title,
+      cartQuantity: cartItems[0]?.quantity ?? 0,
     };
   }
 

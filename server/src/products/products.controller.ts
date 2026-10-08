@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -21,8 +22,10 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { GetProductsQueryDto } from './dto/get-products-query.dto.js';
+
+import type { Request } from 'express';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard.js';
 
 @ApiTags('Products')
 @Controller('products')
@@ -61,17 +64,20 @@ export class ProductsController {
     };
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Получить список товаров' })
   @ApiResponse({
     status: 200,
     description: 'Список товаров успешно получен',
   })
-  findAll(@Query() query: GetProductsQueryDto) {
-    return this.productsService.findAll(query);
+  findAll(@Query() query: GetProductsQueryDto, @Req() req: Request) {
+    const userId = req.user?.sub;
+    return this.productsService.findAll(query, userId);
   }
 
   @Get(':id')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: 'Получить товар по ID' })
   @ApiParam({
     name: 'id',
@@ -91,10 +97,11 @@ export class ProductsController {
     status: 404,
     description: 'Товар не найден',
   })
-  async findById(@Param('id', ParseIntPipe) id: number) {
+  async findById(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = req.user?.sub;
     return {
       success: true,
-      data: await this.productsService.findById(id),
+      data: await this.productsService.findById(id, userId),
     };
   }
 

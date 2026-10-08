@@ -141,8 +141,6 @@ export class AuthService {
     const user = await this.usersService.getUserById(payload.sub);
 
     if (!user) throw new UnauthorizedException('Invalid refresh token.');
-    if (user.isBanned)
-      throw new ForbiddenException('Your account has been banned.');
 
     const accessToken = this.jwtTokensService.createAccessJwtToken({
       id: payload.sub,
@@ -154,6 +152,8 @@ export class AuthService {
       accessToken,
       data: {
         id: payload.sub,
+        role: user.role,
+        isBanned: user.isBanned,
       },
     };
   }
@@ -174,7 +174,8 @@ export class AuthService {
     const user = await this.usersService.getUserById(userId);
 
     if (!user) throw new NotFoundException();
-    return user;
+    const { passwordHash, ...userInfo } = user;
+    return userInfo;
   }
 
   async google(credential: string) {
@@ -254,6 +255,11 @@ export class AuthService {
       success: true,
       accessToken,
       refreshToken,
+      data: {
+        id: user.id,
+        role: user.role,
+        isBanned: user.isBanned,
+      },
     };
   }
 

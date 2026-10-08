@@ -24,6 +24,7 @@ import { RegisterUserDto } from '../users/dto/register-user.dto.js';
 import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { VerifyResetCodeDto } from './dto/verify-reset-code.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
+import { success } from 'zod';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -109,7 +110,11 @@ export class AuthController {
   })
   @Post('refresh')
   async refresh(@Req() req: Request) {
-    return await this.authService.refresh(req.cookies.refreshToken);
+    const data = await this.authService.refresh(req.cookies.refreshToken);
+    return {
+      success: true,
+      ...data,
+    };
   }
 
   @ApiOperation({
@@ -220,7 +225,10 @@ export class AuthController {
   @Get('profile')
   async profile(@Req() req: AuthenticatedRequest) {
     const userId = req.user.sub;
-    return await this.authService.profile(userId);
+    return {
+      success: true,
+      data: await this.authService.profile(userId),
+    };
   }
 
   @ApiOperation({
@@ -251,6 +259,7 @@ export class AuthController {
     const { refreshToken, ...resultData } = await this.authService.google(
       dtoGoogle.credential,
     );
+    console.log(refreshToken);
 
     res.cookie('refreshToken', refreshToken, {
       maxAge: REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000,
