@@ -16,6 +16,7 @@ import type { AuthenticatedRequest } from '../common/types/authenticated-request
 import { AddCartItemDto } from './dto/add-cart-item.dto.js';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto.js';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DecrementCartItemDto } from './dto/decrement-cart-item.dto.js';
 
 @ApiTags('Carts')
 @UseGuards(JwtAuthGuard)
@@ -43,6 +44,29 @@ export class CartsController {
     return {
       success: true,
       data: await this.cartsService.getCartItems(userId),
+    };
+  }
+
+  @Get('cart/items/count')
+  @ApiOperation({
+    summary: 'Получить количество товаров корзины',
+    description:
+      'Возвращает количество всех товаров в корзины текущего авторизованного пользователя.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Количество товаров успешно получены.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  async getCartItemsCount(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.sub;
+
+    return {
+      success: true,
+      data: await this.cartsService.getCartItemsCount(userId),
     };
   }
 
@@ -121,6 +145,43 @@ export class CartsController {
         userId,
         body,
       ),
+    };
+  }
+
+  @Patch('cart/items/:productId/decrement')
+  @ApiOperation({
+    summary: 'Уменьшить количество товара в корзине',
+    description:
+      'Уменьшает количество указанного товара в корзине текущего пользователя.',
+  })
+  @ApiParam({
+    name: 'productId',
+    description: 'ID товара',
+    example: 15,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Количество товара успешно изменено.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Товар не найден или отсутствует в корзине.',
+  })
+  async decrementCartItem(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Req() req: AuthenticatedRequest,
+    @Body() body: DecrementCartItemDto,
+  ) {
+    const userId = req.user.sub;
+
+    return {
+      success: true,
+      data: await this.cartsService.decrementCartItem(productId, userId, body),
     };
   }
 

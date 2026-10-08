@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto.js';
 import { ProductsService } from '../products/products.service.js';
 import { AddCartItemDto } from './dto/add-cart-item.dto.js';
+import { DecrementCartItemDto } from './dto/decrement-cart-item.dto.js';
 
 @Injectable()
 export class CartsService {
@@ -13,11 +18,41 @@ export class CartsService {
 
   async getCartItems(userId: number) {
     const cart = await this.getOrCreateCartByUserId(userId);
-    return this.prisma.cartItem.findMany({
+    const cartItems = await this.prisma.cartItem.findMany({
       where: { cartId: cart.id },
-      include: {
-        product: true,
+      select: {
+        quantity: true,
+        id: true,
+        product: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            imageKey: true,
+            unit: {
+              select: { shortTitle: true },
+            },
+          },
+        },
       },
+    });
+    return cartItems.map((item) => {
+      const { id, quantity, product } = item;
+      const { id: productId, ...productData } = product;
+      return {
+        id,
+        productId,
+        quantity,
+        ...productData,
+        unit: product.unit.shortTitle,
+      };
+    });
+  }
+
+  async getCartItemsCount(userId: number) {
+    const cart = await this.getOrCreateCartByUserId(userId);
+    return this.prisma.cartItem.count({
+      where: { cartId: cart.id },
     });
   }
 
@@ -30,8 +65,7 @@ export class CartsService {
 
     const product = await this.productsService.findById(productId);
     if (!product) throw new NotFoundException('Product not found');
-
-    return this.prisma.cartItem.upsert({
+    const newCartItem = await this.prisma.cartItem.upsert({
       where: {
         cartId_productId: {
           cartId: cart.id,
@@ -48,7 +82,82 @@ export class CartsService {
         productId,
         quantity: dtoAddCartItem.quantity ?? 1,
       },
+      select: {
+        quantity: true,
+        id: true,
+        product: {
+          select: {
+            title: true,
+            price: true,
+            imageKey: true,
+            unit: {
+              select: { shortTitle: true },
+            },
+          },
+        },
+      },
     });
+    const { id, quantity, product: cartProduct } = newCartItem;
+    return {
+      id,
+      quantity,
+      ...cartProduct,
+      unit: cartProduct.unit.shortTitle,
+    };
+  }
+
+  async decrementCartItem(
+    productId: number,
+    userId: number,
+    dtoDecrementItem: DecrementCartItemDto,
+  ) {
+    const cart = await this.getOrCreateCartByUserId(userId);
+
+    const cartItem = await this.prisma.cartItem.findUnique({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
+        },
+      },
+    });
+    if (!cartItem) throw new NotFoundException('Product is not in the cart');
+    if (Number(cartItem.quantity) - (dtoDecrementItem.quantity ?? 1) <= 0)
+      throw new BadRequestException('');
+    const updatedCartItem = await this.prisma.cartItem.update({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
+        },
+      },
+      data: {
+        quantity: {
+          decrement: dtoDecrementItem.quantity ?? 1,
+        },
+      },
+      select: {
+        quantity: true,
+        id: true,
+        product: {
+          select: {
+            title: true,
+            price: true,
+            imageKey: true,
+            unit: {
+              select: { shortTitle: true },
+            },
+          },
+        },
+      },
+    });
+    const { id, quantity, product: cartProduct } = updatedCartItem;
+    return {
+      id,
+      quantity,
+      ...cartProduct,
+      unit: cartProduct.unit.shortTitle,
+    };
   }
 
   async changeQuantityByProductId(

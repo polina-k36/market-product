@@ -1,9 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, Min } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, Min } from 'class-validator';
 
 export class UpdateCartItemDto {
   @ApiProperty({
-    description: 'Количество товара изменния в корзине',
+    description: 'Количество товара для изменения в корзине',
     example: 1,
     minimum: 0.001,
     default: 1,
