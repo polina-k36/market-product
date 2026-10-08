@@ -36,6 +36,13 @@ export class UserAddressesService {
   findAllByUserId(userId: number) {
     return this.prisma.userAddress.findMany({
       where: { userId },
+      select: {
+        id: true,
+        city: true,
+        street: true,
+        house: true,
+        apartment: true,
+      },
     });
   }
 
