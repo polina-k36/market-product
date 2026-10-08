@@ -1,6 +1,5 @@
 import NavButton from '@/components/ui/buttons/NavButton';
 import { User2 } from 'lucide-react';
-import React from 'react';
 import { useNavigate } from 'react-router';
 
 interface IProfileHeaderProps {

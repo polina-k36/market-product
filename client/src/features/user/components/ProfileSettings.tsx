@@ -1,4 +1,7 @@
-import { useUserProfile } from '@/features/auth/hooks/use-user-profile';
+import {
+  PROFILE_QUERY_KEY,
+  useUserProfile,
+} from '@/features/auth/hooks/use-user-profile';
 import {
   CircleAlert,
   CircleCheck,
@@ -7,9 +10,32 @@ import {
   Plus,
   User2,
 } from 'lucide-react';
+import { useUserModalStore } from '../store/user-modal.store';
+import { useRemoveAddress } from '@/features/addresses/hooks/use-remove-address';
+import { useQueryClient } from '@tanstack/react-query';
+import { IMaskInput } from 'react-imask';
 
 const ProfileSettings = () => {
   const { data: user } = useUserProfile();
+  const { openCreateAddressModal, openUpdateAddressModal, openUserInfoModal } =
+    useUserModalStore();
+  const queryClient = useQueryClient();
+
+  const { mutate } = useRemoveAddress();
+
+  const onDelete = (id: number) => {
+    mutate(id, {
+      onSuccess: () => {
+        queryClient.refetchQueries({
+          queryKey: PROFILE_QUERY_KEY,
+        });
+      },
+      onError: (e) => {
+        alert(e.message);
+      },
+    });
+  };
+
   return (
     <div>
       <h2 className="mb-6 text-xl font-bold text-text-primary">
@@ -37,6 +63,7 @@ const ProfileSettings = () => {
 
               <button
                 type="button"
+                onClick={openUserInfoModal}
                 className="cursor-pointer text-sm font-medium text-text-secondary transition-colors duration-200 hover:text-orange-500"
               >
                 Изменить
@@ -78,9 +105,12 @@ const ProfileSettings = () => {
 
               <div className="pt-3">
                 <p className="text-xs text-text-muted">Телефон</p>
-                <p className="mt-1 text-sm font-medium text-text-primary">
-                  {user.phone}
-                </p>
+                <IMaskInput
+                  className="mt-1 border-0 text-sm font-medium text-text-primary focus:outline-0"
+                  mask="+{7} (000) 000-00-00"
+                  value={user.phone ?? ''}
+                  readOnly
+                />
               </div>
             </div>
           </section>
@@ -105,6 +135,7 @@ const ProfileSettings = () => {
 
               <button
                 type="button"
+                onClick={openCreateAddressModal}
                 className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-text-secondary transition-colors duration-200 hover:text-emerald-500"
               >
                 <Plus className="size-4" />
@@ -116,21 +147,33 @@ const ProfileSettings = () => {
               {user.addresses.map((address) => (
                 <div
                   key={address.id}
-                  className="group relative rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-emerald-500/20 hover:bg-emerald-500/[0.03]"
+                  className="group relative rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-emerald-500/20 hover:bg-emerald-500/3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="mt-1 text-sm leading-5 text-text-secondary">
-                        {`${address.city} ${address.street} д. ${address.house} ${address.apartment ? `кв. ${address.apartment}` : ''} `}
+                        {`г. ${address.city} ${address.street} д. ${address.house} ${address.apartment ? `кв. ${address.apartment}` : ''} `}
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-emerald-500"
-                    >
-                      Изменить
-                    </button>
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-emerald-500"
+                        onClick={() => openUpdateAddressModal(address.id)}
+                      >
+                        Изменить
+                      </button>
+                      <button
+                        type="button"
+                        className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-danger"
+                        onClick={() => {
+                          onDelete(address.id);
+                        }}
+                      >
+                        Удалить
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -154,14 +197,6 @@ const ProfileSettings = () => {
                   </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-text-secondary transition-colors duration-200 hover:text-violet-500"
-              >
-                <Plus className="size-4" />
-                Добавить
-              </button>
             </div>
 
             <div className="mt-5 space-y-2.5">
@@ -185,13 +220,6 @@ const ProfileSettings = () => {
                       {card.cardBrand}
                     </p>
                   </div>
-
-                  <button
-                    type="button"
-                    className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-violet-500"
-                  >
-                    Изменить
-                  </button>
                 </div>
               ))}
             </div>
