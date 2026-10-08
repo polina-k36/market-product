@@ -156,9 +156,8 @@ export class UsersController {
 
   @Patch('password')
   @ApiOperation({
-    summary: 'Change user password',
-    description:
-      'Changes the password of the currently authenticated user. The current password must be provided for verification.',
+    summary: 'Изменение пароля',
+    description: 'Изменить пароль у текущего авторизованного пользователя.',
   })
   @ApiResponse({
     status: 200,

@@ -34,6 +34,7 @@ export class UsersService {
     email: true,
     emailVerified: true,
     phone: true,
+    birthDate: true,
     passwordHash: true,
     role: true,
     isBanned: true,
@@ -127,7 +128,33 @@ export class UsersService {
   getUserById(id: number) {
     const user = this.prisma.user.findUnique({
       where: { id, isDeleted: false },
-      select: this.fields,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        emailVerified: true,
+        phone: true,
+        birthDate: true,
+        passwordHash: true,
+        role: true,
+        isBanned: true,
+        cards: {
+          select: {
+            id: true,
+            cardLast4: true,
+            cardBrand: true,
+          },
+        },
+        addresses: {
+          select: {
+            id: true,
+            street: true,
+            house: true,
+            city: true,
+            apartment: true,
+          },
+        },
+      },
     });
     if (!user) throw new NotFoundException('User not found.');
     return user;
@@ -159,7 +186,7 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.user.findUnique({
-      where: { id, isDeleted: true },
+      where: { id, isDeleted: false },
       select: {
         email: true,
         isBanned: true,
