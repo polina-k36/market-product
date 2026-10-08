@@ -1,3 +1,5 @@
+import type { IAddress } from '@/features/addresses/types/address.types';
+import type { IUserCard } from '@/features/cards/types/card.types';
 import type { IAuthUser, IUserRole } from '@/types/auth/auth.types';
 
 export interface IAuthResponse {
@@ -15,21 +17,8 @@ export interface IFullUserInfo {
   birthDate: Date | null;
   isBanned: boolean;
   role: IUserRole;
-  addresses: IUserAddress[];
+  addresses: IAddress[];
   cards: IUserCard[];
-}
-
-export interface IUserCard {
-  id: number;
-  cardLast4: string;
-  cardBrand: string;
-}
-export interface IUserAddress {
-  id: number;
-  street: string;
-  house: string;
-  city: string;
-  apartment?: string;
 }
 
 export interface ILoginProps {
