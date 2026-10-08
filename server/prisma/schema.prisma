@@ -23,7 +23,7 @@ model Cart {
 
 model CartItem {
   id        Int      @id @default(autoincrement()) @map("id_cart_item")
-  quantity  Int
+  quantity  Decimal  @db.Decimal(10, 3)
 
   cartId    Int      @map("id_cart")
   productId Int      @map("id_product")
