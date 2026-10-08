@@ -2,28 +2,39 @@ import Header from '@/components/layout/header/Header';
 import ProductDetails from '@/features/products/components/product-page/ProductDetails';
 import ProductDetailsError from '@/features/products/components/product-page/ProductDetailsError';
 import ProductDetailsSkeleton from '@/features/products/components/product-page/ProductDetailsSkeleton';
-import { Suspense, useEffect } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { useProduct } from '@/features/products/hooks/use-product';
+import { useEffect } from 'react';
+
 import { useParams } from 'react-router';
 
 const ProductPage = () => {
   const params = useParams();
+  const {
+    data: product,
+    isSuccess,
+    isFetching,
+    isError,
+    refetch,
+  } = useProduct(Number(params.id));
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'instant',
     });
   }, []);
+
+  //FIXME исправить хэдер так как в нем нет кнопок для карта
   return (
     <>
-      <Header />
-      <ErrorBoundary FallbackComponent={ProductDetailsError}>
-        <Suspense fallback={<ProductDetailsSkeleton />}>
-          {Number.isInteger(Number(params.id)) && (
-            <ProductDetails id={Number(params.id)} />
-          )}
-        </Suspense>
-      </ErrorBoundary>
+      {Number.isInteger(Number(params.id)) && (
+        <>
+          <Header />
+          {isError && <ProductDetailsError resetError={() => refetch()} />}
+          {isFetching && <ProductDetailsSkeleton />}
+          {isSuccess && product && <ProductDetails product={product} />}
+        </>
+      )}
     </>
   );
 };
