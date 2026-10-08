@@ -1,6 +1,7 @@
 import Button from '@/components/ui/buttons/Button';
 import { CheckCircle, ChevronRight, MapPin, ShoppingBag } from 'lucide-react';
 import type { OrderStatus } from '../../types/order.types';
+import { useNavigate } from 'react-router';
 
 interface IOrderCardProps {
   order: {
@@ -14,7 +15,7 @@ interface IOrderCardProps {
 }
 
 const OrderCard = ({ order }: IOrderCardProps) => {
-  const onViewItems = () => {};
+  const navigate = useNavigate();
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm transition-all duration-200 hover:border-primary/20 hover:shadow-md sm:p-5">
       <div className="flex items-start justify-between gap-3">
@@ -88,7 +89,7 @@ const OrderCard = ({ order }: IOrderCardProps) => {
         <Button
           variant="primary"
           type="button"
-          onClick={() => onViewItems()}
+          onClick={() => navigate(`/orders/${order.id}`)}
           className="group"
         >
           <ShoppingBag className="size-3.5" />
