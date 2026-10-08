@@ -2,13 +2,28 @@ import FullLogo from '@/components/ui/logo/FullLogo';
 import UserMenu from './user-menu/UserMenu';
 import { Search, ShoppingBasket, X } from 'lucide-react';
 import ButtonIcon from '@/components/ui/buttons/ButtonIcon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '@/components/ui/inputs/Input';
 import { useProductFilters } from '@/features/products/hooks/use-product-filters';
 import Button from '@/components/ui/buttons/Button';
+import { useCartStore } from '@/features/cart/store/cart.store';
+import CartPanel from '@/features/cart/components/CartPanel';
+import { useCountCartItems } from '@/features/cart/hooks/use-count-cart-items';
 
 const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
+  const isCartOpen = useCartStore((state) => state.isOpen); //XXX: подумать над надобностью стора
+  const openCart = useCartStore((state) => state.openCart);
+  const countItems = useCartStore((state) => state.countItems);
+
+  const { data: count, isSuccess } = useCountCartItems();
+  const setCountItems = useCartStore((state) => state.setCountItems);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setCountItems(count);
+    }
+  }, [count, isSuccess, setCountItems]);
 
   const { filters, actions } = useProductFilters();
 
@@ -29,6 +44,11 @@ const Header = () => {
   const clearSearch = () => {
     setInputSearch('');
     actions.setSearch();
+  };
+
+  const onOpenCart = () => {
+    openCart();
+    document.body.style.overflowY = 'hidden';
   };
 
   return (
@@ -79,10 +99,20 @@ const Header = () => {
           </ButtonIcon>
 
           <UserMenu />
-
-          <ButtonIcon isActive={false} variant="transparent">
-            <ShoppingBasket className="size-6 text-text-primary" />
-          </ButtonIcon>
+          <div className="relative size-fit">
+            <ButtonIcon
+              isActive={false}
+              variant="transparent"
+              onClick={onOpenCart}
+            >
+              <ShoppingBasket className="size-6 text-text-primary" />
+            </ButtonIcon>
+            {countItems !== 0 && (
+              <span className="absolute top-0 right-0 flex size-5 items-center justify-center rounded-full bg-primary text-xs text-text-inverse">
+                {countItems}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -111,6 +141,8 @@ const Header = () => {
           <Search className="size-5" />
         </ButtonIcon>
       </div>
+
+      {isCartOpen && <CartPanel />}
     </header>
   );
 };
