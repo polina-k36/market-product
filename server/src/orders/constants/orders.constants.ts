@@ -1,0 +1,7 @@
+export const ACTIVE_ORDER_STATUSES = [
+  'PROCESSING',
+  'CONFIRMED',
+  'PREPARING',
+  'SHIPPED',
+  'READY_FOR_PICKUP',
+];

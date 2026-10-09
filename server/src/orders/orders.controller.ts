@@ -122,6 +122,29 @@ export class OrdersController {
     };
   }
 
+  @Get('me/active')
+  @ApiOperation({
+    summary: 'Получить активные заказы текущего пользователя',
+    description:
+      'Возвращает список активных заказов текущего авторизованного пользователя.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список активных заказов успешно получен.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  async getActiveOrders(@Req() req: AuthenticatedRequest) {
+    const id = req.user.sub;
+
+    return {
+      success: true,
+      data: await this.ordersService.findAllActiveByUserId(id),
+    };
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Получить заказ по ID',

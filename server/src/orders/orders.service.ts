@@ -16,6 +16,8 @@ import { ReturnOrderDto } from './dto/return-order.dto.js';
 import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
 import { FilterOrdersDto } from './dto/filter-orders.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
+import { number } from 'zod';
+import { ACTIVE_ORDER_STATUSES } from './constants/orders.constants.js';
 
 @Injectable()
 export class OrdersService {
@@ -161,6 +163,7 @@ export class OrdersService {
     });
   }
 
+  //FIXME: посмотреть и поправить работу с id статусами заказов
   async changeOrderStatus(id: number, dtoChangeStatus: ChangeOrderStatusDto) {
     const { statusId } = dtoChangeStatus;
 
@@ -394,6 +397,38 @@ export class OrdersService {
       paymentMethod: order.paymentMethod.title,
       status: order.status.title,
     };
+  }
+
+  findAllActiveByUserId(userId: number) {
+    return this.prisma.order.findMany({
+      where: {
+        userId,
+        status: {
+          title: {
+            in: ACTIVE_ORDER_STATUSES,
+          },
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+        deliveryCity: true,
+        deliveryApartment: true,
+        deliveryHouse: true,
+        deliveryStreet: true,
+        status: {
+          select: {
+            title: true,
+          },
+        },
+        totalPrice: true,
+        _count: {
+          select: {
+            orderItems: true,
+          },
+        },
+      },
+    });
   }
 
   remove(id: number) {
