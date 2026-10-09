@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Header from '../header/Header';
-import ActiveOrderHeader from '@/features/orders/components/pages/ActiveOrderHeader';
+import ActiveOrderHeader from '@/features/orders/components/ActiveOrderHeader';
 
 interface IMainLayoutProps {
   children: ReactNode;

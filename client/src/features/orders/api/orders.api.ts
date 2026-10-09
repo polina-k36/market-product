@@ -6,12 +6,27 @@ export const ordersApi = {
   getMineOrders: async (): Promise<IPromoOrder[]> => {
     const { data } = await api.get<IResponse<IPromoOrder[]>>('orders/me');
 
-    return data.data;
+    return data.data.map((order) => ({
+      ...order,
+      date: new Date(order.date),
+    }));
   },
   getOrderById: async (id: number): Promise<IFullOrder> => {
     const { data } = await api.get<IResponse<IFullOrder>>(`/orders/${id}`);
 
-    return data.data;
+    return {
+      ...data.data,
+      date: new Date(data.data.date),
+    };
   },
   create: async () => {},
+  getMineActiveOrders: async (): Promise<IPromoOrder[]> => {
+    const { data } =
+      await api.get<IResponse<IPromoOrder[]>>('orders/me/active');
+
+    return data.data.map((order) => ({
+      ...order,
+      date: new Date(order.date),
+    }));
+  },
 };

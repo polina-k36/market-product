@@ -1,12 +1,13 @@
 import Button from '@/components/ui/buttons/Button';
-import { CheckCircle, ChevronRight, MapPin, ShoppingBag } from 'lucide-react';
+import { ChevronRight, MapPin, ShoppingBag } from 'lucide-react';
 import type { OrderStatus } from '../../types/order.types';
 import { useNavigate } from 'react-router';
+import { orderStatusConfig } from '../../utils/order-status.utils';
 
 interface IOrderCardProps {
   order: {
     id: number;
-    date: string;
+    date: Date;
     status: OrderStatus;
     itemCount: number;
     delAddress: string;
@@ -16,6 +17,8 @@ interface IOrderCardProps {
 
 const OrderCard = ({ order }: IOrderCardProps) => {
   const navigate = useNavigate();
+  const statusInfo = orderStatusConfig(order.status);
+  const StatusIcon = statusInfo.icon;
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm transition-all duration-200 hover:border-primary/20 hover:shadow-md sm:p-5">
       <div className="flex items-start justify-between gap-3">
@@ -29,13 +32,15 @@ const OrderCard = ({ order }: IOrderCardProps) => {
               #{order.id}
             </h3>
 
-            <p className="text-xs text-text-secondary">{order.date}</p>
+            <p className="text-xs text-text-secondary">
+              {order.date.toLocaleString('ru-RU')}
+            </p>
           </div>
         </div>
 
         <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-primary">
-          <CheckCircle className="size-3.5" />
-          {order.status}
+          <StatusIcon className="size-3.5" />
+          {statusInfo.label}
         </span>
       </div>
 

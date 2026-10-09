@@ -12,7 +12,7 @@ export interface IPromoOrder {
 
 export interface IFullOrder {
   id: number;
-  date: string;
+  date: Date;
   deliveryMethod: string;
   paymentMethod: string;
   status: OrderStatus;

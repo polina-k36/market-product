@@ -22,7 +22,7 @@ const OrderSummary = ({ itemsTotal, delivery, total }: IOrderSummaryProps) => {
           </div>
 
           <span className="text-sm font-medium text-text-primary">
-            {itemsTotal} ₽
+            {itemsTotal.toFixed(2)} ₽
           </span>
         </div>
 

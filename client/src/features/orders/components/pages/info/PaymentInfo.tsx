@@ -51,7 +51,7 @@ const PaymentInfo = ({ card, method, total }: IPaymentInfoProps) => {
           <span className="text-sm text-text-secondary">Сумма</span>
 
           <span className="text-base font-bold text-text-primary">
-            {total} ₽
+            {total.toFixed(2)} ₽
           </span>
         </div>
       </div>

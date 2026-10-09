@@ -1,5 +1,5 @@
 import NavButton from '@/components/ui/buttons/NavButton';
-import ActiveOrderHeader from '@/features/orders/components/pages/ActiveOrderHeader';
+import ActiveOrderHeader from '@/features/orders/components/ActiveOrderHeader';
 import { User2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 

@@ -20,7 +20,6 @@ const OrderDetailsPage = () => {
 
   const deliveryPrice = 0;
   const total = itemsTotal;
-  //FIXME: подумать над шаблоном для оформления и показа заказа
 
   return (
     <>

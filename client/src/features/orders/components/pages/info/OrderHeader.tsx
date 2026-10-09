@@ -1,15 +1,18 @@
 import NavButton from '@/components/ui/buttons/NavButton';
-import { CheckCircle } from 'lucide-react';
+import type { OrderStatus } from '@/features/orders/types/order.types';
+import { orderStatusConfig } from '@/features/orders/utils/order-status.utils';
 import { useNavigate } from 'react-router';
 
 interface IOrderHeaderProps {
   id: number;
-  date: string;
-  status: string;
+  date: Date;
+  status: OrderStatus;
 }
 
 const OrderHeader = ({ id, date, status }: IOrderHeaderProps) => {
   const navigate = useNavigate();
+  const statusInfo = orderStatusConfig(status);
+  const StatusIcon = statusInfo.icon;
   return (
     <header>
       <NavButton onNavigate={() => navigate('/profile?mode=orders')}>
@@ -27,13 +30,15 @@ const OrderHeader = ({ id, date, status }: IOrderHeaderProps) => {
               #{id}
             </h1>
 
-            <span className="text-sm text-text-secondary">{date}</span>
+            <span className="text-sm text-text-secondary">
+              {date.toLocaleString('ru-RU')}
+            </span>
           </div>
         </div>
 
         <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
-          <CheckCircle className="size-3.5" />
-          {status}
+          <StatusIcon className="size-4" />
+          {statusInfo.label}
         </div>
       </div>
     </header>

@@ -22,7 +22,7 @@ const OrderCardList = () => {
               <OrderCard
                 order={{
                   id: order.id,
-                  date: `${order.date}`,
+                  date: order.date,
                   status: order.status,
                   delAddress: `${order.deliveryCity} ${order.deliveryStreet} д. ${order.deliveryHouse} кв. ${order.deliveryApartment}`,
                   itemCount: order.itemCount,
