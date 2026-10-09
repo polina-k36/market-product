@@ -399,8 +399,8 @@ export class OrdersService {
     };
   }
 
-  findAllActiveByUserId(userId: number) {
-    return this.prisma.order.findMany({
+  async findAllActiveByUserId(userId: number) {
+    const orders = await this.prisma.order.findMany({
       where: {
         userId,
         status: {
@@ -428,6 +428,15 @@ export class OrdersService {
           },
         },
       },
+    });
+
+    return orders.map((order) => {
+      const { _count, status, ...dataOrder } = order;
+      return {
+        ...dataOrder,
+        status: status.title,
+        itemCount: _count.orderItems,
+      };
     });
   }
 
