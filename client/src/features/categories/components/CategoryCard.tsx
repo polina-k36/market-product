@@ -7,7 +7,7 @@ interface ICategoryCardProps {
 
 const CategoryCard = ({ id, name }: ICategoryCardProps) => {
   const { filters, actions } = useProductFilters();
-
+  //FIXME: улучшить дизайн кнопок
   const changeCategory = () => {
     actions.setCategoryId(id);
   };

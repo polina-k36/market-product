@@ -1,16 +1,12 @@
-import { CheckCircle, Truck } from 'lucide-react';
+import { CalendarCheck, CheckCircle } from 'lucide-react';
 
 interface ISuccessMainCardProps {
   orderId: number;
   total: number;
-  deliveryDate: Date;
+  date: Date;
 }
 
-const SuccessMainCard = ({
-  orderId,
-  total,
-  deliveryDate,
-}: ISuccessMainCardProps) => {
+const SuccessMainCard = ({ orderId, total, date }: ISuccessMainCardProps) => {
   return (
     <div className="rounded-3xl bg-surface p-8 text-center shadow-sm">
       <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary-soft">
@@ -28,8 +24,8 @@ const SuccessMainCard = ({
         </span>
       </p>
       <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-2 text-sm font-medium text-accent">
-        <Truck className="h-4 w-4" />
-        Ожидаемая доставка: {deliveryDate.toLocaleString('ru-RU')}
+        <CalendarCheck className="h-4 w-4" />
+        Дата заказа: {date.toLocaleString('ru-RU')}
       </div>
     </div>
   );

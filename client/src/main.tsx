@@ -10,6 +10,10 @@ import ProductPage from './pages/ProductPage';
 import AuthPage from './pages/AuthPage';
 import AuthBootstrap from './app/bootstrap/AuthBootstrap';
 import ProfilePage from './pages/ProfilePage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
+import VerificationEmailPage from './pages/VerificationEmailPage';
+import OrderCheckoutPage from './pages/OrderCheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 
 const queryClient = new QueryClient({
   // defaultOptions: {
@@ -28,8 +32,15 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/orders/:id" element={<OrderDetailsPage />} />
           <Route path="/products/:id" element={<ProductPage />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route
+            path="/verification/email/confirm"
+            element={<VerificationEmailPage />}
+          />
+          <Route path="/orders/checkout" element={<OrderCheckoutPage />} />
+          <Route path="/orders/success" element={<OrderSuccessPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

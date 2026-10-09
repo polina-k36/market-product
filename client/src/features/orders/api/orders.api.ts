@@ -13,4 +13,5 @@ export const ordersApi = {
 
     return data.data;
   },
+  create: async () => {},
 };

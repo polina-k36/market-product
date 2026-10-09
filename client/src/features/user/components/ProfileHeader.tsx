@@ -1,4 +1,5 @@
 import NavButton from '@/components/ui/buttons/NavButton';
+import ActiveOrderHeader from '@/features/orders/components/pages/ActiveOrderHeader';
 import { User2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
@@ -29,6 +30,7 @@ const ProfileHeader = ({ user }: IProfileHeaderProps) => {
           </div>
         </div>
       </div>
+      <ActiveOrderHeader activeOrders={[{ id: 23, status: 'SHIPPED' }]} />
     </div>
   );
 };

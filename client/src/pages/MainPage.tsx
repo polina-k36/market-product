@@ -13,6 +13,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 const MainPage = () => {
   const { filters } = useProductFilters();
+
   return (
     <>
       <MainLayout>

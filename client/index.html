@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>client</title>
   </head>
-  <body class="bg-background">
+  <body
+    class="scrollbar-gutter-stable overflow-y-scroll bg-background [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-text-muted/40 hover:[&::-webkit-scrollbar-thumb]:bg-text-muted/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-border/30"
+  >
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>

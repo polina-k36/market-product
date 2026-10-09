@@ -87,10 +87,11 @@ const StatusTracker = ({ deliveryMethod, status }: IStatusTrackerProps) => {
         />
 
         <div className="relative flex justify-between">
-          {steps.map((step) => {
+          {steps.map((step, index) => {
             const Icon = step.icon;
             const isActive = step.key === status;
-            const isDone = false;
+            const isDone =
+              index < steps.findIndex((s) => s.key == activeStatusInfo?.key);
             return (
               <div
                 key={step.key}
