@@ -261,8 +261,9 @@ model ProductStock {
 
 model StockReservation {
   id                Int      @id @default(autoincrement()) @map("id_stock_reservation")
-  quantity          Decimal  @default(0) @db.Decimal(10, 3)
+  quantity          Decimal  @db.Decimal(10, 3)
   expiresAt         DateTime @map("expires_at")
+  groupId           String   @map("id_group") 
 
   productId         Int      @map("id_product")
   shopId            Int      @map("id_shop")
@@ -272,10 +273,13 @@ model StockReservation {
 
   product           Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_stock_reservation_product1")
   shop              Shop     @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_stock_reservation_shop1")
+  user              User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_stock_reservation_user1")
 
-  @@unique([productId, shopId, userId], map: "unique_stock_reservation")
+  @@unique([productId, shopId, userId, groupId], map: "unique_stock_reservation")
   @@index([productId], map: "fk_stock_reservation_product1_idx")
   @@index([shopId], map: "fk_stock_reservation_shop1_idx")
+  @@index([userId], map: "fk_stock_reservation_user1_idx")
+  @@index([groupId], map: "stock_reservation_group_idx")
 
 
   @@map("stock_reservation")
@@ -358,34 +362,35 @@ model Unit {
 }
 
 model User {
-  id            Int           @id @default(autoincrement()) @map("id_user")
-  name          String        @map("name") @db.VarChar(255)
-  avatarUrl     String?       @map("avatar_url") @db.Text
-  phone         String?       @unique(map: "phone_UNIQUE") @db.VarChar(20)
-  email         String?       @unique(map: "email_UNIQUE") @db.VarChar(255)
-  emailVerified Boolean       @map("email_verified") @default(false) 
-  passwordHash  String?       @map("password") @db.Text
-  birthDate     DateTime?     @map("date_birth") @db.Date 
+  id               Int                @id @default(autoincrement()) @map("id_user")
+  name             String             @map("name") @db.VarChar(255)
+  avatarUrl        String?            @map("avatar_url") @db.Text
+  phone            String?            @unique(map: "phone_UNIQUE") @db.VarChar(20)
+  email            String?            @unique(map: "email_UNIQUE") @db.VarChar(255)
+  emailVerified    Boolean            @map("email_verified") @default(false) 
+  passwordHash     String?            @map("password") @db.Text
+  birthDate        DateTime?          @map("date_birth") @db.Date 
   
-  createdAt     DateTime?     @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime?     @updatedAt @default(now()) @map("updated_at") @db.DateTime(0)
-  isDeleted     Boolean       @default(false) @map("is_deleted")
-  deletedAt     DateTime?     @map("deleted_at") @db.DateTime(0)
-  roleId        Int           @default(2) @map("id_role")
-  isBanned      Boolean       @default(false) @map("is_banned")
-  bannedAt      DateTime?     @map("banned_at") @db.DateTime(0)
-  banReason     String?       @map("ban_reason") @db.VarChar(255)
+  createdAt        DateTime?          @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt        DateTime?          @updatedAt @default(now()) @map("updated_at") @db.DateTime(0)
+  isDeleted        Boolean            @default(false) @map("is_deleted")
+  deletedAt        DateTime?          @map("deleted_at") @db.DateTime(0)
+  roleId           Int                @default(2) @map("id_role")
+  isBanned         Boolean            @default(false) @map("is_banned")
+  bannedAt         DateTime?          @map("banned_at") @db.DateTime(0)
+  banReason        String?            @map("ban_reason") @db.VarChar(255)
   
-  cart          Cart?
-  orders        Order[]
-  role          Role          @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role1")
-  addresses     UserAddress[]
-  cards         UserCard[]
-  sessions      Session[]
-  verifications Verification[]
-  identities    UserIdentity[]
+  cart             Cart?
+  orders           Order[]
+  addresses        UserAddress[] 
+  cards            UserCard[]
+  sessions         Session[]
+  verifications    Verification[]
+  identities       UserIdentity[]
+  stockReservation StockReservation[] 
 
-  @@index([roleId], map: "fk_user_role1_idx")
+  role             Role               @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_role1")
+  
   @@map("user")
 }
 
