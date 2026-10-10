@@ -149,7 +149,28 @@ export class ProductStockService {
     };
   }
 
-  buildFilters(filters: FilterProductStockDto): Prisma.ProductStockWhereInput {
+  getByProductAndShop(productId: number, shopId: number) {
+    return this.prisma.productStock.findUnique({
+      where: {
+        productId_shopId: {
+          productId,
+          shopId,
+        },
+      },
+    });
+  }
+
+  getAllByShop(shopId: number) {
+    return this.prisma.productStock.findMany({
+      where: {
+        shopId,
+      },
+    });
+  }
+
+  private buildFilters(
+    filters: FilterProductStockDto,
+  ): Prisma.ProductStockWhereInput {
     const { quantityFrom, quantityTo, productId, shopId } = filters;
     const where: Prisma.ProductStockWhereInput = {
       productId,
