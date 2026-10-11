@@ -149,8 +149,13 @@ export class ProductStockService {
     };
   }
 
-  getByProductAndShop(productId: number, shopId: number) {
-    return this.prisma.productStock.findUnique({
+  getByProductAndShop(
+    productId: number,
+    shopId: number,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const client = tx ?? this.prisma;
+    return client.productStock.findUnique({
       where: {
         productId_shopId: {
           productId,
@@ -160,8 +165,9 @@ export class ProductStockService {
     });
   }
 
-  getAllByShop(shopId: number) {
-    return this.prisma.productStock.findMany({
+  getAllByShop(shopId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.productStock.findMany({
       where: {
         shopId,
       },
