@@ -58,11 +58,12 @@ export class StockReservationService {
     tx: Prisma.TransactionClient,
   ) {
     const usersReservations = await this.getUserReservations(userId, tx);
+    let validReservation = null;
 
     if (usersReservations.length > 0) {
       usersReservations.forEach((reservation) => {
         if (reservation.expiresAt > new Date()) {
-          return {
+          validReservation = {
             //FIXME: подумать о валидности таких данных в items может кидать ошибку
             reservationId: reservation.id,
             shopId: reservation.shopId,
@@ -76,7 +77,9 @@ export class StockReservationService {
         }
       });
     }
-
+    if (validReservation !== null) {
+      return validReservation;
+    }
     const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
     const finalItems = await this.checkAvailableStock(createDto, tx);
 
