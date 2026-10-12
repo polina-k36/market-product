@@ -433,12 +433,6 @@ export class StockReservationService {
           products,
           tx,
         );
-      } else {
-        await this.productStockService.deductStock(
-          reservation.shopId,
-          products,
-          tx,
-        );
       }
 
       return tx.stockReservation.delete({
