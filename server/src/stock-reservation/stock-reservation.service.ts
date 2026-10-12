@@ -1,0 +1,480 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateStockReservationDto } from './dto/create-stock-reservation.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ProductStockService } from '../product-stock/product-stock.service.js';
+import { Prisma } from '../generated/prisma/client.js';
+import { StockReservationItemsService } from '../stock-reservation-items/stock-reservation-items.service.js';
+import { CartsService } from '../carts/carts.service.js';
+import { ChangeReservationItemDto } from './dto/change-reservation-item.dto.js';
+import { SetReservationItemQuantityDto } from './dto/set-reservation-item-quantity.dto.js';
+
+@Injectable()
+export class StockReservationService {
+  // удаление при окончания резервации ? авто очистка есть ои и можно ли создать
+  //TODO: Конкурентное резервирование товаров
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly productStockService: ProductStockService,
+    private readonly stockReservationItemsService: StockReservationItemsService,
+    private readonly cartsService: CartsService,
+  ) {}
+
+  async create(
+    createDto: CreateStockReservationDto,
+    userId: number,
+    tx?: Prisma.TransactionClient,
+  ) {
+    if (tx) {
+      return this.createInTransaction(createDto, userId, tx);
+    }
+    return this.prisma.$transaction(async (tx) => {
+      return this.createInTransaction(createDto, userId, tx);
+    });
+  }
+
+  async createFromUserCart(userId: number, shopId: number) {
+    const cartItems = await this.cartsService.getCartItems(userId);
+    if (cartItems.length === 0) throw new BadRequestException('Cart is empty');
+    return this.create(
+      {
+        shopId,
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+        })),
+      },
+      userId,
+    );
+  }
+
+  async createInTransaction(
+    createDto: CreateStockReservationDto,
+    userId: number,
+    tx: Prisma.TransactionClient,
+  ) {
+    const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+    const finalItems = await this.checkAvailableStock(createDto, tx);
+
+    const reservations = finalItems
+      .filter((item) => item.reservedQuantity > 0)
+      .map((item) => ({
+        quantity: item.reservedQuantity,
+        productId: item.productId,
+      }));
+
+    if (reservations.length > 0) {
+      const reservation = await tx.stockReservation.create({
+        data: {
+          shopId: createDto.shopId,
+          userId,
+          expiresAt,
+        },
+        select: { id: true, shopId: true },
+      });
+
+      await this.stockReservationItemsService.createMany(
+        reservation.id,
+        reservations,
+        tx,
+      );
+
+      await this.productStockService.reserveStock(
+        createDto.shopId,
+        reservations.map((reservation) => ({
+          productId: reservation.productId,
+          quantity: reservation.quantity,
+        })),
+        tx,
+      );
+      return {
+        reservationId: reservation.id,
+        shopId: reservation.shopId,
+        items: finalItems,
+      };
+    }
+    return {
+      reservationId: null,
+      shopId: createDto.shopId,
+      items: finalItems,
+    };
+  }
+
+  async checkAvailableStock(
+    data: CreateStockReservationDto,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const productsMap = new Map<number, number>();
+
+    for (const product of data.items) {
+      const currentQuantity = productsMap.get(product.productId) ?? 0;
+      productsMap.set(product.productId, currentQuantity + product.quantity);
+    }
+
+    const mergedProducts = Array.from(productsMap, ([productId, quantity]) => ({
+      productId,
+      quantity,
+    }));
+
+    const finalItems: {
+      productId: number;
+      requestedQuantity: number;
+      reservedQuantity: number;
+      status: 'PARTIALLY_RESERVED' | 'RESERVED' | 'UNAVAILABLE';
+    }[] = [];
+
+    const productStock = await this.productStockService.getAllByShop(
+      data.shopId,
+      tx,
+    );
+
+    mergedProducts.forEach((product) => {
+      const stock = productStock.find(
+        (pr) => pr.productId === product.productId,
+      );
+
+      const availableStock =
+        Number(stock?.quantity) - Number(stock?.reservedQuantity);
+
+      if (stock === undefined || availableStock <= 0) {
+        finalItems.push({
+          productId: product.productId,
+          requestedQuantity: product.quantity,
+          reservedQuantity: 0,
+          status: 'UNAVAILABLE',
+        });
+      } else if (availableStock >= product.quantity) {
+        finalItems.push({
+          productId: product.productId,
+          requestedQuantity: product.quantity,
+          reservedQuantity: product.quantity,
+          status: 'RESERVED',
+        });
+      } else {
+        finalItems.push({
+          productId: product.productId,
+          requestedQuantity: product.quantity,
+          reservedQuantity: availableStock,
+          status: 'PARTIALLY_RESERVED',
+        });
+      }
+    });
+    return finalItems;
+  }
+
+  async getAvailableReservation(
+    id: number,
+    userId: number,
+    selectItems: boolean = false,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const client = tx ?? this.prisma;
+    const reservation = await client.stockReservation.findUnique({
+      where: { id, userId },
+      select: { shopId: true, expiresAt: true, items: selectItems },
+    });
+
+    if (!reservation) throw new NotFoundException('Reservation is not found');
+
+    if (reservation.expiresAt <= new Date()) {
+      throw new ConflictException(
+        'Reservation has expired and is no longer available',
+      );
+    }
+    return reservation;
+  }
+
+  async decrementCountProduct(
+    reservationId: number,
+    productId: number,
+    userId: number,
+    quantity: number = 1,
+    tx?: Prisma.TransactionClient,
+  ) {
+    if (tx) {
+      return this.decrementCountProductInTransaction(
+        reservationId,
+        productId,
+        userId,
+        quantity,
+        tx,
+      );
+    }
+
+    return this.prisma.$transaction((tx) =>
+      this.decrementCountProductInTransaction(
+        reservationId,
+        productId,
+        userId,
+        quantity,
+        tx,
+      ),
+    );
+  }
+
+  async incrementCountProduct(
+    reservationId: number,
+    productId: number,
+    userId: number,
+    quantity: number = 1,
+    tx?: Prisma.TransactionClient,
+  ) {
+    if (tx) {
+      return this.incrementCountProductInTransaction(
+        reservationId,
+        productId,
+        userId,
+        quantity,
+        tx,
+      );
+    }
+
+    return this.prisma.$transaction((tx) =>
+      this.incrementCountProductInTransaction(
+        reservationId,
+        productId,
+        userId,
+        quantity,
+        tx,
+      ),
+    );
+  }
+
+  private async decrementCountProductInTransaction(
+    reservationId: number,
+    productId: number,
+    userId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) {
+    const reservation = await this.getAvailableReservation(
+      reservationId,
+      userId,
+      false,
+      tx,
+    );
+
+    const product = await this.stockReservationItemsService.changeCountProduct(
+      reservationId,
+      productId,
+      { decrement: quantity },
+      tx,
+    );
+
+    await this.productStockService.releaseStock(
+      reservation.shopId,
+      [{ productId: product.productId, quantity }],
+      tx,
+    );
+
+    return product;
+  }
+
+  private async incrementCountProductInTransaction(
+    reservationId: number,
+    productId: number,
+    userId: number,
+    quantity: number,
+    tx: Prisma.TransactionClient,
+  ) {
+    const reservation = await this.getAvailableReservation(
+      reservationId,
+      userId,
+      false,
+      tx,
+    );
+
+    const availableStock = await this.checkAvailableStock(
+      {
+        shopId: reservation.shopId,
+        items: [{ productId, quantity }],
+      },
+      tx,
+    );
+
+    //FIXME подумать над статусом чтобы пропускать частичное резервирование как и при создании
+    if (
+      availableStock.length === 0 ||
+      availableStock[0].status !== 'RESERVED'
+    ) {
+      throw new ConflictException('Stock for this product not available');
+    }
+
+    const product = await this.stockReservationItemsService.changeCountProduct(
+      reservationId,
+      productId,
+      { increment: quantity },
+      tx,
+    );
+
+    await this.productStockService.reserveStock(
+      reservation.shopId,
+      [{ productId: product.productId, quantity }],
+      tx,
+    );
+
+    return product;
+  }
+
+  setCountProduct(
+    reservationId: number,
+    productId: number,
+    userId: number,
+    quantity: number = 1,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const item =
+        await this.stockReservationItemsService.findByReservationAndProduct(
+          reservationId,
+          productId,
+        );
+
+      const differenceQuantity = Number(item.quantity) - quantity;
+
+      if (differenceQuantity === 0) {
+        return { message: 'Nothing changed' };
+      }
+
+      if (differenceQuantity > 0) {
+        return this.decrementCountProduct(
+          reservationId,
+          productId,
+          userId,
+          differenceQuantity,
+          tx,
+        );
+      }
+
+      return this.incrementCountProduct(
+        reservationId,
+        productId,
+        userId,
+        Math.abs(differenceQuantity),
+        tx,
+      );
+    });
+  }
+  //TODO: делать проверку на наличие товаров (при добавление в резерв если это будет) и если что объединять
+
+  changeShop(reservationId: number, shopId: number, userId: number) {
+    return this.prisma.$transaction(async (tx) => {
+      const reservation = await this.getAvailableReservation(
+        reservationId,
+        userId,
+        true,
+        tx,
+      );
+      const newReservation = await this.create(
+        {
+          shopId: shopId,
+          items: reservation.items.map((item) => ({
+            productId: item.productId,
+            quantity: Number(item.quantity),
+          })),
+        },
+        userId,
+        tx,
+      );
+
+      if (newReservation.reservationId === null) {
+        throw new ConflictException(
+          'No products available in the selected shop', //откат при ошибке
+        );
+      }
+
+      //FIXME: подумать над выполнением просто функции completeReservation
+      await this.productStockService.releaseStock(
+        reservation.shopId,
+        reservation.items.map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+        })),
+        tx,
+      );
+
+      await tx.stockReservation.delete({
+        where: { id: reservationId },
+      });
+
+      return newReservation;
+    });
+  }
+
+  completeReservation(
+    reservationId: number,
+    userId: number,
+    action: 'cancel' | 'confirm',
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      const reservation = await this.getAvailableReservation(
+        reservationId,
+        userId,
+        true,
+        tx,
+      );
+
+      await this.stockReservationItemsService.removeAllByReservationId(
+        reservationId,
+        tx,
+      );
+
+      const products = reservation.items.map((item) => ({
+        productId: item.productId,
+        quantity: Number(item.quantity),
+      }));
+
+      if (action === 'cancel') {
+        await this.productStockService.releaseStock(
+          reservation.shopId,
+          products,
+          tx,
+        );
+      } else {
+        await this.productStockService.deductStock(
+          reservation.shopId,
+          products,
+          tx,
+        );
+      }
+
+      return tx.stockReservation.delete({
+        where: { id: reservationId },
+      });
+    });
+  }
+
+  removeOneItem(reservationId: number, productId: number, userId: number) {
+    // TODO: подумать над expiresAt когда удалять и кто за это отвечает - просроченные резервы
+    return this.prisma.$transaction(async (tx) => {
+      const reservation = await this.getAvailableReservation(
+        reservationId,
+        userId,
+        false,
+        tx,
+      );
+
+      const item =
+        await this.stockReservationItemsService.removeByReservationAndProduct(
+          reservationId,
+          productId,
+          tx,
+        );
+
+      await this.productStockService.releaseStock(
+        reservation.shopId,
+        [
+          {
+            productId: item.productId,
+            quantity: Number(item.quantity),
+          },
+        ],
+        tx,
+      );
+      return item;
+    });
+  }
+}
