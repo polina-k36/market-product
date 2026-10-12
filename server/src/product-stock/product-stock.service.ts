@@ -11,7 +11,7 @@ export class ProductStockService {
 
   async reserveStock(
     shopId: number,
-    products: IOrderItem[],
+    products: { productId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
@@ -47,7 +47,7 @@ export class ProductStockService {
 
   async deductStock(
     shopId: number,
-    products: IOrderItem[],
+    products: { productId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
@@ -74,7 +74,7 @@ export class ProductStockService {
 
   async releaseStock(
     shopId: number,
-    products: IOrderItem[],
+    products: { productId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
@@ -100,7 +100,7 @@ export class ProductStockService {
 
   async restock(
     shopId: number,
-    products: IOrderItem[],
+    products: { productId: number; quantity: number }[],
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
