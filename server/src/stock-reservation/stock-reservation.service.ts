@@ -175,7 +175,7 @@ export class StockReservationService {
     const client = tx ?? this.prisma;
     const reservation = await client.stockReservation.findUnique({
       where: { id, userId },
-      select: { shopId: true, expiresAt: true, items: selectItems },
+      select: { id: true, shopId: true, expiresAt: true, items: selectItems },
     });
 
     if (!reservation) throw new NotFoundException('Reservation is not found');

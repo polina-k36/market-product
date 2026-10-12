@@ -27,6 +27,8 @@ import { InvoicesModule } from './invoices/invoices.module.js';
 import { InvoiceItemsModule } from './invoice-items/invoice-items.module.js';
 import { envSchema } from './common/config/env.validation.js';
 import { CartsModule } from './carts/carts.module.js';
+import { StockReservationModule } from './stock-reservation/stock-reservation.module.js';
+import { StockReservationItemsModule } from './stock-reservation-items/stock-reservation-items.module.js';
 import appConfig from './common/config/app.config.js';
 import databaseConfig from './common/config/database.config.js';
 import jwtConfig from './common/config/jwt.config.js';
@@ -66,6 +68,8 @@ import googleConfig from './common/config/google.config.js';
     InvoicesModule,
     InvoiceItemsModule,
     CartsModule,
+    StockReservationModule,
+    StockReservationItemsModule,
   ],
 })
 export class AppModule {}

@@ -24,6 +24,7 @@ import { CreateStockReservationFromCartDto } from './dto/create-stock-reservatio
 import { CreateStockReservationDto } from './dto/create-stock-reservation.dto.js';
 import { ChangeReservationItemDto } from './dto/change-reservation-item.dto.js';
 import { SetReservationItemQuantityDto } from './dto/set-reservation-item-quantity.dto.js';
+import { UpdateReservationShopDto } from './dto/update-reservation-shop.dto.js';
 
 @ApiTags('Резервирование товаров')
 @ApiBearerAuth()
@@ -62,13 +63,20 @@ export class StockReservationController {
   ) {
     const userId = req.user.sub;
 
-    return {
-      success: true,
-      data: await this.stockReservationService.getAvailableReservation(
+    const reservation =
+      await this.stockReservationService.getAvailableReservation(
         id,
         userId,
         true,
-      ),
+      );
+
+    return {
+      success: true,
+      data: {
+        reservationId: reservation.id,
+        shopId: reservation.shopId,
+        items: reservation.items,
+      },
     };
   }
 
@@ -91,14 +99,14 @@ export class StockReservationController {
     description: 'Пользователь не авторизован.',
   })
   async create(
-    @Body() createData: CreateStockReservationDto,
+    @Body() createDto: CreateStockReservationDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.sub;
 
     return {
       success: true,
-      data: await this.stockReservationService.create(createData, userId),
+      data: await this.stockReservationService.create(createDto, userId),
     };
   }
 
@@ -122,7 +130,7 @@ export class StockReservationController {
     description: 'Пользователь не авторизован.',
   })
   async createFromCart(
-    @Body() createData: CreateStockReservationFromCartDto,
+    @Body() createDto: CreateStockReservationFromCartDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.sub;
@@ -131,7 +139,25 @@ export class StockReservationController {
       success: true,
       data: await this.stockReservationService.createFromUserCart(
         userId,
-        createData.shopId,
+        createDto.shopId,
+      ),
+    };
+  }
+
+  @Patch(':id/shop')
+  changeShop(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() changeShopDto: UpdateReservationShopDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.sub;
+
+    return {
+      success: true,
+      data: this.stockReservationService.changeShop(
+        id,
+        changeShopDto.shopId,
+        userId,
       ),
     };
   }
