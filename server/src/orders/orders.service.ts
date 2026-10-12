@@ -16,7 +16,6 @@ import { ReturnOrderDto } from './dto/return-order.dto.js';
 import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
 import { FilterOrdersDto } from './dto/filter-orders.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { number } from 'zod';
 import { ACTIVE_ORDER_STATUSES } from './constants/orders.constants.js';
 
 @Injectable()
@@ -36,6 +35,7 @@ export class OrdersService {
     const { products, ...orderData } = createOrderDto;
 
     return this.prisma.$transaction(async (tx) => {
+      //TODO: проверка резерва для заказа - может передача как раз таки id резервации - может если резерва нет резервировать продукты в списке самостоятельно
       for (const product of products) {
         const productWithPrice = await this.productsService.getProductPriceById(
           product.productId,
@@ -61,12 +61,6 @@ export class OrdersService {
       const orderItems = await this.orderItemsService.createMany(
         orderItemsData,
         order.id,
-        tx,
-      );
-
-      await this.productStockService.reserveStock(
-        order.shopId,
-        orderItemsData,
         tx,
       );
 
