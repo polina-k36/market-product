@@ -35,6 +35,29 @@ export class StockReservationController {
     private readonly stockReservationService: StockReservationService,
   ) {}
 
+  @Get()
+  @ApiOperation({
+    summary: 'Получить все резервирования пользователя',
+    description:
+      'Возвращает информацию о всех резервированиях пользователя. Пользователь может получить только собственное доступное резервирование.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Резервирование успешно получено.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Пользователь не авторизован.',
+  })
+  async getUserReservations(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.sub;
+
+    return {
+      success: true,
+      data: await this.stockReservationService.getUserReservations(userId),
+    };
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Получить резервирование по ID',

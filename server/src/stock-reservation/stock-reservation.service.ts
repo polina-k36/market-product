@@ -57,6 +57,26 @@ export class StockReservationService {
     userId: number,
     tx: Prisma.TransactionClient,
   ) {
+    const usersReservations = await this.getUserReservations(userId, tx);
+
+    if (usersReservations.length > 0) {
+      usersReservations.forEach((reservation) => {
+        if (reservation.expiresAt > new Date()) {
+          return {
+            //FIXME: подумать о валидности таких данных в items может кидать ошибку
+            reservationId: reservation.id,
+            shopId: reservation.shopId,
+            items: reservation.items.map((item) => ({
+              productId: item.productId,
+              reservedQuantity: item.quantity,
+              requestedQuantity: item.quantity,
+              status: 'RESERVED',
+            })),
+          };
+        }
+      });
+    }
+
     const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
     const finalItems = await this.checkAvailableStock(createDto, tx);
 
@@ -186,6 +206,14 @@ export class StockReservationService {
       );
     }
     return reservation;
+  }
+
+  getUserReservations(userId: number, tx?: Prisma.TransactionClient) {
+    const client = tx ?? this.prisma;
+    return client.stockReservation.findMany({
+      where: { userId },
+      select: { id: true, shopId: true, expiresAt: true, items: true },
+    });
   }
 
   async decrementCountProduct(
