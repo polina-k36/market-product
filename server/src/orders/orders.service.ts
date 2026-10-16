@@ -242,7 +242,7 @@ export class OrdersService {
         quantity: +item.quantity,
         price: +item.price,
       }));
-      if (order.statusId >= 3)
+      if (order.statusId > OrderStatusEnum.PREPARING)
         throw new BadRequestException(
           'Order cannot be cancelled after preparation has started.',
         );

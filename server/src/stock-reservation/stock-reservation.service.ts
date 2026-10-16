@@ -80,7 +80,7 @@ export class StockReservationService {
     if (validReservation !== null) {
       return validReservation;
     }
-    const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); //FIXME: подумать над таймаутом резерва
     const finalItems = await this.checkAvailableStock(createDto, tx);
 
     //TODO проверить и может поправить
