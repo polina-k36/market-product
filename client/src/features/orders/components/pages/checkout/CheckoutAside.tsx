@@ -1,16 +1,41 @@
 import Button from '@/components/ui/buttons/Button';
-import { ArrowRight, CheckCircle2, ShoppingBag, Truck } from 'lucide-react';
+import { useReservationOperations } from '@/features/reservations/hooks/use-reservation-operations';
+import {
+  ArrowRight,
+  CheckCircle2,
+  CircleX,
+  ShoppingBag,
+  Truck,
+} from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 interface ICheckoutAsideProps {
+  reservationId: number;
   productsCount: number;
   totalProducts: number;
+  disabledConfirmOrder: boolean;
+  onConfirmOrder: () => void;
 }
 
 const CheckoutAside = ({
+  reservationId,
   productsCount,
   totalProducts,
+  disabledConfirmOrder,
+  onConfirmOrder,
 }: ICheckoutAsideProps) => {
-  //TODO: исправить окончания у позиций
+  const { cancel, confirm } = useReservationOperations(reservationId);
+  const navigate = useNavigate();
+
+  const cancelOrder = () => {
+    cancel(); //TODO: спросить уверен ли пользователь в своих дествиях и действительно ли хочет отменить заказ
+    navigate('/');
+  };
+  const confirmOrder = async () => {
+    await confirm(); //TODO: после изменение сервера убрать
+    onConfirmOrder();
+  };
+
   return (
     <aside className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5 lg:sticky lg:top-6">
       <h2 className="text-base font-bold text-text-primary">Детали заказа</h2>
@@ -29,7 +54,12 @@ const CheckoutAside = ({
             </p>
 
             <p className="mt-0.5 text-xs text-text-muted">
-              {productsCount} позиций
+              {productsCount}{' '}
+              {productsCount === 1
+                ? 'позиция'
+                : productsCount < 5
+                  ? 'позиции'
+                  : 'позиций'}
             </p>
           </div>
         </div>
@@ -57,9 +87,25 @@ const CheckoutAside = ({
         </div>
       </div>
 
-      <Button variant="primary" type="button" className="group mt-5 w-full">
+      <Button
+        variant="primary"
+        type="button"
+        className="group mt-5 w-full"
+        onClick={confirmOrder}
+        disabled={disabledConfirmOrder}
+      >
         Оформить заказ
         <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+      </Button>
+
+      <Button
+        variant="danger-filled"
+        type="button"
+        className="group mt-2 w-full"
+        onClick={cancelOrder}
+      >
+        <CircleX className="size-4" />
+        Отменить заказ
       </Button>
 
       <div className="mt-3 flex items-start gap-2 text-xs leading-5 text-text-muted">

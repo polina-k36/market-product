@@ -25,16 +25,43 @@ export interface ISetReservationItemQuantity {
 }
 
 export interface IReservation {
+  isNew?: boolean;
   reservationId: number | null;
   shopId: number;
   items: IReservationItem[];
 }
 
-interface IReservationItem {
-  productId: number;
+export interface IReservationItem {
+  product:
+    | {
+        id: number;
+        title: string;
+        description: string;
+        imageKey: string;
+        price: number;
+        unit: string;
+      }
+    | undefined;
   requestedQuantity: number;
   reservedQuantity: number;
   status: ReservationItemStatus;
+}
+
+export interface IInfoReservation {
+  expiresAt: Date;
+  reservationId: number;
+  shopId: number;
+  items: {
+    product: {
+      unit: string;
+      id: number;
+      title: string;
+      description: string;
+      imageKey: string;
+      price: string;
+    };
+    quantity: string;
+  }[];
 }
 
 export interface IReservationItemProduct {

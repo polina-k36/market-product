@@ -39,8 +39,11 @@ createRoot(document.getElementById('root')!).render(
             path="/verification/email/confirm"
             element={<VerificationEmailPage />}
           />
-          <Route path="/orders/checkout" element={<OrderCheckoutPage />} />
-          <Route path="/orders/success" element={<OrderSuccessPage />} />
+          <Route
+            path="/orders/checkout/:reservationId"
+            element={<OrderCheckoutPage />}
+          />
+          <Route path="/orders/:id/success" element={<OrderSuccessPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

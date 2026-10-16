@@ -1,10 +1,11 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { addressApi } from '../api/address.api';
 import type { ICreateUpdateAddress } from '../types/address.types';
 import { ADDRESSES_QUERY_KEY } from './use-addresses';
 
 export function useCreateUpdateAddress(id?: number) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: [...ADDRESSES_QUERY_KEY, id ? 'update' : 'create', id],
 
@@ -14,6 +15,11 @@ export function useCreateUpdateAddress(id?: number) {
       }
 
       return addressApi.createAddress(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ADDRESSES_QUERY_KEY,
+      });
     },
   });
 }

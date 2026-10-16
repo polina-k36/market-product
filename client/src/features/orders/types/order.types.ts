@@ -40,6 +40,18 @@ export interface IOrderItems {
     };
   };
 }
+//TODO при создании заказа использовать резерв и именно из него брать продукты
+export interface ICreateOrder {
+  deliveryCity: string | null;
+  deliveryStreet: string | null;
+  deliveryHouse: string | null;
+  deliveryApartment: string | null;
+  shopId: number;
+  paymentMethodId: number;
+  deliveryMethodId: number;
+  userCardId: number | null;
+  reservationId: number;
+}
 
 export type OrderStatus =
   | 'PROCESSING'

@@ -13,16 +13,15 @@ import FieldError from '@/features/auth/components/FieldError';
 import { useCreateUpdateAddress } from '@/features/addresses/hooks/use-create-update-address';
 import FormError from '@/features/auth/components/FormError';
 // import { useUserModalStore } from '../../store/user-modal.store';
-import { useQueryClient } from '@tanstack/react-query';
-import { PROFILE_QUERY_KEY } from '@/features/auth/hooks/use-user-profile';
+import type { IAddress } from '@/features/addresses/types/address.types';
 
 interface IAddressFormProps {
   addressId?: number;
+  onSubmitForm?: (data: IAddress) => void;
 }
 
-const AddressForm = ({ addressId }: IAddressFormProps) => {
+const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
   const { data: address } = useAddress(addressId);
-  const queryClient = useQueryClient();
   const {
     mutate,
     reset: resetMutation,
@@ -64,7 +63,7 @@ const AddressForm = ({ addressId }: IAddressFormProps) => {
 
   const onSubmit = (data: AddressFormValues) => {
     mutate(data, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         resetForm({
           city: '',
           street: '',
@@ -73,9 +72,7 @@ const AddressForm = ({ addressId }: IAddressFormProps) => {
         });
         // TODO: сделать универсальную форму без приввязки к модел
         // closeModal();
-        queryClient.refetchQueries({
-          queryKey: PROFILE_QUERY_KEY,
-        });
+        onSubmitForm?.(data);
       },
     });
   };

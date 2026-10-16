@@ -1,6 +1,7 @@
-import { Image, Trash2 } from 'lucide-react';
 import { useCartItemOperations } from '../hooks/use-cart-item-operations';
+import { useReservationItemOperations } from '@/features/reservations/hooks/use-reservation-item-operations';
 import CartItemQuantityControl from './CartItemQuantityControl';
+import { Image, Trash2 } from 'lucide-react';
 
 interface ICartProductCardProps {
   product: {
@@ -9,19 +10,60 @@ interface ICartProductCardProps {
     title: string;
     price: number;
     unit: string;
-    quantity: string;
+    quantity: number;
   };
+  mode:
+    | { name: 'order'; reservationId: number }
+    | { name: 'cart'; reservationId?: never };
 }
 
-const CartProductCard = ({ product }: ICartProductCardProps) => {
+const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
   const total = Number(product.quantity) * product.price;
-  const { increment, decrement, remove, setQuantity } = useCartItemOperations(
-    product.productId,
-    Number(product.quantity),
-  );
+  const {
+    increment: incrementCart,
+    decrement: decrementCart,
+    remove: removeCart,
+    setQuantity: setQuantityCart,
+  } = useCartItemOperations(product.productId, Number(product.quantity));
+  const {
+    increment: incrementReservationItem,
+    decrement: decrementReservationItem,
+    remove: removeReservationItem,
+    setQuantity: setQuantityReservationItem,
+  } = useReservationItemOperations(mode.reservationId, product.productId);
   //TODO: сделать карточку ссылкой на продукт
   //BUG: название продукта залазит на иконку если не помещается
   //FIXME: при декременте продукта количество которого меньше 1 ничего не происходит подумать и решить
+
+  const onIncrement = () => {
+    if (mode.name === 'order') {
+      incrementReservationItem();
+    } else {
+      incrementCart();
+    }
+  };
+  const onDecrement = () => {
+    if (mode.name === 'order') {
+      decrementReservationItem();
+    } else {
+      decrementCart();
+    }
+  };
+  const onRemove = () => {
+    if (mode.name === 'order') {
+      removeReservationItem();
+    } else {
+      removeCart();
+    }
+  };
+  const onSetQuantity = (quantity: number) => {
+    if (mode.name === 'order') {
+      setQuantityReservationItem(quantity);
+    } else {
+      setQuantityCart(quantity);
+    }
+  };
+
   return (
     <div className="flex w-full items-center gap-4 rounded-2xl border border-border bg-surface p-4 transition-shadow duration-200 hover:shadow-sm sm:gap-5 sm:p-5">
       <div className="flex size-18 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-muted sm:size-20">
@@ -50,9 +92,9 @@ const CartProductCard = ({ product }: ICartProductCardProps) => {
 
           <CartItemQuantityControl
             quantity={Number(product.quantity)}
-            onIncrement={increment}
-            onDecrement={decrement}
-            onSetQuantity={setQuantity}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+            onSetQuantity={onSetQuantity}
           />
         </div>
       </div>
@@ -61,7 +103,7 @@ const CartProductCard = ({ product }: ICartProductCardProps) => {
         <button
           type="button"
           aria-label={`Удалить ${product.title} из корзины`}
-          onClick={() => remove()}
+          onClick={() => onRemove()}
           className="flex size-8 items-center justify-center rounded-lg text-text-muted transition-colors duration-200 hover:bg-danger/10 hover:text-danger focus:ring-2 focus:ring-danger/30 focus:outline-none"
         >
           <Trash2 className="size-4" />

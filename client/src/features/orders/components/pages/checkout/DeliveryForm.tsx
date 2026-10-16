@@ -1,30 +1,37 @@
 import { useState } from 'react';
-
 import type { DeliveryMethod } from '@/features/orders/types/order.types';
 import { useShops } from '@/features/shops/hooks/use-shops';
 import AddressForm from '@/features/user/components/forms/AddressForm';
 import { Check, MapPin, Plus, Store, Truck } from 'lucide-react';
 import { useAddresses } from '@/features/addresses/hooks/use-addresses';
 import { useShopStore } from '@/stores/shop/shop.store';
+import { useChangeShopReservation } from '@/features/reservations/hooks/use-change-shop-reservation';
+import { useNavigate } from 'react-router';
+import Button from '@/components/ui/buttons/Button';
+import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
 
 interface IDeliveryFormProps {
-  deliveryMethod: DeliveryMethod;
-  onDeliveryMethodChange: (method: DeliveryMethod) => void;
+  reservationId: number;
+  selectedAddressId: number | null;
+  setSelectedAddressId: (id: number | null) => void;
 }
 
 const DeliveryForm = ({
-  deliveryMethod,
-  onDeliveryMethodChange,
+  reservationId,
+  selectedAddressId,
+  setSelectedAddressId,
 }: IDeliveryFormProps) => {
+  const navigate = useNavigate();
+
   const { data: shops } = useShops();
   const { data: addresses } = useAddresses(); //TODO: сделать загрузку ошибку адресов
   const { shopId: activeShopId, setShopId: setActiveShopId } = useShopStore();
-
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null,
-  );
+  const { method: deliveryMethod, setMethod: setDeliveryMethod } =
+    useDeliveryMethod();
 
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+
+  const { mutate: changeShop } = useChangeShopReservation();
 
   const handleSelectAddress = (addressId: number) => {
     setSelectedAddressId(addressId);
@@ -34,6 +41,33 @@ const DeliveryForm = ({
   const handleAddNewAddress = () => {
     setSelectedAddressId(null);
     setIsAddingAddress(true);
+  };
+
+  const changeActiveShop = (shopId: number) => {
+    changeShop(
+      {
+        reservationId,
+        shopId,
+      },
+      {
+        onSuccess: (data) => {
+          console.log('changed shop');
+          navigate(`/orders/checkout/${data.reservationId}`, {
+            state: {
+              issues: data.items.filter(
+                (item) =>
+                  item.status === 'UNAVAILABLE' ||
+                  item.status === 'PARTIALLY_RESERVED',
+              ),
+            },
+          });
+          setActiveShopId(shopId);
+        },
+        onError: () => {
+          console.log('reservation not created'); //TODO сообщить ччто смена магазина невозможна
+        },
+      },
+    );
   };
 
   return (
@@ -56,6 +90,7 @@ const DeliveryForm = ({
           { method: 'pickup', name: 'Самовывоз' },
         ].map((tab) => (
           <label
+            key={tab.method}
             className={`flex cursor-pointer items-center justify-start rounded-xl border p-3 transition-all ${
               deliveryMethod === tab.method
                 ? 'border-primary bg-primary/5'
@@ -67,9 +102,7 @@ const DeliveryForm = ({
               name="deliveryMethod"
               value="delivery"
               checked={deliveryMethod === tab.method}
-              onChange={() =>
-                onDeliveryMethodChange(tab.method as DeliveryMethod)
-              }
+              onChange={() => setDeliveryMethod(tab.method as DeliveryMethod)}
               className="sr-only"
             />
 
@@ -178,7 +211,20 @@ const DeliveryForm = ({
 
           {isAddingAddress && (
             <div className="mt-4">
-              <AddressForm />
+              <AddressForm
+                onSubmitForm={(data) => {
+                  setIsAddingAddress(false);
+                  setSelectedAddressId(data.id);
+                }}
+              />
+              <Button
+                type="submit"
+                form="address-form"
+                variant="primary"
+                className="mt-4 w-full"
+              >
+                Добавить адрес
+              </Button>
             </div>
           )}
         </div>
@@ -201,7 +247,7 @@ const DeliveryForm = ({
                       ? 'border-primary bg-primary/5'
                       : 'border-border bg-surface hover:border-primary/40'
                   }`}
-                  onClick={() => setActiveShopId(shop.id_shop)}
+                  onClick={() => changeActiveShop(shop.id_shop)}
                 >
                   <div className="flex items-start gap-3">
                     <Store className="mt-0.5 h-5 w-5 shrink-0 text-primary" />

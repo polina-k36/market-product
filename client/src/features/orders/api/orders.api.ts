@@ -1,6 +1,10 @@
 import { api } from '@/api/axios';
 import type { IResponse } from '@/types/api/api-response.type';
-import type { IFullOrder, IPromoOrder } from '../types/order.types';
+import type {
+  ICreateOrder,
+  IFullOrder,
+  IPromoOrder,
+} from '../types/order.types';
 
 export const ordersApi = {
   getMineOrders: async (): Promise<IPromoOrder[]> => {
@@ -19,7 +23,13 @@ export const ordersApi = {
       date: new Date(data.data.date),
     };
   },
-  create: async () => {},
+  create: async (createData: ICreateOrder): Promise<IFullOrder> => {
+    const { data } = await api.post<IResponse<IFullOrder>>(
+      'orders',
+      createData,
+    );
+    return data.data;
+  },
   getMineActiveOrders: async (): Promise<IPromoOrder[]> => {
     const { data } =
       await api.get<IResponse<IPromoOrder[]>>('orders/me/active');

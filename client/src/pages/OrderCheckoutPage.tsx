@@ -1,91 +1,35 @@
-import OrderLayout from '@/components/layout/order/OrderLayout';
-import CartProductCard from '@/features/cart/components/CartProductCard';
-import { useCartItems } from '@/features/cart/hooks/use-cart-items';
-import CheckoutAside from '@/features/orders/components/pages/checkout/CheckoutAside';
-import CheckoutHeader from '@/features/orders/components/pages/checkout/CheckoutHeader';
-import DeliveryForm from '@/features/orders/components/pages/checkout/DeliveryForm';
-import PaymentForm from '@/features/orders/components/pages/checkout/PaymentForm';
-import type {
-  DeliveryMethod,
-  PaymentMethod,
-} from '@/features/orders/types/order.types';
-import { ShoppingBag } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import OrderCheckout from '@/features/orders/components/pages/checkout/OrderCheckout';
+import { useLocation, useParams } from 'react-router';
+// FIXME: useRef предотвращает повторный вызов эффекта только в рамках одного экземпляра компонента и не гарантирует однократное создание резерва при повторном монтировании страницы.
+// FIXME: защита от дублирования резервов должна обеспечиваться на сервере, например через проверку существующего активного резерва или механизм идемпотентности.
+// FIXME: не обрабатываются состояния загрузки и ошибки создания резерва, поэтому пользователь может продолжить оформление заказа, даже если резервирование не удалось.
+// FIXME: useCartItems не обрабатывает в этом компоненте состояния загрузки и ошибки получения корзины, из-за чего пользователь не понимает, почему товары не отображаются.
+// TODO: при изменении состава корзины необходимо синхронизировать активный резерв с актуальными товарами и их количеством.
+//TODO: в корзине через какие то промежутки времени проверять доступность товаров в выбраном магазине
 
+//TODO: выносить за страницу логику и отображай дизайн  тут в странице
+// придумать промежуточный этап мужду корзиной и страницей оформления заказа
+// в компоненте заказа которы будет цельной страницей отображать сущствующий резерв => до этого нужно его создать или узнать о существуеющем
+import type { IReservationItem } from '@/features/reservations/types/reservation.types';
 const OrderCheckoutPage = () => {
-  const [deliveryMethod, setDeliveryMethod] =
-    useState<DeliveryMethod>('delivery');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
-  const changeDeliveryMethod = (method: DeliveryMethod) => {
-    setDeliveryMethod(method);
-  };
-  const changePaymentMethod = (method: PaymentMethod) => {
-    setPaymentMethod(method);
-  };
-  const { data: products } = useCartItems();
-  const total = useMemo(() => {
-    let totalPrice = 0;
-    if (products && products.length > 0) {
-      products.forEach((product) => {
-        totalPrice += Number(product.price) * Number(product.quantity);
-      });
-    }
-    return totalPrice;
-  }, [products]);
+  const params = useParams();
+
+  const location = useLocation();
+
+  const state = location.state as { issues: IReservationItem[] } | undefined;
+  const issues = state?.issues ?? [];
+
   return (
-    <OrderLayout
-      aside={
-        <CheckoutAside
-          productsCount={products ? products.length : 0}
-          totalProducts={total}
-        />
-      }
-      header={<CheckoutHeader />}
-    >
-      {products && (
-        <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
-          <div className="mb-4 flex items-center gap-2.5">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-              1
-            </span>
-            <ShoppingBag className="h-5 w-5 text-primary" />
+    // <>
+    //   {!products || products.length === 0 ? (
+    //     <div className="flex min-h-screen items-center justify-center">
+    //       <OrderCartEmpty />
+    //     </div>
 
-            <div>
-              <h2 className="text-[1.1rem] font-bold text-text-primary">
-                Товары
-              </h2>
-
-              <p className="text-xs text-text-muted">
-                {products.length} позиций
-              </p>
-            </div>
-          </div>
-
-          <div className="max-h-72 scrollbar-gutter-stable overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-text-muted/40 hover:[&::-webkit-scrollbar-thumb]:bg-text-muted/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-border/30">
-            <div className="space-y-3">
-              {products.map((product) => (
-                <CartProductCard
-                  key={product.id}
-                  product={{
-                    ...product,
-                    imageUrl: product.imageKey,
-                    price: +product.price,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-      <DeliveryForm
-        deliveryMethod={deliveryMethod}
-        onDeliveryMethodChange={changeDeliveryMethod}
-      />
-      <PaymentForm
-        paymentMethod={paymentMethod}
-        onPaymentMethodChange={changePaymentMethod}
-      />
-    </OrderLayout>
+    <OrderCheckout
+      reservationId={Number(params.reservationId)}
+      notificationItems={issues}
+    />
   );
 };
 

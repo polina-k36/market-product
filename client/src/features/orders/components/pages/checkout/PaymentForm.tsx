@@ -4,20 +4,22 @@ import PaymentCardForm from '@/features/cards/components/PaymentCardForm';
 import type { PaymentMethod } from '@/features/orders/types/order.types';
 import { Banknote, Check, CreditCard, Plus } from 'lucide-react';
 import { useUserCards } from '@/features/cards/hooks/use-user-cards';
+import { usePaymentMethod } from '@/features/orders/hooks/use-payment-method';
+import Button from '@/components/ui/buttons/Button';
 
 interface IPaymentFormProps {
-  paymentMethod: PaymentMethod;
-  onPaymentMethodChange: (method: PaymentMethod) => void;
+  selectedCardId: number | null;
+  setSelectedCardId: (id: number | null) => void;
 }
 
 const PaymentForm = ({
-  paymentMethod,
-  onPaymentMethodChange,
+  selectedCardId,
+  setSelectedCardId,
 }: IPaymentFormProps) => {
   const { data: cards } = useUserCards(); // TODO: загрузка и ошибка карт
 
-  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
-
+  const { method: paymentMethod, setMethod: setPaymentMethod } =
+    usePaymentMethod();
   const [isAddingCard, setIsAddingCard] = useState(false);
 
   const handleSelectCard = (cardId: number) => {
@@ -54,6 +56,7 @@ const PaymentForm = ({
           },
         ].map((tab) => (
           <label
+            key={tab.method}
             className={`relative cursor-pointer rounded-xl border p-4 transition-all ${
               paymentMethod === tab.method
                 ? 'border-primary bg-primary/5 shadow-sm'
@@ -65,9 +68,7 @@ const PaymentForm = ({
               name="paymentMethod"
               value="card"
               checked={paymentMethod === tab.method}
-              onChange={() =>
-                onPaymentMethodChange(tab.method as PaymentMethod)
-              }
+              onChange={() => setPaymentMethod(tab.method as PaymentMethod)}
               className="sr-only"
             />
 
@@ -191,10 +192,19 @@ const PaymentForm = ({
           {isAddingCard && (
             <div className="mt-4">
               <PaymentCardForm
-                onSubmitData={(data) => {
-                  console.log(data);
+                onSubmitForm={(data) => {
+                  setIsAddingCard(false);
+                  setSelectedCardId(data.id);
                 }}
               />
+              <Button
+                variant="primary"
+                type="submit"
+                form="user-card-form"
+                className="mt-4 w-full"
+              >
+                Добавить карту
+              </Button>
             </div>
           )}
         </div>

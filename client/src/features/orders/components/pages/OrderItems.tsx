@@ -16,7 +16,14 @@ const OrderItems = ({ items }: IOrderItemsProps) => {
         <div>
           <h2 className="text-base font-bold text-text-primary">Товары</h2>
 
-          <p className="text-xs text-text-muted">{items.length} позиций</p>
+          <p className="text-xs text-text-muted">
+            {items.length}{' '}
+            {items.length === 1
+              ? 'позиция'
+              : items.length < 5
+                ? 'позиции'
+                : 'позиций'}
+          </p>
         </div>
       </div>
 

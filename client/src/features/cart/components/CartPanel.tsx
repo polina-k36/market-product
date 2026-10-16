@@ -1,13 +1,13 @@
-import { useNavigate } from 'react-router';
 import { useCartItems } from '../hooks/use-cart-items';
 import CartFooter from './CartFooter';
 import CartHeader from './CartHeader';
 import CartPanelEmpty from './CartPanelEmpty';
 import CartProductCard from './CartProductCard';
+import { usePrepareCheckoutFromCart } from '@/features/reservations/hooks/use-prepare-checkout-from-cart';
 
 const CartPanel = () => {
   const { data: products } = useCartItems();
-  const navigate = useNavigate();
+  const { checkout } = usePrepareCheckoutFromCart();
   //TODO: ОБДУМАТЬ ДОСТАВКУ цену и хранение ее цены
 
   const totalItems = products ? products.length : 0;
@@ -20,7 +20,7 @@ const CartPanel = () => {
     : 0;
 
   const handleCheckout = () => {
-    navigate('/orders/checkout');
+    checkout();
     document.body.style.overflowY = 'scroll';
   };
 
@@ -46,7 +46,9 @@ const CartPanel = () => {
                       ...product,
                       imageUrl: product.imageKey,
                       price: +product.price,
+                      quantity: Number(product.quantity),
                     }}
+                    mode={{ name: 'cart' }}
                   />
                 ))}
               </div>

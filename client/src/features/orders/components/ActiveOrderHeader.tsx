@@ -16,7 +16,7 @@ const ActiveOrderHeader = () => {
 
   return (
     <div className="w-full bg-primary text-text-inverse">
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"

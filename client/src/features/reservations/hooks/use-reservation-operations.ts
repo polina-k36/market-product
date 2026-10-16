@@ -8,6 +8,7 @@ export function useReservationOperations(reservationId: number) {
   const { mutate: changeShopReservation } = useChangeShopReservation();
 
   const cancel = () => {
+    console.log(`удален - ${reservationId}`);
     cancelReservation(reservationId);
   };
   const confirm = () => {

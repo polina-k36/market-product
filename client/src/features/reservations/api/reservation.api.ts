@@ -4,6 +4,7 @@ import type {
   ICompleteReservation,
   ICreateData,
   ICreateFromCartData,
+  IInfoReservation,
   IReservation,
   IReservationItemProduct,
   ISetReservationItemQuantity,
@@ -12,8 +13,8 @@ import type { IResponse } from '@/types/api/api-response.type';
 
 // TODO: получать активные резервы по id пользователя и как не законченное оформление заказа чтобы пользователь мог отменить или продолжить оформление.
 export const reservationApi = {
-  getById: async (id: number): Promise<IReservation> => {
-    const { data } = await api.get<IResponse<IReservation>>(
+  getById: async (id: number): Promise<IInfoReservation> => {
+    const { data } = await api.get<IResponse<IInfoReservation>>(
       `stock-reservations/${id}`,
     );
     return data.data;

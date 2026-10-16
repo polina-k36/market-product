@@ -5,12 +5,14 @@ import Input from '@/components/ui/inputs/Input';
 import FieldError from '@/features/auth/components/FieldError';
 import { Calendar, CreditCard, Lock } from 'lucide-react';
 import MaskedInput from '@/components/ui/inputs/MaskedInput';
+import { useCreteUserCard } from '../hooks/use-create-user-card';
+import type { IUserCard } from '../types/card.types';
 
 interface IPaymentCardFormProps {
-  onSubmitData: (data: CardFormValues) => void;
+  onSubmitForm?: (data: IUserCard) => void;
 }
 
-const PaymentCardForm = ({ onSubmitData }: IPaymentCardFormProps) => {
+const PaymentCardForm = ({ onSubmitForm }: IPaymentCardFormProps) => {
   const {
     register,
     handleSubmit,
@@ -22,15 +24,51 @@ const PaymentCardForm = ({ onSubmitData }: IPaymentCardFormProps) => {
     resolver: zodResolver(cardSchema),
   });
 
+  const { mutate: createCard } = useCreteUserCard();
+
   const onSubmit = (data: CardFormValues) => {
-    onSubmitData(data);
-    resetForm();
+    const [monthStr, yearStr] = data.date.split('/');
+
+    const expireMonth = Number(monthStr);
+    const expireYear = Number(`20${yearStr}`);
+
+    if (
+      !/^\d{2}\/\d{2}$/.test(data.date) ||
+      expireMonth < 1 ||
+      expireMonth > 12
+    ) {
+      return;
+    }
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    if (
+      expireYear < currentYear ||
+      (expireYear === currentYear && expireMonth < currentMonth)
+    ) {
+      return; //FIXME: подумать над отправкой ошибок или объектов для сообщений
+    }
+
+    createCard(
+      {
+        expireMonth,
+        expireYear,
+        cardLast4: data.number.replace(/\s/g, '').slice(-4),
+      },
+      {
+        onSuccess: (data) => {
+          onSubmitForm?.(data);
+          resetForm();
+        },
+      },
+    );
   };
 
   return (
     <>
       <form
-        id="address-form"
+        id="user-card-form"
         className="mt-6 space-y-4"
         onSubmit={handleSubmit(onSubmit)}
       >

@@ -4,7 +4,7 @@ import { useRemoveReservationItem } from './use-remove-reservation-item';
 import { useSetReservationItemQuantity } from './use-set-reservation-item-quantity';
 
 export function useReservationItemOperations(
-  reservationId: number,
+  reservationId: number | undefined | null,
   productId: number,
 ) {
   const { mutate: decrementReservationItem } = useDecrementReservationItem();
@@ -14,6 +14,7 @@ export function useReservationItemOperations(
   const { mutate: removeReservationItem } = useRemoveReservationItem();
 
   const decrement = (quantity?: number) => {
+    if (!reservationId) return;
     decrementReservationItem({
       reservationId,
       productId,
@@ -21,6 +22,7 @@ export function useReservationItemOperations(
     });
   };
   const increment = (quantity?: number) => {
+    if (!reservationId) return;
     incrementReservationItem({
       reservationId,
       productId,
@@ -28,6 +30,7 @@ export function useReservationItemOperations(
     });
   };
   const setQuantity = (quantity: number) => {
+    if (!reservationId) return;
     setReservationItemQuantity({
       reservationId,
       productId,
@@ -35,6 +38,7 @@ export function useReservationItemOperations(
     });
   };
   const remove = () => {
+    if (!reservationId) return;
     removeReservationItem({
       reservationId,
       productId,

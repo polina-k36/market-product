@@ -59,19 +59,8 @@ const StatusTracker = ({ deliveryMethod, status }: IStatusTrackerProps) => {
   const activeStatusInfo = steps.filter((step) => step.key === status)
     ? steps.filter((step) => step.key === status)[0]
     : null;
+
   const ActiveIcon = activeStatusInfo?.icon;
-  // export type OrderStatus =
-  //   | 'PROCESSING'
-  //   | 'CONFIRMED'
-  //   | 'PREPARING'
-  //   | 'SHIPPED'
-  //   | 'READY_FOR_PICKUP'
-  //   | 'DELIVERED'
-  //   | 'CANCELLED'
-  //   | 'RETURNED';
-  //присылаем метод доставки и текущий статус у нас выстраивается можно задействовать время последнего обновления чтобы показать в какое время был последний раз обновлен статус и также показать время создания заказа.
-  //при доставке шаги заказа - оформление -> подтвержден -> сборка -> отправка курьеру -> доставлен --- до момента передачи курьеру можно отменить заказа, после только возврат товара
-  //при самовывозе шаги заказа - оформление -> подтвержден -> сборка -> готов к выдаче -> выдан
   return (
     <div className="rounded-3xl bg-surface p-6 shadow-sm">
       <h2 className="mb-6 text-base font-semibold text-text-primary">
@@ -137,9 +126,9 @@ const StatusTracker = ({ deliveryMethod, status }: IStatusTrackerProps) => {
             {activeStatusInfo?.desc}
           </p>
         </div>
-        <span className="ml-auto rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-          {status}
-          {/*  //TODO: сделать руссификацию для всех статусов */}
+        <span className="ml-auto flex items-center gap-2 rounded-full bg-primary-soft px-3 py-2 text-xs font-semibold text-primary">
+          {ActiveIcon ? <ActiveIcon className="h-4 w-4 text-primary" /> : null}
+          {activeStatusInfo?.label}
         </span>
       </div>
     </div>
