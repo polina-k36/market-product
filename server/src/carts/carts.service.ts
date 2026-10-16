@@ -122,8 +122,17 @@ export class CartsService {
       },
     });
     if (!cartItem) throw new NotFoundException('Product is not in the cart');
-    if (Number(cartItem.quantity) - (dtoDecrementItem.quantity ?? 1) <= 0)
-      throw new BadRequestException('');
+    if (Number(cartItem.quantity) - (dtoDecrementItem.quantity ?? 1) <= 0) {
+      this.prisma.cartItem.delete({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
+      });
+    }
+
     const updatedCartItem = await this.prisma.cartItem.update({
       where: {
         cartId_productId: {

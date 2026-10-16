@@ -578,6 +578,7 @@ export class StockReservationService {
     });
   }
 
+  //при удалении элемента из резерва нужно смотреть сколько осталось если ноль то удалять резерв
   removeOneItem(reservationId: number, productId: number, userId: number) {
     // TODO: подумать над expiresAt когда удалять и кто за это отвечает - просроченные резервы
     return this.prisma.$transaction(async (tx) => {
@@ -604,6 +605,17 @@ export class StockReservationService {
         ],
         tx,
       );
+
+      const newReservation = await this.getAvailableReservation(
+        reservationId,
+        userId,
+        tx,
+      );
+      if (newReservation.items.length === 0) {
+        await tx.stockReservation.delete({
+          where: { id: reservationId },
+        });
+      }
       return item;
     });
   }

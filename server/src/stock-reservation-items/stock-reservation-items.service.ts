@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateStockReservationItemDto } from './dto/create-stock-reservation-item.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
@@ -86,8 +90,31 @@ export class StockReservationItemsService {
     quantityChange: number | { decrement: number } | { increment: number },
     tx?: Prisma.TransactionClient,
   ) {
-    const client = tx ?? this.prisma;
-    const item = await client.stockReservationItem.findUnique({
+    if (tx) {
+      return this.changeCountProductInTransaction(
+        reservationId,
+        productId,
+        quantityChange,
+        tx,
+      );
+    }
+    return this.prisma.$transaction(async (tx) =>
+      this.changeCountProductInTransaction(
+        reservationId,
+        productId,
+        quantityChange,
+        tx,
+      ),
+    );
+  }
+
+  async changeCountProductInTransaction(
+    reservationId: number,
+    productId: number,
+    quantityChange: number | { decrement: number } | { increment: number },
+    tx: Prisma.TransactionClient,
+  ) {
+    const item = await tx.stockReservationItem.findUnique({
       where: {
         reservationId_productId: {
           reservationId,
@@ -96,8 +123,23 @@ export class StockReservationItemsService {
       },
     });
     if (!item) throw new NotFoundException('Reservation item is not found.');
+    if (typeof quantityChange === 'object' && 'decrement' in quantityChange) {
+      if (Number(item.quantity) - quantityChange.decrement <= 0) {
+        return tx.stockReservationItem.delete({
+          where: {
+            reservationId_productId: {
+              reservationId,
+              productId,
+            },
+          },
+        });
+      }
+    }
+    if (typeof quantityChange === 'number' && quantityChange <= 0) {
+      throw new BadRequestException('Invalid quantity');
+    }
 
-    return client.stockReservationItem.update({
+    return tx.stockReservationItem.update({
       where: {
         reservationId_productId: {
           reservationId,
