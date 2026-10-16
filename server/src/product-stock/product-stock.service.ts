@@ -171,6 +171,21 @@ export class ProductStockService {
       where: {
         shopId,
       },
+      select: {
+        id: true,
+        shopId: true,
+        product: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            imageKey: true,
+            price: true,
+          },
+        },
+        quantity: true,
+        reservedQuantity: true,
+      },
     });
   }
 
