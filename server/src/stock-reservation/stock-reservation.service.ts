@@ -522,35 +522,59 @@ export class StockReservationService {
     reservationId: number,
     userId: number,
     action: 'cancel' | 'confirm',
+    tx?: Prisma.TransactionClient,
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      const reservation = await this.getAvailableReservation(
+    if (tx) {
+      return this.completeReservationInTransaction(
         reservationId,
         userId,
+        action,
         tx,
       );
-
-      await this.stockReservationItemsService.removeAllByReservationId(
-        reservationId,
-        tx,
-      );
-
-      const products = reservation.items.map((item) => ({
-        productId: item.product?.id ?? 0,
-        quantity: Number(item.quantity),
-      }));
-
-      if (action === 'cancel') {
-        await this.productStockService.releaseStock(
-          reservation.shopId,
-          products,
+    } else {
+      return this.prisma.$transaction(async (tx) => {
+        return this.completeReservationInTransaction(
+          reservationId,
+          userId,
+          action,
           tx,
         );
-      }
-
-      return tx.stockReservation.delete({
-        where: { id: reservationId },
       });
+    }
+  }
+
+  async completeReservationInTransaction(
+    reservationId: number,
+    userId: number,
+    action: 'cancel' | 'confirm',
+    tx: Prisma.TransactionClient,
+  ) {
+    const reservation = await this.getAvailableReservation(
+      reservationId,
+      userId,
+      tx,
+    );
+
+    await this.stockReservationItemsService.removeAllByReservationId(
+      reservationId,
+      tx,
+    );
+
+    const products = reservation.items.map((item) => ({
+      productId: item.product?.id ?? 0,
+      quantity: Number(item.quantity),
+    }));
+
+    if (action === 'cancel') {
+      await this.productStockService.releaseStock(
+        reservation.shopId,
+        products,
+        tx,
+      );
+    }
+
+    return tx.stockReservation.delete({
+      where: { id: reservationId },
     });
   }
 

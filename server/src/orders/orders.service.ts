@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
 import { FilterOrdersDto } from './dto/filter-orders.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { ACTIVE_ORDER_STATUSES } from './constants/orders.constants.js';
+import { StockReservationService } from '../stock-reservation/stock-reservation.service.js';
 
 @Injectable()
 export class OrdersService {
@@ -26,36 +28,58 @@ export class OrdersService {
     private readonly orderItemsService: OrderItemsService,
     private readonly productStockService: ProductStockService,
     private readonly invoicesService: InvoicesService,
+    private readonly stockReservationService: StockReservationService,
   ) {}
 
   async create(userId: number, createOrderDto: CreateOrderDto) {
-    let totalPrice = 0;
-    const orderItemsData: IOrderItem[] = [];
-
-    const { products, ...orderData } = createOrderDto;
+    const { reservationId, ...orderData } = createOrderDto;
 
     return this.prisma.$transaction(async (tx) => {
-      //TODO: проверка резерва для заказа - может передача как раз таки id резервации - может если резерва нет резервировать продукты в списке самостоятельно
-      for (const product of products) {
+      let totalPrice = 0;
+      const orderItemsData: IOrderItem[] = [];
+
+      const reservation =
+        await this.stockReservationService.getAvailableReservation(
+          reservationId,
+          userId,
+          tx,
+        );
+
+      if (!reservation) throw new NotFoundException('Reservation not found');
+      if (reservation.expiresAt <= new Date())
+        throw new ConflictException(
+          'Reservation has expired and is no longer available',
+        );
+
+      await this.stockReservationService.completeReservation(
+        reservationId,
+        userId,
+        'confirm',
+        tx,
+      );
+
+      for (const item of reservation.items) {
+        const product = item.product;
         const productWithPrice = await this.productsService.getProductPriceById(
-          product.productId,
+          product.id,
           tx,
         );
 
         if (!productWithPrice) throw new NotFoundException('Product not found');
         orderItemsData.push({
-          ...product,
-          price: +productWithPrice.price,
+          productId: product.id,
+          quantity: Number(item.quantity),
+          price: Number(productWithPrice.price),
         });
-        totalPrice += product.quantity * +productWithPrice.price;
+        totalPrice += Number(item.quantity) * Number(productWithPrice.price);
       }
       const order = await tx.order.create({
         data: {
+          ...orderData,
           userId,
           totalPrice,
           date: new Date(),
-          statusId: 1,
-          ...orderData,
+          statusId: OrderStatusEnum.PROCESSING,
         },
       });
       const orderItems = await this.orderItemsService.createMany(

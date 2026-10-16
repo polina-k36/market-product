@@ -6,4 +6,5 @@ export enum OrderStatusEnum {
   DELIVERED = 5,
   CANCELLED = 6,
   RETURNED = 8,
+  READY_FOR_PICKUP = 9,
 }

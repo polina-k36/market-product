@@ -1,15 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsDate,
-  IsInt,
-  IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateOrderItemDto } from '../../order-items/dto/create-order-item.dto.js';
+import { IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateOrderDto {
   @ApiPropertyOptional({
@@ -21,6 +11,15 @@ export class CreateOrderDto {
   @IsString()
   @MaxLength(100)
   deliveryCity?: string;
+
+  @ApiProperty({
+    description: 'ID резерва, на основе которого будет выполнен заказ',
+    example: 1,
+    minimum: 1,
+  })
+  @IsInt()
+  @Min(1)
+  reservationId: number;
 
   @ApiPropertyOptional({
     description: 'Улица доставки',
@@ -88,12 +87,4 @@ export class CreateOrderDto {
   @IsInt()
   @Min(1)
   userCardId?: number;
-
-  @ApiProperty({
-    description: 'Товары в заказе',
-    type: [CreateOrderItemDto],
-  })
-  @ValidateNested({ each: true })
-  @Type(() => CreateOrderItemDto)
-  products: CreateOrderItemDto[];
 }

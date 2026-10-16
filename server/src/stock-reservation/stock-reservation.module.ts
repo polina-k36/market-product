@@ -9,5 +9,6 @@ import { CartsModule } from '../carts/carts.module.js';
   imports: [ProductStockModule, StockReservationItemsModule, CartsModule],
   controllers: [StockReservationController],
   providers: [StockReservationService],
+  exports: [StockReservationService],
 })
 export class StockReservationModule {}
