@@ -10,13 +10,12 @@ import { ProductStockService } from '../product-stock/product-stock.service.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { StockReservationItemsService } from '../stock-reservation-items/stock-reservation-items.service.js';
 import { CartsService } from '../carts/carts.service.js';
-import { ChangeReservationItemDto } from './dto/change-reservation-item.dto.js';
-import { SetReservationItemQuantityDto } from './dto/set-reservation-item-quantity.dto.js';
 
 @Injectable()
 export class StockReservationService {
   // удаление при окончания резервации ? авто очистка есть ои и можно ли создать
   //TODO: Конкурентное резервирование товаров
+  //TODO: еще раз проверить всю логику
   constructor(
     private readonly prisma: PrismaService,
     private readonly productStockService: ProductStockService,
@@ -66,9 +65,10 @@ export class StockReservationService {
           validReservation = {
             //FIXME: подумать о валидности таких данных в items может кидать ошибку
             reservationId: reservation.id,
+            isNew: false,
             shopId: reservation.shopId,
             items: reservation.items.map((item) => ({
-              productId: item.productId,
+              product: item.product,
               reservedQuantity: item.quantity,
               requestedQuantity: item.quantity,
               status: 'RESERVED',
@@ -83,11 +83,13 @@ export class StockReservationService {
     const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
     const finalItems = await this.checkAvailableStock(createDto, tx);
 
+    //TODO проверить и может поправить
     const reservations = finalItems
       .filter((item) => item.reservedQuantity > 0)
+      .filter((item) => item.product !== undefined)
       .map((item) => ({
         quantity: item.reservedQuantity,
-        productId: item.productId,
+        productId: item.product?.id ?? 0,
       }));
 
     if (reservations.length > 0) {
@@ -115,6 +117,7 @@ export class StockReservationService {
         tx,
       );
       return {
+        isNew: true,
         reservationId: reservation.id,
         shopId: reservation.shopId,
         items: finalItems,
@@ -144,7 +147,15 @@ export class StockReservationService {
     }));
 
     const finalItems: {
-      productId: number;
+      product:
+        | {
+            id: number;
+            title: string;
+            description: string;
+            imageKey: string;
+            price: number;
+          }
+        | undefined;
       requestedQuantity: number;
       reservedQuantity: number;
       status: 'PARTIALLY_RESERVED' | 'RESERVED' | 'UNAVAILABLE';
@@ -157,7 +168,7 @@ export class StockReservationService {
 
     mergedProducts.forEach((product) => {
       const stock = productStock.find(
-        (pr) => pr.productId === product.productId,
+        (pr) => pr.product.id === product.productId,
       );
 
       const availableStock =
@@ -165,21 +176,32 @@ export class StockReservationService {
 
       if (stock === undefined || availableStock <= 0) {
         finalItems.push({
-          productId: product.productId,
+          product: stock?.product
+            ? {
+                ...stock.product,
+                price: Number(stock.product.price),
+              }
+            : undefined,
           requestedQuantity: product.quantity,
           reservedQuantity: 0,
           status: 'UNAVAILABLE',
         });
       } else if (availableStock >= product.quantity) {
         finalItems.push({
-          productId: product.productId,
+          product: {
+            ...stock.product,
+            price: Number(stock.product.price),
+          },
           requestedQuantity: product.quantity,
           reservedQuantity: product.quantity,
           status: 'RESERVED',
         });
       } else {
         finalItems.push({
-          productId: product.productId,
+          product: {
+            ...stock.product,
+            price: Number(stock.product.price),
+          },
           requestedQuantity: product.quantity,
           reservedQuantity: availableStock,
           status: 'PARTIALLY_RESERVED',
@@ -192,13 +214,35 @@ export class StockReservationService {
   async getAvailableReservation(
     id: number,
     userId: number,
-    selectItems: boolean = false,
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
     const reservation = await client.stockReservation.findUnique({
       where: { id, userId },
-      select: { id: true, shopId: true, expiresAt: true, items: selectItems },
+      select: {
+        id: true,
+        shopId: true,
+        expiresAt: true,
+        items: {
+          select: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                imageKey: true,
+                price: true,
+                unit: {
+                  select: {
+                    shortTitle: true,
+                  },
+                },
+              },
+            },
+            quantity: true,
+          },
+        },
+      },
     });
 
     if (!reservation) throw new NotFoundException('Reservation is not found');
@@ -208,15 +252,57 @@ export class StockReservationService {
         'Reservation has expired and is no longer available',
       );
     }
-    return reservation;
+    return {
+      ...reservation,
+      items: reservation.items.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          unit: item.product.unit.shortTitle,
+        },
+      })),
+    };
   }
 
-  getUserReservations(userId: number, tx?: Prisma.TransactionClient) {
+  async getUserReservations(userId: number, tx?: Prisma.TransactionClient) {
     const client = tx ?? this.prisma;
-    return client.stockReservation.findMany({
+    const reservations = await client.stockReservation.findMany({
       where: { userId },
-      select: { id: true, shopId: true, expiresAt: true, items: true },
+      select: {
+        id: true,
+        shopId: true,
+        expiresAt: true,
+        items: {
+          select: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                imageKey: true,
+                price: true,
+                unit: {
+                  select: {
+                    shortTitle: true,
+                  },
+                },
+              },
+            },
+            quantity: true,
+          },
+        },
+      },
     });
+    return reservations.map((reservation) => ({
+      ...reservation,
+      items: reservation.items.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          unit: item.product.unit.shortTitle,
+        },
+      })),
+    }));
   }
 
   async decrementCountProduct(
@@ -285,7 +371,6 @@ export class StockReservationService {
     const reservation = await this.getAvailableReservation(
       reservationId,
       userId,
-      false,
       tx,
     );
 
@@ -315,7 +400,6 @@ export class StockReservationService {
     const reservation = await this.getAvailableReservation(
       reservationId,
       userId,
-      false,
       tx,
     );
 
@@ -326,7 +410,6 @@ export class StockReservationService {
       },
       tx,
     );
-
     //FIXME подумать над статусом чтобы пропускать частичное резервирование как и при создании
     if (
       availableStock.length === 0 ||
@@ -396,14 +479,28 @@ export class StockReservationService {
       const reservation = await this.getAvailableReservation(
         reservationId,
         userId,
-        true,
         tx,
       );
+      //FIXME: подумать над выполнением просто функции completeReservation
+      //FIXME: подумать над проблемой создания или добавить параметр который гарантирует что резерв точно будет создан, но пока просто раньше удаляем
+      await this.productStockService.releaseStock(
+        reservation.shopId,
+        reservation.items.map((item) => ({
+          productId: item.product?.id ?? 0,
+          quantity: Number(item.quantity),
+        })),
+        tx,
+      );
+
+      await tx.stockReservation.delete({
+        where: { id: reservationId },
+      });
+
       const newReservation = await this.create(
         {
           shopId: shopId,
           items: reservation.items.map((item) => ({
-            productId: item.productId,
+            productId: item.product?.id ?? 0,
             quantity: Number(item.quantity),
           })),
         },
@@ -413,23 +510,9 @@ export class StockReservationService {
 
       if (newReservation.reservationId === null) {
         throw new ConflictException(
-          'No products available in the selected shop', //откат при ошибке
+          'No products available in the selected shop',
         );
       }
-
-      //FIXME: подумать над выполнением просто функции completeReservation
-      await this.productStockService.releaseStock(
-        reservation.shopId,
-        reservation.items.map((item) => ({
-          productId: item.productId,
-          quantity: Number(item.quantity),
-        })),
-        tx,
-      );
-
-      await tx.stockReservation.delete({
-        where: { id: reservationId },
-      });
 
       return newReservation;
     });
@@ -444,7 +527,6 @@ export class StockReservationService {
       const reservation = await this.getAvailableReservation(
         reservationId,
         userId,
-        true,
         tx,
       );
 
@@ -454,7 +536,7 @@ export class StockReservationService {
       );
 
       const products = reservation.items.map((item) => ({
-        productId: item.productId,
+        productId: item.product?.id ?? 0,
         quantity: Number(item.quantity),
       }));
 
@@ -478,7 +560,6 @@ export class StockReservationService {
       const reservation = await this.getAvailableReservation(
         reservationId,
         userId,
-        false,
         tx,
       );
 

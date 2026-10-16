@@ -87,11 +87,7 @@ export class StockReservationController {
     const userId = req.user.sub;
 
     const reservation =
-      await this.stockReservationService.getAvailableReservation(
-        id,
-        userId,
-        true,
-      );
+      await this.stockReservationService.getAvailableReservation(id, userId);
 
     return {
       success: true,
@@ -168,7 +164,7 @@ export class StockReservationController {
   }
 
   @Patch(':id/shop')
-  changeShop(
+  async changeShop(
     @Param('id', ParseIntPipe) id: number,
     @Body() changeShopDto: UpdateReservationShopDto,
     @Req() req: AuthenticatedRequest,
@@ -177,7 +173,7 @@ export class StockReservationController {
 
     return {
       success: true,
-      data: this.stockReservationService.changeShop(
+      data: await this.stockReservationService.changeShop(
         id,
         changeShopDto.shopId,
         userId,
