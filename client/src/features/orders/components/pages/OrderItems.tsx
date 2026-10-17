@@ -1,5 +1,6 @@
 import { ShoppingBag } from 'lucide-react';
 import type { IOrderItems } from '../../types/order.types';
+import { env } from '@/config/env';
 
 interface IOrderItemsProps {
   items: IOrderItems[];
@@ -32,7 +33,8 @@ const OrderItems = ({ items }: IOrderItemsProps) => {
           <div key={item.id} className="flex gap-3 py-4 first:pt-0 last:pb-0">
             <div className="size-20 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
               <img
-                src={item.product.imageKey}
+                src={`${env.s3Url}/${item.product.imageKey}`}
+                alt={item.product.title}
                 className="size-full object-cover"
               />
             </div>

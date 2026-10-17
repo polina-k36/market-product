@@ -1,8 +1,9 @@
 import Button from '@/components/ui/buttons/Button';
-import { ChevronRight, MapPin, ShoppingBag } from 'lucide-react';
+import { ChevronRight, MapPin, ShoppingBag, Store } from 'lucide-react';
 import type { OrderStatus } from '../../types/order.types';
 import { useNavigate } from 'react-router';
 import { orderStatusConfig } from '../../utils/order-status.utils';
+import StatusTracker from '../StatusTracker';
 
 interface IOrderCardProps {
   order: {
@@ -10,11 +11,13 @@ interface IOrderCardProps {
     date: Date;
     status: OrderStatus;
     itemCount: number;
-    delAddress: string;
+    delAddress: string | null;
     total: number;
+    shopAddress: string;
+    delMethod: 'Курьерская доставка' | 'Самовывоз';
   };
 }
-
+//TODO: смена заказа сразу после создания на оформлен
 const OrderCard = ({ order }: IOrderCardProps) => {
   const navigate = useNavigate();
   const statusInfo = orderStatusConfig(order.status);
@@ -38,7 +41,9 @@ const OrderCard = ({ order }: IOrderCardProps) => {
           </div>
         </div>
 
-        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-primary">
+        <span
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.color}`}
+        >
           <StatusIcon className="size-3.5" />
           {statusInfo.label}
         </span>
@@ -59,23 +64,40 @@ const OrderCard = ({ order }: IOrderCardProps) => {
           </div>
         </div>
 
-        {order.delAddress && (
+        <div className="h-8 w-px bg-border" />
+
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-text-secondary">
+            {order.delMethod === 'Курьерская доставка' ? (
+              <MapPin className="size-4" />
+            ) : (
+              <Store className="size-4" />
+            )}
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-[0.7rem] text-text-muted">{order.delMethod}</p>
+
+            <p className="truncate text-sm font-medium text-text-primary">
+              {order.delMethod === 'Курьерская доставка'
+                ? order.delAddress
+                : order.shopAddress}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div>
+        {statusInfo.key !== 'RETURNED' && statusInfo.key !== 'CANCELLED' && (
           <>
-            <div className="h-8 w-px bg-border" />
+            <StatusTracker
+              onlyTracker
+              deliveryMethod={
+                order.delMethod === 'Самовывоз' ? 'pickup' : 'delivery'
+              }
+              status={statusInfo.key}
+            />
 
-            <div className="flex min-w-0 items-center gap-2.5">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-muted text-text-secondary">
-                <MapPin className="size-4" />
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-[0.7rem] text-text-muted">Доставка</p>
-
-                <p className="truncate text-sm font-medium text-text-primary">
-                  {order.delAddress}
-                </p>
-              </div>
-            </div>
+            <div className="mt-3 h-px w-full bg-border" />
           </>
         )}
       </div>

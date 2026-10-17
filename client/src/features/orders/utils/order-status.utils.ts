@@ -11,17 +11,23 @@ import {
 } from 'lucide-react';
 import type { OrderStatus } from '../types/order.types';
 
-export function orderStatusConfig(status: OrderStatus): {
+interface OrderStatusConfig {
   key: OrderStatus;
   label: string;
   icon: LucideIcon;
-} {
+  color: string;
+  bgColor: string;
+}
+
+export function orderStatusConfig(status: OrderStatus): OrderStatusConfig {
   switch (status) {
     case 'PROCESSING':
       return {
         key: 'PROCESSING',
         label: 'Обработка',
         icon: ClipboardList,
+        color: 'text-accent',
+        bgColor: 'bg-accent/15',
       };
 
     case 'CONFIRMED':
@@ -29,6 +35,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'CONFIRMED',
         label: 'Подтверждён',
         icon: CheckCircle,
+        color: 'text-primary',
+        bgColor: 'bg-primary/15',
       };
 
     case 'PREPARING':
@@ -36,6 +44,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'PREPARING',
         label: 'Сборка',
         icon: PackageOpen,
+        color: 'text-blue',
+        bgColor: 'bg-blue/15',
       };
 
     case 'SHIPPED':
@@ -43,6 +53,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'SHIPPED',
         label: 'Передан в доставку',
         icon: Truck,
+        color: 'text-primary',
+        bgColor: 'bg-primary/15',
       };
 
     case 'READY_FOR_PICKUP':
@@ -50,6 +62,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'READY_FOR_PICKUP',
         label: 'Готов к выдаче',
         icon: Store,
+        color: 'text-warning',
+        bgColor: 'bg-warning/15',
       };
 
     case 'DELIVERED':
@@ -57,6 +71,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'DELIVERED',
         label: 'Получен',
         icon: PackageCheck,
+        color: 'text-success',
+        bgColor: 'bg-success/15',
       };
 
     case 'CANCELLED':
@@ -64,6 +80,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'CANCELLED',
         label: 'Отменён',
         icon: XCircle,
+        color: 'text-danger',
+        bgColor: 'bg-danger/15',
       };
 
     case 'RETURNED':
@@ -71,6 +89,8 @@ export function orderStatusConfig(status: OrderStatus): {
         key: 'RETURNED',
         label: 'Возвращён',
         icon: RotateCcw,
+        color: 'text-accent',
+        bgColor: 'bg-accent/15',
       };
   }
 }

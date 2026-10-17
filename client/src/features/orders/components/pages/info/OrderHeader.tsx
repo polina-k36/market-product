@@ -36,7 +36,9 @@ const OrderHeader = ({ id, date, status }: IOrderHeaderProps) => {
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary">
+        <div
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${statusInfo.bgColor} ${statusInfo.color}`}
+        >
           <StatusIcon className="size-4" />
           {statusInfo.label}
         </div>

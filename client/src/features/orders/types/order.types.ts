@@ -5,9 +5,15 @@ export interface IPromoOrder {
   deliveryStreet: string | null;
   deliveryHouse: string | null;
   deliveryApartment: string | null;
+  deliveryMethod: 'Курьерская доставка' | 'Самовывоз';
   totalPrice: string | null;
   status: OrderStatus;
   itemCount: number;
+  shop: {
+    city: string;
+    street: string;
+    house: string;
+  };
 }
 
 export interface IFullOrder {
@@ -24,6 +30,11 @@ export interface IFullOrder {
   deliveryStreet: string | null;
   deliveryHouse: string | null;
   deliveryApartment: string | null;
+  shop: {
+    city: string;
+    street: string;
+    house: string;
+  };
   orderItems: IOrderItems[];
 }
 
@@ -32,6 +43,7 @@ export interface IOrderItems {
   price: string;
   quantity: string;
   product: {
+    id: number;
     title: string;
     description: string;
     imageKey: string;

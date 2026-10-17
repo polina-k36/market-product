@@ -18,18 +18,28 @@ const OrderCardList = () => {
       ) : (
         <div className="space-y-4">
           {orders &&
-            orders.map((order) => (
-              <OrderCard
-                order={{
-                  id: order.id,
-                  date: order.date,
-                  status: order.status,
-                  delAddress: `${order.deliveryCity} ${order.deliveryStreet} д. ${order.deliveryHouse} кв. ${order.deliveryApartment}`,
-                  itemCount: order.itemCount,
-                  total: Number(order.totalPrice),
-                }}
-              />
-            ))}
+            orders
+              .sort(
+                (orderA, orderB) =>
+                  new Date(orderB.date).getTime() -
+                  new Date(orderA.date).getTime(),
+              )
+              .map((order) => (
+                <OrderCard
+                  order={{
+                    id: order.id,
+                    date: order.date,
+                    status: order.status,
+                    delAddress: order.deliveryCity
+                      ? `${order.deliveryCity} ${order.deliveryStreet} д. ${order.deliveryHouse} кв. ${order.deliveryApartment}`
+                      : null,
+                    itemCount: order.itemCount,
+                    total: Number(order.totalPrice),
+                    delMethod: order.deliveryMethod,
+                    shopAddress: `${order.shop.city} ${order.shop.street} д. ${order.shop.house}`,
+                  }}
+                />
+              ))}
         </div>
       )}
     </>

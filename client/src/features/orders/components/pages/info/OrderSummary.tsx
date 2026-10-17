@@ -9,6 +9,7 @@ import Button from '@/components/ui/buttons/Button';
 import { useNavigate } from 'react-router';
 import type { OrderStatus } from '@/features/orders/types/order.types';
 import { useCancelOrder } from '@/features/orders/hooks/use-cancel-order';
+import { usePrepareCheckout } from '@/features/reservations/hooks/use-prepare-checkout';
 
 interface IOrderSummaryProps {
   orderId: number;
@@ -16,6 +17,7 @@ interface IOrderSummaryProps {
   delivery: number;
   total: number;
   status: OrderStatus;
+  items: { productId: number; quantity: number }[];
 }
 
 const OrderSummary = ({
@@ -24,9 +26,11 @@ const OrderSummary = ({
   delivery,
   total,
   status,
+  items,
 }: IOrderSummaryProps) => {
   const navigate = useNavigate();
   const { mutate: cancelOrder } = useCancelOrder();
+  const { checkout } = usePrepareCheckout();
   console.log(status);
 
   return (
@@ -63,7 +67,12 @@ const OrderSummary = ({
           {total.toFixed(2)} ₽
         </p>
       </div>
-      <Button variant="primary" type="button" className="group mt-5 w-full">
+      <Button
+        variant="primary"
+        type="button"
+        className="group mt-5 w-full"
+        onClick={() => checkout(items)}
+      >
         <RotateCcw className="size-3.5 transition-transform duration-500 group-hover:-rotate-360" />
         Повторить заказ
       </Button>
