@@ -1,13 +1,17 @@
+import { useAuthStore } from '@/stores/auth/auth.store';
 import { useCartItems } from '../hooks/use-cart-items';
 import CartFooter from './CartFooter';
 import CartHeader from './CartHeader';
+import CartPanelAuthError from './CartPanelAuthError';
 import CartPanelEmpty from './CartPanelEmpty';
+import CartPanelLoading from './CartPanelLoading';
 import CartProductCard from './CartProductCard';
 import { usePrepareCheckoutFromCart } from '@/features/reservations/hooks/use-prepare-checkout-from-cart';
 
 const CartPanel = () => {
-  const { data: products } = useCartItems();
+  const { data: products, isError, error, isLoading } = useCartItems(); //TODO: подумать над ошибками при загрузке корзины
   const { checkout } = usePrepareCheckoutFromCart();
+  const status = useAuthStore((state) => state.status);
   //TODO: ОБДУМАТЬ ДОСТАВКУ цену и хранение ее цены
 
   const totalItems = products ? products.length : 0;
@@ -33,7 +37,11 @@ const CartPanel = () => {
 
       <aside className="fixed top-0 right-0 z-50 flex h-dvh w-full max-w-md flex-col bg-surface shadow-2xl">
         <CartHeader totalItems={totalItems} />
-        {products === undefined || products.length === 0 ? (
+        {isLoading ? (
+          <CartPanelLoading />
+        ) : status === 'unauthenticated' ? (
+          <CartPanelAuthError />
+        ) : products === undefined || products.length === 0 ? (
           <CartPanelEmpty />
         ) : (
           <>

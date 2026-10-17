@@ -2,6 +2,7 @@ import { useCartItemOperations } from '../hooks/use-cart-item-operations';
 import { useReservationItemOperations } from '@/features/reservations/hooks/use-reservation-item-operations';
 import CartItemQuantityControl from './CartItemQuantityControl';
 import { Image, Trash2 } from 'lucide-react';
+import { env } from '@/config/env';
 
 interface ICartProductCardProps {
   product: {
@@ -69,7 +70,7 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
       <div className="flex size-18 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-muted sm:size-20">
         {product.imageUrl ? (
           <img
-            src={product.imageUrl}
+            src={`${env.s3Url}/${product.imageUrl}`}
             alt={product.title}
             className="h-full w-full object-cover"
           />
