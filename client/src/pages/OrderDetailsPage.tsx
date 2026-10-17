@@ -20,6 +20,7 @@ const OrderDetailsPage = () => {
 
   const deliveryPrice = 0;
   const total = itemsTotal;
+  console.log(order?.orderItems);
 
   return (
     <>
@@ -39,13 +40,21 @@ const OrderDetailsPage = () => {
               itemsTotal={itemsTotal}
               delivery={deliveryPrice}
               total={total}
+              items={order.orderItems.map((item) => ({
+                productId: item.product.id,
+                quantity: Number(item.quantity),
+              }))}
             />
           }
         >
           <OrderItems items={order.orderItems} />
 
           <DeliveryInfo
-            address={`${order.deliveryCity ?? ''} ${order.deliveryStreet ?? ''} ${order.deliveryHouse ? 'д. ' + order.deliveryHouse : ''} ${order.deliveryApartment ? 'д. ' + order.deliveryApartment : ''}`}
+            address={
+              order.deliveryMethod === 'Самовывоз'
+                ? `${order.shop.city} ${order.shop.street} д. ${order.shop.house}`
+                : `${order.deliveryCity ?? ''} ${order.deliveryStreet ?? ''} ${order.deliveryHouse ? 'д. ' + order.deliveryHouse : ''} ${order.deliveryApartment ? 'кв. ' + order.deliveryApartment : ''}`
+            }
             method={order.deliveryMethod}
           />
 
