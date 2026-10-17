@@ -3,7 +3,12 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant:
-    'primary' | 'transparent' | 'danger' | 'danger-filled' | 'danger-white';
+    | 'primary'
+    | 'transparent'
+    | 'danger'
+    | 'danger-filled'
+    | 'danger-white'
+    | 'warning-filled';
 }
 
 const Button = ({
@@ -22,6 +27,8 @@ const Button = ({
       'bg-danger text-white hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger',
     'danger-white':
       'border border-border bg-surface text-text-primary hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger',
+    'warning-filled':
+      'bg-accent text-text-inverse transition-colors hover:bg-accent/85',
   };
   return (
     <button

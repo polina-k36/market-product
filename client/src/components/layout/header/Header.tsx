@@ -10,12 +10,14 @@ import { useCartStore } from '@/features/cart/store/cart.store';
 import CartPanel from '@/features/cart/components/CartPanel';
 import { useCountCartItems } from '@/features/cart/hooks/use-count-cart-items';
 import ShopDropdown from './shop-menu/ShopDropdown';
+import { useAuthStore } from '@/stores/auth/auth.store';
 
 const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
   const isCartOpen = useCartStore((state) => state.isOpen); //XXX: подумать над надобностью стора
   const openCart = useCartStore((state) => state.openCart);
   const countItems = useCartStore((state) => state.countItems);
+  const status = useAuthStore((state) => state.status);
 
   const { data: count, isSuccess } = useCountCartItems();
   const setCountItems = useCartStore((state) => state.setCountItems);
@@ -110,7 +112,7 @@ const Header = () => {
             >
               <ShoppingBasket className="size-6 text-text-primary" />
             </ButtonIcon>
-            {countItems !== 0 && (
+            {countItems !== 0 && status === 'authenticated' && (
               <span className="absolute top-0 right-0 flex size-5 items-center justify-center rounded-full bg-primary text-xs text-text-inverse">
                 {countItems}
               </span>

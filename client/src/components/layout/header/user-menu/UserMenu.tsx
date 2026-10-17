@@ -10,7 +10,7 @@ import { useUserProfile } from '@/features/auth/hooks/use-user-profile';
 const UserMenu = () => {
   const [activeDropdown, setActiveDropdown] = useState(false);
 
-  const { status } = useAuthStore();
+  const status = useAuthStore((state) => state.status);
   const { data } = useUserProfile();
 
   const handleClose = () => {
