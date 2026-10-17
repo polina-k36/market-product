@@ -34,12 +34,20 @@ import databaseConfig from './common/config/database.config.js';
 import jwtConfig from './common/config/jwt.config.js';
 import mailConfig from './common/config/mail.config.js';
 import googleConfig from './common/config/google.config.js';
+import s3Config from './common/config/s3.config.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, mailConfig, googleConfig],
+      load: [
+        appConfig,
+        databaseConfig,
+        jwtConfig,
+        mailConfig,
+        googleConfig,
+        s3Config,
+      ],
       validationSchema: envSchema,
     }),
     AuthModule,

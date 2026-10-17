@@ -158,6 +158,18 @@ export class OrdersService {
         deliveryApartment: true,
         deliveryHouse: true,
         deliveryStreet: true,
+        deliveryMethod: {
+          select: {
+            title: true,
+          },
+        },
+        shop: {
+          select: {
+            city: true,
+            street: true,
+            house: true,
+          },
+        },
         status: {
           select: {
             title: true,
@@ -172,10 +184,11 @@ export class OrdersService {
       },
     });
     return orders.map((order) => {
-      const { _count, status, ...dataOrder } = order;
+      const { _count, status, deliveryMethod, ...dataOrder } = order;
       return {
         ...dataOrder,
         status: status.title,
+        deliveryMethod: deliveryMethod.title,
         itemCount: _count.orderItems,
       };
     });
@@ -369,6 +382,13 @@ export class OrdersService {
         deliveryCity: true,
         deliveryHouse: true,
         deliveryStreet: true,
+        shop: {
+          select: {
+            city: true,
+            street: true,
+            house: true,
+          },
+        },
         deliveryMethod: {
           select: {
             title: true,
@@ -392,6 +412,7 @@ export class OrdersService {
             price: true,
             product: {
               select: {
+                id: true,
                 title: true,
                 description: true,
                 imageKey: true,
