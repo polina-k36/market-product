@@ -3,10 +3,20 @@ import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { LogIn, User2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
-const GuestDropdown = () => {
+interface IGuestDropdownProps {
+  onClose: () => void;
+}
+
+const GuestDropdown = ({ onClose }: IGuestDropdownProps) => {
   const navigate = useNavigate();
   return (
-    <Dropdown side="right">
+    <Dropdown
+      side="right"
+      role="dialog"
+      topHeight="sm"
+      ariaLabel="Меню незарегистрированного пользователя"
+      onClose={onClose}
+    >
       <div className="g-4 mb-4 flex flex-col items-center text-center">
         <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-surface-muted">
           <User2 className="size-8 text-text-primary" />

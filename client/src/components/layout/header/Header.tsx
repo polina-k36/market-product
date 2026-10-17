@@ -9,6 +9,7 @@ import Button from '@/components/ui/buttons/Button';
 import { useCartStore } from '@/features/cart/store/cart.store';
 import CartPanel from '@/features/cart/components/CartPanel';
 import { useCountCartItems } from '@/features/cart/hooks/use-count-cart-items';
+import ShopDropdown from './shop-menu/ShopDropdown';
 
 const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
@@ -97,6 +98,8 @@ const Header = () => {
               <Search className="size-6 text-text-primary" />
             )}
           </ButtonIcon>
+
+          <ShopDropdown />
 
           <UserMenu />
           <div className="relative size-fit">

@@ -39,4 +39,17 @@ export const ordersApi = {
       date: new Date(order.date),
     }));
   },
+  cancelOrder: async (id: number) => {
+    const { data } = await api.post<IResponse<IFullOrder>>(
+      `orders/${id}/cancel`,
+    );
+    return data.data;
+  },
+  //TODO: возврат не всего заказа а некоторых продуктов из него
+  // returnOrder: async (id: number) => {
+  //   const { data } = await api.post<IResponse<IFullOrder>>(
+  //     `orders/${id}/return`,
+  //   );
+  //   return data.data;
+  // },
 };

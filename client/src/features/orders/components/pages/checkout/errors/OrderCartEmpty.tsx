@@ -11,11 +11,11 @@ const OrderCartEmpty = () => {
       </div>
 
       <h2 className="max-w-lg text-xl leading-snug font-bold text-text-primary sm:text-2xl">
-        Ваша корзина пока пуста
+        Список продуктов пуст
       </h2>
 
       <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted sm:text-base">
-        Чтобы перейти к оформлению заказа, добавьте товары в корзину.
+        Чтобы перейти к оформлению заказа необходимо добавить хотя бы один товар
       </p>
       <Button
         variant="primary"

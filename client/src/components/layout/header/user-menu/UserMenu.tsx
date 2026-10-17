@@ -1,5 +1,6 @@
 import { User2 } from 'lucide-react';
 import { useState } from 'react';
+
 import GuestDropdown from './GuestDropdown';
 import UserDropdown from './UserDropdown';
 import ButtonIcon from '@/components/ui/buttons/ButtonIcon';
@@ -8,8 +9,14 @@ import { useUserProfile } from '@/features/auth/hooks/use-user-profile';
 
 const UserMenu = () => {
   const [activeDropdown, setActiveDropdown] = useState(false);
+
   const { status } = useAuthStore();
   const { data } = useUserProfile();
+
+  const handleClose = () => {
+    setActiveDropdown(false);
+  };
+
   const dropdown =
     status === 'authenticated' ? (
       <UserDropdown
@@ -17,12 +24,16 @@ const UserMenu = () => {
           name: data?.name || '',
           email: data?.email,
         }}
+        onClose={handleClose}
       />
     ) : status === 'unauthenticated' ? (
-      <GuestDropdown />
+      <GuestDropdown onClose={handleClose} />
     ) : (
-      'загрузка информации о входе.'
+      <div className="p-3 text-sm text-text-secondary">
+        Загрузка информации о входе...
+      </div>
     );
+
   return (
     <div className="relative inline-block">
       <ButtonIcon
@@ -32,7 +43,19 @@ const UserMenu = () => {
       >
         <User2 className="size-6 text-text-primary" />
       </ButtonIcon>
-      {activeDropdown ? dropdown : undefined}
+
+      {activeDropdown && (
+        <>
+          <button
+            type="button"
+            aria-label="Закрыть меню пользователя"
+            onClick={handleClose}
+            className="fixed inset-0 z-40 cursor-default"
+          />
+
+          <div className="relative z-50">{dropdown}</div>
+        </>
+      )}
     </div>
   );
 };

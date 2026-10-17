@@ -5,7 +5,7 @@ import CheckoutHeader from '@/features/orders/components/pages/checkout/Checkout
 import DeliveryForm from '@/features/orders/components/pages/checkout/DeliveryForm';
 import PaymentForm from '@/features/orders/components/pages/checkout/PaymentForm';
 import { ShoppingBag } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ReservationNotifications from '@/features/reservations/components/notifications/ReservationNotifications';
 import { useReservation } from '@/features/reservations/hooks/use-reservation';
 import type { IReservationItem } from '@/features/reservations/types/reservation.types';
@@ -15,10 +15,14 @@ import { useDeliverySelection } from '@/features/orders/hooks/use-delivery-selec
 import { usePaymentSelection } from '@/features/orders/hooks/use-payment-selection';
 import { useCreateOrder } from '@/features/orders/hooks/use-create-order';
 import type { ICreateOrder } from '@/features/orders/types/order.types';
+import OrderCartEmpty from './errors/OrderCartEmpty';
+import CheckoutLoading from './CheckoutLoading';
+import { useCancelReservation } from '@/features/reservations/hooks/use-cancel-reservation';
 
 interface IOrderCheckoutProps {
   reservationId: number;
   notificationItems?: IReservationItem[];
+  isNewReservation: boolean;
 }
 //TODO показывать окно о пустом списке продуктов если такое произойдет
 //TODO сделать нормальное время резервирования - чтобы пока пользователь был на странице и что то делала он не заканчивался может но при выходе со странице мы устанавливаем 15 минут чтобы пользователь могу вернуться к заказу
@@ -26,8 +30,23 @@ interface IOrderCheckoutProps {
 const OrderCheckout = ({
   reservationId,
   notificationItems,
+  isNewReservation,
 }: IOrderCheckoutProps) => {
   const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(true);
+
+  const [paymentErrors, setPaymentErrors] = useState<{
+    success: boolean;
+    data: null;
+    error: string;
+  } | null>(null);
+
+  const [deliveryErrors, setDeliveryErrors] = useState<{
+    success: boolean;
+    data: null;
+    error: string;
+  } | null>(null);
+
   const {
     selectedCardId,
     isLoadingCards,
@@ -43,12 +62,14 @@ const OrderCheckout = ({
   } = useDeliverySelection();
 
   const { mutate: createOrder } = useCreateOrder();
+  const { mutate: cancelReservation } = useCancelReservation();
 
   const {
     data: reservation,
     isError,
     isPending,
   } = useReservation(reservationId);
+
   const availableProducts = useMemo(
     () =>
       reservation?.items &&
@@ -65,7 +86,6 @@ const OrderCheckout = ({
         .filter((product) => product !== undefined),
     [reservation],
   );
-
   const total = useMemo(
     () =>
       availableProducts?.reduce(
@@ -87,19 +107,46 @@ const OrderCheckout = ({
     }
   }, [reservation, navigate, isError]);
 
-  const confirmOrder = async () => {
-    const deliveryInfo = await getDeliveryValues();
-    const paymentInfo = await getPaymentValues();
+  const confirmOrder = () => {
+    const deliveryInfo = getDeliveryValues();
+    const paymentInfo = getPaymentValues();
 
-    if (!deliveryInfo?.success || !paymentInfo?.success) {
-      return; //TODO: показ сообщений
+    if (!deliveryInfo || !paymentInfo) {
+      return;
+    }
+
+    if (paymentInfo.success === false) {
+      setPaymentErrors({
+        success: false,
+        data: null,
+        error: paymentInfo.error ?? 'Неизвестная ошибка',
+      });
+    }
+
+    if (paymentInfo.success === false) {
+      setPaymentErrors({
+        success: false,
+        data: null,
+        error: paymentInfo.error ?? 'Неизвестная ошибка',
+      });
+    } else {
+      setPaymentErrors(null);
+    }
+    if (deliveryInfo.success === false) {
+      setDeliveryErrors({
+        success: false,
+        data: null,
+        error: deliveryInfo.error ?? 'Неизвестная ошибка',
+      });
+    } else {
+      setDeliveryErrors(null);
     }
     if (
       deliveryInfo.data === null ||
       paymentInfo.data === null ||
       !reservation
     ) {
-      return; //показ сообщений
+      return;
     }
 
     const data: ICreateOrder = {
@@ -107,58 +154,67 @@ const OrderCheckout = ({
       ...paymentInfo.data,
       reservationId: reservation.reservationId,
     };
+
     createOrder(data, {
       onSuccess: (data) => {
         navigate(`/orders/${data.id}/success`);
       },
     });
   };
+
   return (
     <>
       {isPending ? (
-        //TODO: создать страницу загрузки
-        'заргузка...'
+        <CheckoutLoading />
       ) : (
         <>
-          {notificationItems &&
-            notificationItems.length > 0 &&
-            reservedStatuses &&
-            (reservedStatuses.includes('PARTIALLY_RESERVED') ||
-              reservedStatuses.includes('UNAVAILABLE')) && (
-              <ReservationNotifications
-                kind={
-                  reservedStatuses.includes('PARTIALLY_RESERVED')
-                    ? 'partially-reserved'
-                    : 'not-reserved'
-                }
-                products={notificationItems
-                  .filter(
-                    (item) =>
-                      item.status === 'PARTIALLY_RESERVED' ||
-                      item.status === 'UNAVAILABLE',
-                  )
-                  .map((item) => {
-                    return {
-                      productId: item.product?.id ?? 0,
-                      product: item.product?.title ?? '',
-                      status: item.status,
-                      reservedQuantity: item.reservedQuantity,
-                      requestedQuantity: item.requestedQuantity,
-                    };
-                  })}
-                onAction={() => {
-                  // Продолжить оформление или открыть подробности
-                }}
-                onClose={() => {
-                  // Скрыть уведомление
-                }}
-              />
-            )}
           {isError || !reservation || reservation.reservationId === null ? (
             <ReservationError />
+          ) : !availableProducts || availableProducts.length === 0 ? (
+            <div className="flex min-h-screen items-center justify-center">
+              <OrderCartEmpty />
+            </div>
           ) : (
-            availableProducts &&
-            availableProducts.length > 0 && (
+            <>
+              {showNotifications &&
+                notificationItems &&
+                notificationItems.length > 0 &&
+                reservedStatuses &&
+                (reservedStatuses.includes('PARTIALLY_RESERVED') ||
+                  reservedStatuses.includes('UNAVAILABLE')) && (
+                  <ReservationNotifications
+                    kind={
+                      reservedStatuses.includes('PARTIALLY_RESERVED')
+                        ? 'partially-reserved'
+                        : 'not-reserved'
+                    }
+                    products={notificationItems
+                      .filter(
+                        (item) =>
+                          item.status === 'PARTIALLY_RESERVED' ||
+                          item.status === 'UNAVAILABLE',
+                      )
+                      .map((item) => {
+                        return {
+                          productId: item.product?.id ?? 0,
+                          product: item.product?.title ?? '',
+                          status: item.status,
+                          reservedQuantity: item.reservedQuantity,
+                          requestedQuantity: item.requestedQuantity,
+                        };
+                      })}
+                    onAction={() => {
+                      cancelReservation(reservationId, {
+                        onSuccess: () => {
+                          navigate(`/`);
+                        },
+                      });
+                    }}
+                    onClose={() => {
+                      setShowNotifications(false);
+                    }}
+                  />
+                )}
               <OrderLayout
                 aside={
                   <CheckoutAside
@@ -171,7 +227,7 @@ const OrderCheckout = ({
                     onConfirmOrder={confirmOrder}
                   />
                 }
-                header={<CheckoutHeader />}
+                header={<CheckoutHeader isNewReservation={isNewReservation} />}
               >
                 <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
                   <div className="mb-4 flex items-center gap-2.5">
@@ -221,13 +277,17 @@ const OrderCheckout = ({
                   reservationId={reservation.reservationId}
                   selectedAddressId={selectedAddressId}
                   setSelectedAddressId={setSelectedAddressId}
+                  resetValid={() => setDeliveryErrors(null)}
+                  isNotValid={deliveryErrors !== null}
                 />
                 <PaymentForm
                   selectedCardId={selectedCardId}
                   setSelectedCardId={setSelectedCardId}
+                  resetValid={() => setPaymentErrors(null)}
+                  isNotValid={paymentErrors !== null}
                 />
               </OrderLayout>
-            )
+            </>
           )}
         </>
       )}

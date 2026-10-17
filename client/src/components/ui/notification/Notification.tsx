@@ -60,7 +60,7 @@ const Notification = ({
   //TODO: обыграть плавное появление и у некоторых уведомлений которые не требуют взаимодействия скрывать их через время
 
   return (
-    <div className="m-auto mt-2.5 w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="m-auto mt-2.5 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
       <section
         role={type === 'error' ? 'alert' : 'status'}
         className={`flex w-full items-start gap-3 rounded-xl border p-4 shadow-sm ${style.container} ${className}`}
@@ -84,7 +84,7 @@ const Notification = ({
             <button
               type="button"
               onClick={action.onClick}
-              className="mt-3 inline-flex min-h-8 items-center justify-center rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-primary transition-colors hover:bg-border/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              className="mt-3 inline-flex min-h-8 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-primary transition-colors hover:bg-border/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
             >
               {action.label}
             </button>

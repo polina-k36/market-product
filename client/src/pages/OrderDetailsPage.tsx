@@ -34,6 +34,8 @@ const OrderDetailsPage = () => {
           }
           aside={
             <OrderSummary
+              orderId={order.id}
+              status={order.status}
               itemsTotal={itemsTotal}
               delivery={deliveryPrice}
               total={total}
@@ -48,6 +50,7 @@ const OrderDetailsPage = () => {
           />
 
           <PaymentInfo
+            status={order.status}
             card={order.userCard}
             total={total}
             method={order.paymentMethod}

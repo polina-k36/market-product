@@ -1,6 +1,8 @@
-import { CheckCircle, CreditCard } from 'lucide-react';
+import type { OrderStatus } from '@/features/orders/types/order.types';
+import { CheckCircle, CreditCard, RotateCcw } from 'lucide-react';
 
 interface IPaymentInfoProps {
+  status: OrderStatus;
   card: {
     cardBrand: string;
     cardLast4: string;
@@ -9,7 +11,7 @@ interface IPaymentInfoProps {
   total: number;
 }
 
-const PaymentInfo = ({ card, method, total }: IPaymentInfoProps) => {
+const PaymentInfo = ({ status, card, method, total }: IPaymentInfoProps) => {
   return (
     <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex items-center gap-2.5">
@@ -34,16 +36,25 @@ const PaymentInfo = ({ card, method, total }: IPaymentInfoProps) => {
 
             <p className="mt-0.5 text-sm font-medium text-text-primary">
               {method === 'Онлайн оплата'
-                ? `Онлайн оплата - ${card?.cardBrand} •••• ${card?.cardLast4}`
+                ? card && card.cardBrand && card.cardLast4
+                  ? `Онлайн оплата - ${card?.cardBrand} •••• ${card?.cardLast4}`
+                  : 'Онлайн оплата - карта не привязана'
                 : method}
             </p>
           </div>
         </div>
 
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500">
-          <CheckCircle className="size-3.5" />
-          Оплачено
-        </span>
+        {status === 'CANCELLED' || status === 'RETURNED' ? (
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-500">
+            <RotateCcw className="size-3.5" />
+            Возврат
+          </span>
+        ) : status === 'DELIVERED' || method === 'Онлайн оплата' ? (
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500">
+            <CheckCircle className="size-3.5" />
+            Оплачено
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-4 border-t border-border pt-3">

@@ -3,7 +3,11 @@ import { Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-const CheckoutHeader = () => {
+interface ICheckoutHeaderProps {
+  isNewReservation: boolean;
+}
+
+const CheckoutHeader = ({ isNewReservation }: ICheckoutHeaderProps) => {
   const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
@@ -33,7 +37,9 @@ const CheckoutHeader = () => {
           </p>
 
           <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-            Оформление заказа
+            {isNewReservation
+              ? 'Оформление заказа'
+              : 'Продолжите оформление заказа'}
           </h1>
 
           <p className="mt-1 text-sm text-text-secondary">

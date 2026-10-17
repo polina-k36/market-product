@@ -24,7 +24,7 @@ const CheckoutAside = ({
   disabledConfirmOrder,
   onConfirmOrder,
 }: ICheckoutAsideProps) => {
-  const { cancel, confirm } = useReservationOperations(reservationId);
+  const { cancel } = useReservationOperations(reservationId);
   const navigate = useNavigate();
 
   const cancelOrder = () => {
@@ -32,7 +32,6 @@ const CheckoutAside = ({
     navigate('/');
   };
   const confirmOrder = async () => {
-    await confirm(); //TODO: после изменение сервера убрать
     onConfirmOrder();
   };
 

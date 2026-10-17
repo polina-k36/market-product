@@ -16,19 +16,15 @@ const OrderCheckoutPage = () => {
 
   const location = useLocation();
 
-  const state = location.state as { issues: IReservationItem[] } | undefined;
+  const state = location.state as
+    { isNewReservation: boolean; issues: IReservationItem[] } | undefined;
   const issues = state?.issues ?? [];
 
   return (
-    // <>
-    //   {!products || products.length === 0 ? (
-    //     <div className="flex min-h-screen items-center justify-center">
-    //       <OrderCartEmpty />
-    //     </div>
-
     <OrderCheckout
       reservationId={Number(params.reservationId)}
       notificationItems={issues}
+      isNewReservation={state?.isNewReservation ?? false}
     />
   );
 };

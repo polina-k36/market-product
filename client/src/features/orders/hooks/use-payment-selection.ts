@@ -19,12 +19,13 @@ export function usePaymentSelection() {
         };
       }
       const activeCard = cards?.find((card) => card.id === selectedCardId);
-      if (!activeCard)
+      if (!activeCard) {
         return {
           success: false,
           data: null,
           error: 'Не найдена карта для оплаты',
         };
+      }
       return {
         success: true,
         data: {
@@ -52,8 +53,8 @@ export function usePaymentSelection() {
   };
   return {
     selectedCardId,
+    isLoadingCards: isLoading,
     setSelectedCardId,
     getPaymentValues,
-    isLoadingCards: isLoading,
   };
 }

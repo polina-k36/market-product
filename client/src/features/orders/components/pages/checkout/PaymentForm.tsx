@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import PaymentCardForm from '@/features/cards/components/PaymentCardForm';
 import type { PaymentMethod } from '@/features/orders/types/order.types';
-import { Banknote, Check, CreditCard, Plus } from 'lucide-react';
+import { AlertCircle, Banknote, Check, CreditCard, Plus } from 'lucide-react';
 import { useUserCards } from '@/features/cards/hooks/use-user-cards';
 import { usePaymentMethod } from '@/features/orders/hooks/use-payment-method';
 import Button from '@/components/ui/buttons/Button';
@@ -10,30 +10,42 @@ import Button from '@/components/ui/buttons/Button';
 interface IPaymentFormProps {
   selectedCardId: number | null;
   setSelectedCardId: (id: number | null) => void;
+  resetValid: () => void;
+  isNotValid?: boolean;
 }
 
 const PaymentForm = ({
   selectedCardId,
   setSelectedCardId,
+  resetValid,
+  isNotValid = false,
 }: IPaymentFormProps) => {
-  const { data: cards } = useUserCards(); // TODO: загрузка и ошибка карт
+  const { data: cards } = useUserCards(); // TODO: обработать загрузку и ошибку карт
 
   const { method: paymentMethod, setMethod: setPaymentMethod } =
     usePaymentMethod();
   const [isAddingCard, setIsAddingCard] = useState(false);
 
   const handleSelectCard = (cardId: number) => {
+    resetValid();
     setSelectedCardId(cardId);
     setIsAddingCard(false);
   };
 
   const handleAddNewCard = () => {
+    resetValid();
     setSelectedCardId(null);
     setIsAddingCard(true);
   };
 
   return (
-    <div className="rounded-2xl bg-surface p-4 shadow-sm sm:p-6">
+    <div
+      className={`rounded-2xl border p-4 shadow-sm transition-colors sm:p-6 ${
+        isNotValid
+          ? 'border-red-500 bg-red-50/50'
+          : 'border-transparent bg-surface'
+      }`}
+    >
       <h2 className="mb-5 flex items-center gap-2 text-[1.1rem] font-bold text-text-primary">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
           3
@@ -41,6 +53,18 @@ const PaymentForm = ({
         <CreditCard className="h-5 w-5 text-primary" />
         Способ оплаты
       </h2>
+
+      {isNotValid && (
+        <div
+          role="alert"
+          className="mb-5 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>
+            Пожалуйста, выберите способ оплаты и заполните необходимые поля.
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {[
@@ -66,9 +90,12 @@ const PaymentForm = ({
             <input
               type="radio"
               name="paymentMethod"
-              value="card"
+              value={tab.method}
               checked={paymentMethod === tab.method}
-              onChange={() => setPaymentMethod(tab.method as PaymentMethod)}
+              onChange={() => {
+                resetValid();
+                setPaymentMethod(tab.method as PaymentMethod);
+              }}
               className="sr-only"
             />
 
@@ -193,10 +220,12 @@ const PaymentForm = ({
             <div className="mt-4">
               <PaymentCardForm
                 onSubmitForm={(data) => {
+                  resetValid();
                   setIsAddingCard(false);
                   setSelectedCardId(data.id);
                 }}
               />
+
               <Button
                 variant="primary"
                 type="submit"
@@ -209,6 +238,7 @@ const PaymentForm = ({
           )}
         </div>
       )}
+
       {paymentMethod === 'courier' && (
         <div className="mt-4 rounded-xl bg-background p-3.5">
           <div className="flex gap-3">

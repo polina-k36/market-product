@@ -10,21 +10,29 @@ interface IUserDropdownProps {
     name: string;
     email?: string | null;
   };
+  onClose: () => void;
 }
 
-const UserDropdown = ({ user }: IUserDropdownProps) => {
+const UserDropdown = ({ user, onClose }: IUserDropdownProps) => {
   const navigate = useNavigate();
   const { mutate } = useLogout();
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const logout = () => {
     mutate(undefined, {
       onSuccess: () => {
+        onClose();
         clearAuth();
       },
     });
   };
   return (
-    <Dropdown side="right">
+    <Dropdown
+      side="right"
+      role="dialog"
+      topHeight="sm"
+      ariaLabel="Меню зарегистрированного пользователя"
+      onClose={onClose}
+    >
       <div className="mb-4 flex items-center justify-start gap-4 text-center">
         <div className="flex size-13 items-center justify-center rounded-full bg-primary-soft">
           <User2 className="size-7 text-primary" />
@@ -45,26 +53,32 @@ const UserDropdown = ({ user }: IUserDropdownProps) => {
         <Button
           variant="transparent"
           className="w-full justify-start"
-          onClick={() => navigate('/profile?mode=settings')}
+          onClick={() => {
+            onClose();
+            navigate('/profile?mode=settings');
+          }}
         >
           <Settings className="size-5" />
-          <a href="" className="display-block text-left">
+          <div className="text-left">
             <p className="font-semibold text-text-primary">Мой аккаунт</p>
             <p className="text-[0.875rem] text-text-muted">
               Настройки и профиль
             </p>
-          </a>
+          </div>
         </Button>
         <Button
           variant="transparent"
           className="w-full justify-start"
-          onClick={() => navigate('/profile?mode=orders')}
+          onClick={() => {
+            onClose();
+            navigate('/profile?mode=orders');
+          }}
         >
           <Package className="size-5" />
-          <a href="" className="display-block text-left">
+          <div className="text-left">
             <p className="font-semibold text-text-primary">Мои заказы</p>
             <p className="text-[0.875rem] text-text-muted">История покупок</p>
-          </a>
+          </div>
         </Button>
         <hr className="mt-2 mb-2 border-0 border-t border-border-strong" />
         <Button
