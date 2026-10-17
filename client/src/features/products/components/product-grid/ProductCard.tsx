@@ -1,7 +1,8 @@
 import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
 import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
-import { Image, Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router';
+import { env } from '@/config/env';
 
 interface IProductCardProps {
   id: number;
@@ -16,6 +17,7 @@ interface IProductCardProps {
 const ProductCard = ({
   id,
   title,
+  imgUrl,
   price,
   unit,
   category,
@@ -31,9 +33,13 @@ const ProductCard = ({
       to={`/products/${id}`}
       className="block overflow-hidden rounded-2xl bg-surface shadow-2xs transition-all duration-200 ease-in hover:-translate-y-1 hover:shadow-2xl"
     >
-      <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-surface-muted">
-        {/* <img src="${rootDir}${row.thumbnail}" className="product-image" /> */}
-        <Image className="size-1/3 text-primary transition-transform duration-500 ease-in hover:scale-[1.1]" />
+      <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-surface">
+        <img
+          src={`${env.s3Url}/${imgUrl}`}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 ease-in hover:scale-[1.1]"
+        />
+        {/* <Image className="size-1/3 text-primary transition-transform duration-500 ease-in hover:scale-[1.1]" /> */}
         <div className="absolute top-3 left-3 rounded-full bg-surface/95 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm backdrop-blur-md sm:text-[0.9375rem]">
           {category}
         </div>

@@ -10,6 +10,7 @@ import NavButton from '@/components/ui/buttons/NavButton';
 import { useNavigate } from 'react-router';
 import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
 import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
+import { env } from '@/config/env';
 
 interface IProductDetailsProps {
   product: {
@@ -42,9 +43,12 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
           <NavButton onNavigate={() => navigate(-1)}>Вернуться</NavButton>
 
           <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-surface">
-            <Image className="relative z-10 size-1/3 text-primary transition-transform duration-500 ease-out hover:scale-110" />
-
-            <div className="absolute top-3 left-3 rounded-full bg-surface/95 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm backdrop-blur-md sm:text-[0.9375rem]">
+            <img
+              src={`${env.s3Url}/${product.imageKey}`}
+              alt={product.title}
+              className="h-full w-full object-cover transition-transform duration-500 ease-in hover:scale-[1.1]"
+            />
+            <div className="absolute top-3 left-3 z-15 rounded-full bg-surface/95 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm backdrop-blur-md sm:text-[0.9375rem]">
               {product.category}
             </div>
           </div>
