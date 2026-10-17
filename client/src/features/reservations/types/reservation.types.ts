@@ -3,7 +3,7 @@ export interface ICreateData {
   items: ICreateReservationItem[];
 }
 
-interface ICreateReservationItem {
+export interface ICreateReservationItem {
   productId: number;
   quantity: number;
 }

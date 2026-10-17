@@ -20,9 +20,9 @@ export const reservationApi = {
     return data.data;
   },
 
-  getByUser: async (): Promise<IReservation> => {
+  getByUser: async (): Promise<IReservation | null> => {
     const { data } =
-      await api.get<IResponse<IReservation>>(`stock-reservations`);
+      await api.get<IResponse<IReservation | null>>(`stock-reservations`);
     return data.data;
   },
 
