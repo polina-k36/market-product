@@ -51,10 +51,9 @@ export class StockReservationService {
     );
   }
 
-  async createInTransaction(
-    createDto: CreateStockReservationDto,
+  async getValidReservationByUserId(
     userId: number,
-    tx: Prisma.TransactionClient,
+    tx?: Prisma.TransactionClient,
   ) {
     const usersReservations = await this.getUserReservations(userId, tx);
     let validReservation = null;
@@ -77,9 +76,19 @@ export class StockReservationService {
         }
       });
     }
+    return validReservation;
+  }
+
+  async createInTransaction(
+    createDto: CreateStockReservationDto,
+    userId: number,
+    tx: Prisma.TransactionClient,
+  ) {
+    let validReservation = await this.getValidReservationByUserId(userId, tx);
     if (validReservation !== null) {
       return validReservation;
     }
+
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); //FIXME: подумать над таймаутом резерва
     const finalItems = await this.checkAvailableStock(createDto, tx);
 

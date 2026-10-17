@@ -37,9 +37,9 @@ export class StockReservationController {
 
   @Get()
   @ApiOperation({
-    summary: 'Получить все резервирования пользователя',
+    summary: 'Получить валидное резервирования пользователя',
     description:
-      'Возвращает информацию о всех резервированиях пользователя. Пользователь может получить только собственное доступное резервирование.',
+      'Возвращает информацию о валидном резервирование пользователя. Пользователь может получить только собственное доступное резервирование.',
   })
   @ApiResponse({
     status: 200,
@@ -49,12 +49,14 @@ export class StockReservationController {
     status: 401,
     description: 'Пользователь не авторизован.',
   })
-  async getUserReservations(@Req() req: AuthenticatedRequest) {
+  async getUserReservation(@Req() req: AuthenticatedRequest) {
     const userId = req.user.sub;
 
     return {
       success: true,
-      data: await this.stockReservationService.getUserReservations(userId),
+      data: await this.stockReservationService.getValidReservationByUserId(
+        userId,
+      ),
     };
   }
 
