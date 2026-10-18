@@ -8,9 +8,15 @@ import CartPanelLoading from './CartPanelLoading';
 import CartProductCard from './CartProductCard';
 import { usePrepareCheckoutFromCart } from '@/features/reservations/hooks/use-prepare-checkout-from-cart';
 import { useCartStore } from '../store/cart.store';
+import CartProductListError from './CartProductListError';
 
 const CartPanel = () => {
-  const { data: products, isError, error, isLoading } = useCartItems(); //TODO: подумать над ошибками при загрузке корзины
+  const {
+    data: products,
+    isError,
+    isLoading,
+    refetch: refetchCartItems,
+  } = useCartItems();
   const { checkout } = usePrepareCheckoutFromCart();
   const status = useAuthStore((state) => state.status);
   //TODO: ОБДУМАТЬ ДОСТАВКУ цену и хранение ее цены
@@ -44,18 +50,20 @@ const CartPanel = () => {
           <CartPanelLoading />
         ) : status === 'unauthenticated' ? (
           <CartPanelAuthError />
+        ) : isError ? (
+          <CartProductListError onRetry={() => refetchCartItems()} />
         ) : products === undefined || products.length === 0 ? (
           <CartPanelEmpty />
         ) : (
           <>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <div className="min-h-0 custom-scrollbar flex-1 overflow-y-auto px-4 py-4">
               <div className="space-y-3">
                 {products.map((product) => (
                   <CartProductCard
                     key={product.id}
                     product={{
                       ...product,
-                      price: +product.price,
+                      price: Number(product.price),
                       quantity: Number(product.quantity),
                     }}
                     mode={{ name: 'cart' }}

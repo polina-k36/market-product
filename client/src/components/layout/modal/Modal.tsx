@@ -44,10 +44,10 @@ const Modal = ({
 
     if (isOpen) {
       if (!dialog.open) dialog.showModal();
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflowY = 'hidden';
     } else {
       if (dialog.open) dialog.close();
-      document.body.style.overflow = 'scroll';
+      document.body.style.overflowY = 'scroll';
     }
   }, [isOpen]);
   const sizes = {

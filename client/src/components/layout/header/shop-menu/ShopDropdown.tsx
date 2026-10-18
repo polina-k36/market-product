@@ -147,7 +147,7 @@ const ShopDropdown = () => {
               </div>
             </div>
 
-            <div className="max-h-[min(55vh,380px)] overflow-y-auto px-2 pb-2">
+            <div className="max-h-[min(55vh,380px)] custom-scrollbar overflow-y-auto px-2 pb-2">
               {isLoadingShops ? (
                 <div className="space-y-2">
                   {Array.from({ length: 3 }, (_, index) => (
@@ -162,7 +162,7 @@ const ShopDropdown = () => {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {shops?.map((shop) => (
+                  {filteredShops?.map((shop) => (
                     <AddressCard
                       shop={shop}
                       isSelected={activeShop?.id_shop === shop.id_shop}
