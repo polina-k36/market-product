@@ -11,17 +11,20 @@ const httpsUrlSchema = z
   .url('Must be a valid URL')
   .refine((value) => value.startsWith('https://'), 'URL must use HTTPS');
 
-const httpUrlSchema = z
+const urlSchema = z
   .string()
   .url('Must be a valid URL')
-  .refine((value) => value.startsWith('http://'), 'URL must use HTTPS');
+  .refine(
+    (value) => value.startsWith('http://') || value.startsWith('https://'),
+    'URL must use HTTPS',
+  );
 
 const requiredStringSchema = z.string().trim().min(1, 'Field is required');
 
 export const envSchema = z.object({
   PORT: portSchema.default(5000),
 
-  BASE_URL_CLIENT: httpUrlSchema,
+  BASE_URL_CLIENT: urlSchema,
 
   DATABASE_URL: requiredStringSchema,
   DATABASE_HOST: requiredStringSchema,
