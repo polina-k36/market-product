@@ -3,20 +3,21 @@ import { useState } from 'react';
 
 interface ICartItemQuantityControlProps {
   quantity: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
+  unit: string;
+  onIncrement: (quantity?: number) => void;
+  onDecrement: (quantity?: number) => void;
   onSetQuantity: (quantity: number) => void;
 }
 
 const CartItemQuantityControl = ({
   quantity,
+  unit,
   onIncrement,
   onDecrement,
   onSetQuantity,
 }: ICartItemQuantityControlProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(String(quantity));
-  //TODO: в зависимости от единицы измерения продукта нужно ограничить дроби на штуки к примеру
 
   const startEditing = () => {
     setValue(String(quantity));
@@ -59,7 +60,9 @@ const CartItemQuantityControl = ({
       <button
         type="button"
         aria-label="Уменьшить количество"
-        onClick={() => onDecrement()}
+        onClick={() =>
+          onDecrement(unit === 'шт' ? 1 : unit === 'л' ? 0.5 : 0.2)
+        }
         className="flex size-7 items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-danger/10 hover:text-danger focus:ring-2 focus:ring-danger/30 focus:outline-none"
       >
         <Minus className="size-3.5" />
@@ -70,9 +73,16 @@ const CartItemQuantityControl = ({
             autoFocus
             type="number"
             min="0"
-            step="0.1у"
+            step={unit === 'шт' ? '1' : unit === 'л' ? '0.5' : '0.2'}
             value={value}
-            onChange={(event) => setValue(event.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (unit === 'шт') {
+                setValue(value === '' ? '0' : `${Math.round(Number(value))}`);
+              } else {
+                setValue(value);
+              }
+            }}
             onKeyDown={handleKeyDown}
             className="h-7 w-14 rounded-lg border border-border bg-surface px-1 text-center text-sm font-semibold text-text-primary outline-none focus:ring-2 focus:ring-primary/30"
           />
@@ -98,7 +108,9 @@ const CartItemQuantityControl = ({
       <button
         type="button"
         aria-label="Увеличить количество"
-        onClick={() => onIncrement()}
+        onClick={() =>
+          onIncrement(unit === 'шт' ? 1 : unit === 'л' ? 0.5 : 0.2)
+        }
         className="flex size-7 items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus:ring-2 focus:ring-primary/30 focus:outline-none"
       >
         <Plus className="size-3.5" />

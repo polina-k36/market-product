@@ -55,14 +55,14 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
     setQuantity: setQuantityReservationItem,
   } = useReservationItemOperations(mode.reservationId, product.productId);
 
-  const onIncrement = () => {
-    if (mode.name === 'order') incrementReservationItem();
-    else incrementCart();
+  const onIncrement = (quantity?: number) => {
+    if (mode.name === 'order') incrementReservationItem(quantity);
+    else incrementCart(quantity);
   };
 
-  const onDecrement = () => {
-    if (mode.name === 'order') decrementReservationItem();
-    else decrementCart();
+  const onDecrement = (quantity?: number) => {
+    if (mode.name === 'order') decrementReservationItem(quantity);
+    else decrementCart(quantity);
   };
 
   const onRemove = () => {
@@ -132,6 +132,7 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
 
         <CartItemQuantityControl
           quantity={quantity}
+          unit={product.unit}
           onIncrement={onIncrement}
           onDecrement={onDecrement}
           onSetQuantity={onSetQuantity}

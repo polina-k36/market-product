@@ -39,7 +39,6 @@ const ProductCard = ({
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 ease-in hover:scale-[1.1]"
         />
-        {/* <Image className="size-1/3 text-primary transition-transform duration-500 ease-in hover:scale-[1.1]" /> */}
         <div className="absolute top-3 left-3 rounded-full bg-surface/95 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm backdrop-blur-md sm:text-[0.9375rem]">
           {category}
         </div>
@@ -73,6 +72,7 @@ const ProductCard = ({
             </button>
           ) : (
             <CartItemQuantityControl
+              unit={unit}
               quantity={cartQuantity}
               onIncrement={increment}
               onDecrement={decrement}

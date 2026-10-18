@@ -113,6 +113,7 @@ const ShopDropdown = () => {
               </button>
             </div>
 
+            {/* FIXME: поправить поиск по номеру */}
             <div className="p-3">
               <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3">
                 <Search className="h-4 w-4 shrink-0 text-text-secondary" />

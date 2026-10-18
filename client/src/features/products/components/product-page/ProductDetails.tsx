@@ -114,6 +114,7 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
 
               <div className="flex items-center gap-2">
                 <CartItemQuantityControl
+                  unit={product.unit.shortTitle}
                   quantity={product.cartQuantity}
                   onDecrement={decrement}
                   onIncrement={increment}
