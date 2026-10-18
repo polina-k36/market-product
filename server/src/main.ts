@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://10.170.156.158:5173',
-      'https://market-client-lq8x.onrender.com',
+      'https://product-market-diplom.duckdns.org',
     ],
     credentials: true,
   });
