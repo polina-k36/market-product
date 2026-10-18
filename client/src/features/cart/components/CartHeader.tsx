@@ -14,7 +14,6 @@ const CartHeader = ({ totalItems }: ICartHeaderProps) => {
 
   const onClose = () => {
     closeCart();
-    document.body.style.overflowY = 'scroll';
   };
 
   return (

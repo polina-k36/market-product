@@ -7,6 +7,7 @@ import CartPanelEmpty from './CartPanelEmpty';
 import CartPanelLoading from './CartPanelLoading';
 import CartProductCard from './CartProductCard';
 import { usePrepareCheckoutFromCart } from '@/features/reservations/hooks/use-prepare-checkout-from-cart';
+import { useCartStore } from '../store/cart.store';
 
 const CartPanel = () => {
   const { data: products, isError, error, isLoading } = useCartItems(); //TODO: подумать над ошибками при загрузке корзины
@@ -15,6 +16,7 @@ const CartPanel = () => {
   //TODO: ОБДУМАТЬ ДОСТАВКУ цену и хранение ее цены
 
   const totalItems = products ? products.length : 0;
+  const closeCart = useCartStore((state) => state.closeCart);
 
   const totalPrice = products
     ? products.reduce(
@@ -25,14 +27,14 @@ const CartPanel = () => {
 
   const handleCheckout = () => {
     checkout();
-    document.body.style.overflowY = 'scroll';
   };
 
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
+        className="fixed inset-0 z-40 h-screen w-full cursor-pointer bg-black/40 backdrop-blur-[1px]"
         aria-hidden="true"
+        onClick={closeCart}
       />
 
       <aside className="fixed top-0 right-0 z-50 flex h-dvh w-full max-w-md flex-col bg-surface shadow-2xl">

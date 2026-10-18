@@ -1,4 +1,3 @@
-//TODO: сделать карточку ссылкой на продукт
 //BUG: название продукта залазит на иконку если не помещается
 //FIXME: при декременте продукта количество которого меньше 1 ничего не происходит подумать и решить
 
@@ -9,7 +8,6 @@ import { Image, Trash2, AlertTriangle, PackageX } from 'lucide-react';
 import { env } from '@/config/env';
 import { useShopStore } from '@/stores/shop/shop.store';
 import { Link } from 'react-router';
-import { useCartStore } from '../store/cart.store';
 
 interface ICartProductCardProps {
   product: {

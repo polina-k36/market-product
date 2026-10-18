@@ -36,7 +36,7 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
   const ingredients = product.composition.split(',');
 
   return (
-    <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative mx-auto h-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2 md:items-start lg:gap-30">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-surface-muted p-4 shadow-sm min-[400px]:m-auto min-[400px]:w-3/4 sm:p-6 md:m-0 md:w-full lg:sticky">
           <NavButton onNavigate={() => navigate(-1)}>Вернуться</NavButton>

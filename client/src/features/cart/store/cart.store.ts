@@ -6,9 +6,11 @@ export const useCartStore = create<ICartState>((set) => ({
   countItems: 0,
   openCart: () => {
     set({ isOpen: true });
+    document.body.style.overflowY = 'hidden';
   },
   closeCart: () => {
     set({ isOpen: false });
+    document.body.style.overflowY = 'scroll';
   },
   setCountItems: (quantity: number) => {
     set({ countItems: quantity });
