@@ -51,16 +51,16 @@ const HeaderAuthForm = ({ title, subtitle }: IHeaderAuthFormProps) => {
     resetMutation();
   };
   return (
-    <div className="mt-4">
+    <div className="mt-4 flex flex-col items-center sm:items-start">
       <h1 className="text-2xl font-semibold text-text-primary">{title}</h1>
 
       <p className="mt-1 text-base text-text-secondary">{subtitle}</p>
       {isError && <FormError message={error.message} onClose={closeError} />}
       <div id="google-btn" className="mt-7 w-full"></div>
-      <div className="mb-5 flex items-center gap-3">
-        <div className="h-px flex-1 bg-border" />
+      <div className="mt-5 mb-5 flex w-full items-center gap-3">
+        <div className="h-px w-full flex-1 bg-border" />
         <span className="text-sm text-text-secondary">или</span>
-        <div className="h-px flex-1 bg-border" />
+        <div className="h-px w-full flex-1 bg-border" />
       </div>
     </div>
   );
