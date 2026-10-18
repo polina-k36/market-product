@@ -92,7 +92,7 @@ export class StockReservationService {
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); //FIXME: подумать над таймаутом резерва
     const finalItems = await this.checkAvailableStock(createDto, tx);
 
-    //TODO проверить и может поправить
+    //TODO: проверить и может поправить
     const reservations = finalItems
       .filter((item) => item.reservedQuantity > 0)
       .filter((item) => item.product !== undefined)
@@ -503,7 +503,6 @@ export class StockReservationService {
       );
     });
   }
-  //TODO: делать проверку на наличие товаров (при добавление в резерв если это будет) и если что объединять
 
   changeShop(reservationId: number, shopId: number, userId: number) {
     return this.prisma.$transaction(async (tx) => {
@@ -513,7 +512,6 @@ export class StockReservationService {
         tx,
       );
       //FIXME: подумать над выполнением просто функции completeReservation
-      //FIXME: подумать над проблемой создания или добавить параметр который гарантирует что резерв точно будет создан, но пока просто раньше удаляем
       await this.productStockService.releaseStock(
         reservation.shopId,
         reservation.items.map((item) => ({

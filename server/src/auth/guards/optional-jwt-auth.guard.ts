@@ -10,7 +10,6 @@ import { JwtTokensService } from '../../jwt-tokens/jwt-tokens.service.js';
 @Injectable()
 export class OptionalJwtAuthGuard implements CanActivate {
   constructor(private readonly jwtTokensService: JwtTokensService) {}
-  //TODO: коммит feat(auth): add optional jwt guard for product list
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(req);
