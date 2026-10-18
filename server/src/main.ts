@@ -26,6 +26,8 @@ async function bootstrap() {
     }),
   );
 
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('MARKET API')
     .setDescription('API для продуктового магазина')
@@ -36,7 +38,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('documentation', app, document);
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port') ?? 5000;
