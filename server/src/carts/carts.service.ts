@@ -32,10 +32,18 @@ export class CartsService {
             unit: {
               select: { shortTitle: true },
             },
+            productStocks: {
+              select: {
+                quantity: true,
+                reservedQuantity: true,
+                shopId: true,
+              },
+            },
           },
         },
       },
     });
+
     return cartItems.map((item) => {
       const { id, quantity, product } = item;
       const { id: productId, ...productData } = product;
@@ -45,6 +53,10 @@ export class CartsService {
         quantity,
         ...productData,
         unit: product.unit.shortTitle,
+        productStocks: productData.productStocks.map((stock) => ({
+          quantity: Number(stock.quantity) - Number(stock.reservedQuantity),
+          shopId: stock.shopId,
+        })),
       };
     });
   }

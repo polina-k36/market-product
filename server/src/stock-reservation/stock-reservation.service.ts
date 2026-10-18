@@ -246,6 +246,13 @@ export class StockReservationService {
                     shortTitle: true,
                   },
                 },
+                productStocks: {
+                  select: {
+                    quantity: true,
+                    reservedQuantity: true,
+                    shopId: true,
+                  },
+                },
               },
             },
             quantity: true,
@@ -268,6 +275,10 @@ export class StockReservationService {
         product: {
           ...item.product,
           unit: item.product.unit.shortTitle,
+          productStocks: item.product.productStocks.map((stock) => ({
+            quantity: Number(stock.quantity) - Number(stock.reservedQuantity),
+            shopId: stock.shopId,
+          })),
         },
       })),
     };
@@ -295,6 +306,13 @@ export class StockReservationService {
                     shortTitle: true,
                   },
                 },
+                productStocks: {
+                  select: {
+                    quantity: true,
+                    reservedQuantity: true,
+                    shopId: true,
+                  },
+                },
               },
             },
             quantity: true,
@@ -309,6 +327,10 @@ export class StockReservationService {
         product: {
           ...item.product,
           unit: item.product.unit.shortTitle,
+          productStocks: item.product.productStocks.map((stock) => ({
+            quantity: Number(stock.quantity) - Number(stock.reservedQuantity),
+            shopId: stock.shopId,
+          })),
         },
       })),
     }));
