@@ -18,6 +18,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       password: config.password,
       database: config.name,
       connectionLimit: 5,
+      connectTimeout: 10_000,
+      acquireTimeout: 10_000,
       allowPublicKeyRetrieval: true,
     });
 
