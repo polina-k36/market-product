@@ -135,7 +135,7 @@ const StatusTracker = ({
                 {activeStatusInfo?.desc}
               </p>
             </div>
-            <span className="ml-auto flex items-center gap-2 rounded-full bg-primary-soft px-3 py-2 text-xs font-semibold text-primary">
+            <span className="ml-auto hidden items-center gap-2 rounded-full bg-primary-soft px-3 py-2 text-xs font-semibold text-primary sm:flex">
               {ActiveIcon ? (
                 <ActiveIcon className="h-4 w-4 text-primary" />
               ) : null}

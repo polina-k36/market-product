@@ -6,7 +6,7 @@ import { AlertCircle, Check, MapPin, Plus, Store, Truck } from 'lucide-react';
 import { useAddresses } from '@/features/addresses/hooks/use-addresses';
 import { useShopStore } from '@/stores/shop/shop.store';
 import { useChangeShopReservation } from '@/features/reservations/hooks/use-change-shop-reservation';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
 
@@ -26,6 +26,7 @@ const DeliveryForm = ({
   isNotValid = false,
 }: IDeliveryFormProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: shops } = useShops();
   const { data: addresses } = useAddresses(); // TODO: обработать загрузку и ошибку адресов
@@ -59,7 +60,7 @@ const DeliveryForm = ({
       {
         onSuccess: (data) => {
           console.log('changed shop');
-          navigate(`/orders/checkout/${data.reservationId}`, {
+          navigate(`/orders/checkout/${data.reservationId}${location.search}`, {
             state: {
               issues: data.items.filter(
                 (item) =>
