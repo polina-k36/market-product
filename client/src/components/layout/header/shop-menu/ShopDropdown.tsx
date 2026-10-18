@@ -3,14 +3,21 @@ import { ChevronDown, Search, Store, X } from 'lucide-react';
 
 import { useShops } from '@/features/shops/hooks/use-shops';
 import { useShopStore } from '@/stores/shop/shop.store';
-import ShopOption from './ShopOption';
+import AddressCard from '../../../../features/addresses/components/AddressCard';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
+import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
+import AddressListError from '@/features/addresses/components/AddressListError';
 
 const ShopDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const { data: shops } = useShops();
+  const {
+    data: shops,
+    isLoading: isLoadingShops,
+    isError: isErrorShops,
+    refetch: refetchShops,
+  } = useShops();
   const { shopId, setShopId } = useShopStore();
 
   const filteredShops = useMemo(() => {
@@ -141,23 +148,28 @@ const ShopDropdown = () => {
             </div>
 
             <div className="max-h-[min(55vh,380px)] overflow-y-auto px-2 pb-2">
-              {!shops ? (
-                <p className="px-3 py-8 text-center text-sm text-text-secondary">
-                  Загружаем магазины...
-                </p>
-              ) : filteredShops.length === 0 ? (
-                <p className="px-3 py-8 text-center text-sm text-text-secondary">
-                  Магазины не найдены
+              {isLoadingShops ? (
+                <div className="space-y-2">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <AddressCardSkeleton key={index} />
+                  ))}
+                </div>
+              ) : isErrorShops ? (
+                <AddressListError onRetry={() => refetchShops()} />
+              ) : !shops || shops?.length === 0 ? (
+                <p className="py-8 text-center text-sm text-text-secondary">
+                  Пока нет доступных магазинов
                 </p>
               ) : (
-                filteredShops.map((shop) => (
-                  <ShopOption
-                    key={shop.id_shop}
-                    shop={shop}
-                    isSelected={activeShop?.id_shop === shop.id_shop}
-                    onSelect={handleSelect}
-                  />
-                ))
+                <div className="space-y-2">
+                  {shops?.map((shop) => (
+                    <AddressCard
+                      shop={shop}
+                      isSelected={activeShop?.id_shop === shop.id_shop}
+                      onSelect={handleSelect}
+                    />
+                  ))}
+                </div>
               )}
             </div>
 

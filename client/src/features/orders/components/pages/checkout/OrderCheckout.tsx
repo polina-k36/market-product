@@ -255,7 +255,7 @@ const OrderCheckout = ({
                     </div>
                   </div>
 
-                  <div className="max-h-72 scrollbar-gutter-stable overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-text-muted/40 hover:[&::-webkit-scrollbar-thumb]:bg-text-muted/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-border/30">
+                  <div className="max-h-72 custom-scrollbar overflow-y-auto pr-1">
                     <div className="space-y-3">
                       {availableProducts.map(
                         (product) =>

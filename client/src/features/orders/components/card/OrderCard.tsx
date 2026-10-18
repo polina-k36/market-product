@@ -90,6 +90,7 @@ const OrderCard = ({ order }: IOrderCardProps) => {
         {statusInfo.key !== 'RETURNED' && statusInfo.key !== 'CANCELLED' && (
           <>
             <StatusTracker
+              shopAddress={order.shopAddress}
               onlyTracker
               deliveryMethod={
                 order.delMethod === 'Самовывоз' ? 'pickup' : 'delivery'

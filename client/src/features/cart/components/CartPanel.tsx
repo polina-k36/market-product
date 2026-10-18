@@ -26,6 +26,7 @@ const CartPanel = () => {
     : 0;
 
   const handleCheckout = () => {
+    document.body.style.overflowY = 'scroll';
     checkout();
   };
 

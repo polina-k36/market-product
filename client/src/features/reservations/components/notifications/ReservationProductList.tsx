@@ -9,7 +9,7 @@ const ReservationProductList = ({ products }: ReservationProductListProps) => {
   if (products.length === 0) return null;
 
   return (
-    <div className="mt-3 max-h-38 scrollbar-gutter-stable space-y-2 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-text-muted/40 hover:[&::-webkit-scrollbar-thumb]:bg-text-muted/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-border/30">
+    <div className="mt-3 max-h-38 custom-scrollbar space-y-2 overflow-y-auto pr-1">
       {products.map((product) => {
         const unavailable = product.status === 'UNAVAILABLE';
 

@@ -11,12 +11,14 @@ import type { DeliveryMethod, OrderStatus } from '../types/order.types';
 
 interface IStatusTrackerProps {
   deliveryMethod: DeliveryMethod;
+  shopAddress: string;
   status: OrderStatus;
   onlyTracker?: boolean;
 }
-
+//TODO: Подумать все таки над описаниями для моментов когда мы берем только трекер без карточки
 const StatusTracker = ({
   deliveryMethod,
+  shopAddress,
   status,
   onlyTracker = false,
 }: IStatusTrackerProps) => {
@@ -32,7 +34,7 @@ const StatusTracker = ({
           key: 'READY_FOR_PICKUP',
           label: 'Готов к выдаче',
           icon: MapPin,
-          desc: 'Ожидает вас в магазине', //TODO: добавление адреса
+          desc: `Ожидает вас в магазине ${shopAddress}`,
         };
   const steps = [
     {

@@ -9,6 +9,9 @@ import { useChangeShopReservation } from '@/features/reservations/hooks/use-chan
 import { useLocation, useNavigate } from 'react-router';
 import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
+import AddressCard from '@/features/addresses/components/AddressCard';
+import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
+import AddressListError from '@/features/addresses/components/AddressListError';
 
 interface IDeliveryFormProps {
   reservationId: number;
@@ -28,7 +31,12 @@ const DeliveryForm = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: shops } = useShops();
+  const {
+    data: shops,
+    isError: isErrorShops,
+    isLoading: isLoadingShops,
+    refetch: refetchShops,
+  } = useShops();
   const { data: addresses } = useAddresses(); // TODO: обработать загрузку и ошибку адресов
   const { shopId: activeShopId, setShopId: setActiveShopId } = useShopStore();
   const { method: deliveryMethod, setMethod: setDeliveryMethod } =
@@ -273,52 +281,29 @@ const DeliveryForm = ({
             Выберите магазин
           </p>
 
-          <div className="flex flex-col gap-3">
-            {shops?.map((shop) => (
-              <button
-                key={shop.id_shop}
-                type="button"
-                className={`w-full cursor-pointer rounded-xl border p-4 text-left transition-all ${
-                  activeShopId === shop.id_shop
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border bg-surface hover:border-primary/40'
-                }`}
-                onClick={() => changeActiveShop(shop.id_shop)}
-              >
-                <div className="flex items-start gap-3">
-                  <Store className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-
-                  <div>
-                    <p className="font-medium text-text-primary">
-                      Магазин на {shop.shop_street}
-                    </p>
-
-                    <p className="mt-1 text-sm text-text-secondary">
-                      {shop.shop_city} {shop.shop_street}, д. {shop.shop_house}
-                    </p>
-
-                    <p
-                      className={`mt-1 text-xs ${
-                        new Date().getHours() >= 22
-                          ? 'text-red'
-                          : 'text-primary'
-                      }`}
-                    >
-                      {new Date().getHours() >= 22
-                        ? 'Магазин закрыт. Откроется завтра в 7:00'
-                        : 'Сегодня до 22:00'}
-                    </p>
-                  </div>
-
-                  {activeShopId === shop.id_shop && (
-                    <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white">
-                      <Check className="h-2.5 w-2.5" />
-                    </span>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
+          {isLoadingShops ? (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }, (_, index) => (
+                <AddressCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : isErrorShops ? (
+            <AddressListError onRetry={() => refetchShops()} />
+          ) : !shops || shops?.length === 0 ? (
+            <p className="py-8 text-center text-sm text-text-secondary">
+              Пока нет доступных магазинов
+            </p>
+          ) : (
+            <div className="max-h-[min(55vh,380px)] custom-scrollbar space-y-2 overflow-x-hidden overflow-y-auto">
+              {shops?.map((shop) => (
+                <AddressCard
+                  shop={shop}
+                  isSelected={shop.id_shop === activeShopId}
+                  onSelect={(id: number) => changeActiveShop(id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

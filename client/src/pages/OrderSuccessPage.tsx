@@ -20,6 +20,7 @@ const OrderSuccessPage = () => {
             date={order.date}
           />
           <StatusTracker
+            shopAddress={`${order.shop.city} ${order.shop.street} д. ${order.shop.house}`}
             status={order.status}
             deliveryMethod={
               order.deliveryMethod === 'Самовывоз' ? 'pickup' : 'delivery'

@@ -14,7 +14,7 @@ import { useAuthStore } from '@/stores/auth/auth.store';
 
 const Header = () => {
   const [activeSearch, setActiveSearch] = useState(false);
-  const isCartOpen = useCartStore((state) => state.isOpen); //XXX: подумать над надобностью стора
+  const isCartOpen = useCartStore((state) => state.isOpen);
   const openCart = useCartStore((state) => state.openCart);
   const countItems = useCartStore((state) => state.countItems);
   const status = useAuthStore((state) => state.status);
@@ -51,7 +51,6 @@ const Header = () => {
 
   const onOpenCart = () => {
     openCart();
-    document.body.style.overflowY = 'hidden';
   };
 
   return (
