@@ -52,7 +52,6 @@ const CartPanel = () => {
                     key={product.id}
                     product={{
                       ...product,
-                      imageUrl: product.imageKey,
                       price: +product.price,
                       quantity: Number(product.quantity),
                     }}

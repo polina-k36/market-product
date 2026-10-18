@@ -18,6 +18,7 @@ import type { ICreateOrder } from '@/features/orders/types/order.types';
 import OrderCartEmpty from './errors/OrderCartEmpty';
 import CheckoutLoading from './CheckoutLoading';
 import { useCancelReservation } from '@/features/reservations/hooks/use-cancel-reservation';
+import { useShopStore } from '@/stores/shop/shop.store';
 
 interface IOrderCheckoutProps {
   reservationId: number;
@@ -26,7 +27,7 @@ interface IOrderCheckoutProps {
 }
 //TODO показывать окно о пустом списке продуктов если такое произойдет
 //TODO сделать нормальное время резервирования - чтобы пока пользователь был на странице и что то делала он не заканчивался может но при выходе со странице мы устанавливаем 15 минут чтобы пользователь могу вернуться к заказу
-
+//BUG: при смене мегезина страница обновляется переделать
 const OrderCheckout = ({
   reservationId,
   notificationItems,
@@ -34,6 +35,7 @@ const OrderCheckout = ({
 }: IOrderCheckoutProps) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(true);
+  const { shopId } = useShopStore();
 
   const [paymentErrors, setPaymentErrors] = useState<{
     success: boolean;
@@ -79,9 +81,10 @@ const OrderCheckout = ({
           title: item.product.title,
           description: item.product.description,
           unit: item.product.unit,
-          imageUrl: item.product.imageKey,
+          imageKey: item.product.imageKey,
           price: Number(item.product.price),
           quantity: Number(item.quantity),
+          productStocks: item.product.productStocks,
         }))
         .filter((product) => product !== undefined),
     [reservation],
@@ -262,6 +265,18 @@ const OrderCheckout = ({
                               product={{
                                 ...product,
                                 price: Number(product.price),
+                                productStocks: product.productStocks.map(
+                                  (stock) => {
+                                    if (stock.shopId === shopId) {
+                                      return {
+                                        quantity:
+                                          stock.quantity + product.quantity,
+                                        shopId,
+                                      };
+                                    }
+                                    return stock;
+                                  },
+                                ),
                               }}
                               mode={{
                                 name: 'order',

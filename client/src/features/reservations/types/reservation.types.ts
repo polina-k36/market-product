@@ -40,6 +40,10 @@ export interface IReservationItem {
         imageKey: string;
         price: number;
         unit: string;
+        productStocks: {
+          quantity: number;
+          shopId: number;
+        }[];
       }
     | undefined;
   requestedQuantity: number;
@@ -59,6 +63,10 @@ export interface IInfoReservation {
       description: string;
       imageKey: string;
       price: string;
+      productStocks: {
+        quantity: number;
+        shopId: number;
+      }[];
     };
     quantity: string;
   }[];
