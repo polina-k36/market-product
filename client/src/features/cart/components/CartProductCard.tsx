@@ -8,6 +8,8 @@ import CartItemQuantityControl from './CartItemQuantityControl';
 import { Image, Trash2, AlertTriangle, PackageX } from 'lucide-react';
 import { env } from '@/config/env';
 import { useShopStore } from '@/stores/shop/shop.store';
+import { Link } from 'react-router';
+import { useCartStore } from '../store/cart.store';
 
 interface ICartProductCardProps {
   product: {
@@ -76,7 +78,9 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
   };
 
   return (
-    <div
+    <Link
+      to={`/products/${product.productId}`}
+
       className={`flex w-full items-center gap-3 rounded-2xl border p-3 transition-all duration-200 sm:gap-5 sm:p-5 ${
         isOutOfStock
           ? 'border-danger/30 bg-danger/5'
@@ -143,7 +147,10 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
         <button
           type="button"
           aria-label={`Удалить ${product.title}`}
-          onClick={onRemove}
+          onClick={(e) => {
+            e.preventDefault();
+            onRemove();
+          }}
           className="flex size-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-danger/10 hover:text-danger focus:ring-2 focus:ring-danger/30 focus:outline-none"
         >
           <Trash2 className="size-4" />
@@ -153,7 +160,7 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
           {total.toFixed(2)} ₽
         </span>
       </div>
-    </div>
+    </Link>
   );
 };
 

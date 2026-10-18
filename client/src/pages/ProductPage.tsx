@@ -1,4 +1,5 @@
 import Header from '@/components/layout/header/Header';
+import { useCartStore } from '@/features/cart/store/cart.store';
 import ProductDetails from '@/features/products/components/product-page/ProductDetails';
 import ProductDetailsError from '@/features/products/components/product-page/ProductDetailsError';
 import ProductDetailsSkeleton from '@/features/products/components/product-page/ProductDetailsSkeleton';
@@ -17,11 +18,14 @@ const ProductPage = () => {
     refetch,
   } = useProduct(Number(params.id));
 
+  const { closeCart } = useCartStore();
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: 'instant',
     });
+    closeCart();
   }, []);
 
   //FIXME исправить хэдер так как в нем нет кнопок для карта
