@@ -11,7 +11,6 @@ import type {
 } from '../types/reservation.types';
 import type { IResponse } from '@/types/api/api-response.type';
 
-// TODO: получать активные резервы по id пользователя и как не законченное оформление заказа чтобы пользователь мог отменить или продолжить оформление.
 export const reservationApi = {
   getById: async (id: number): Promise<IInfoReservation> => {
     const { data } = await api.get<IResponse<IInfoReservation>>(

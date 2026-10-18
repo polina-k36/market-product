@@ -28,7 +28,6 @@ const ProductPage = () => {
     closeCart();
   }, []);
 
-  //FIXME исправить хэдер так как в нем нет кнопок для карта
   return (
     <>
       {Number.isInteger(Number(params.id)) && (

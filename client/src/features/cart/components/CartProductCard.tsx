@@ -1,6 +1,3 @@
-//BUG: название продукта залазит на иконку если не помещается
-//FIXME: при декременте продукта количество которого меньше 1 ничего не происходит подумать и решить
-
 import { useCartItemOperations } from '../hooks/use-cart-item-operations';
 import { useReservationItemOperations } from '@/features/reservations/hooks/use-reservation-item-operations';
 import CartItemQuantityControl from './CartItemQuantityControl';

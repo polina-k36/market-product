@@ -2,16 +2,19 @@ import { useState } from 'react';
 import type { DeliveryMethod } from '@/features/orders/types/order.types';
 import { useShops } from '@/features/shops/hooks/use-shops';
 import AddressForm from '@/features/user/components/forms/AddressForm';
-import { AlertCircle, Check, MapPin, Plus, Store, Truck } from 'lucide-react';
+import { AlertCircle, Check, Plus, Store, Truck } from 'lucide-react';
 import { useAddresses } from '@/features/addresses/hooks/use-addresses';
 import { useShopStore } from '@/stores/shop/shop.store';
 import { useChangeShopReservation } from '@/features/reservations/hooks/use-change-shop-reservation';
 import { useLocation, useNavigate } from 'react-router';
 import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
-import ShopAddressCard from '@/features/shops/components/ShopAddressCard';
 import ShopAddressCardSkeleton from '@/features/shops/components/ShopAddressCardSkeleton';
 import ShopAddressListError from '@/features/shops/components/ShopAddressListError';
+import AddressListError from '@/features/addresses/components/AddressCardListError';
+import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
+import AddressCard from '@/features/addresses/components/AddressCard';
+import ShopAddressCard from '@/features/shops/components/ShopAddressCard';
 
 interface IDeliveryFormProps {
   reservationId: number;
@@ -37,7 +40,12 @@ const DeliveryForm = ({
     isLoading: isLoadingShops,
     refetch: refetchShops,
   } = useShops();
-  const { data: addresses } = useAddresses(); // TODO: обработать загрузку и ошибку адресов
+  const {
+    data: addresses,
+    isError: isErrorAddresses,
+    isLoading: isLoadingAddresses,
+    refetch: refetchAddresses,
+  } = useAddresses();
   const { shopId: activeShopId, setShopId: setActiveShopId } = useShopStore();
   const { method: deliveryMethod, setMethod: setDeliveryMethod } =
     useDeliveryMethod();
@@ -170,59 +178,40 @@ const DeliveryForm = ({
             Выберите адрес доставки
           </p>
 
-          <div className="flex flex-wrap gap-2">
-            {addresses &&
-              addresses.map((address) => {
-                const isSelected =
-                  selectedAddressId === address.id && !isAddingAddress;
-
-                return (
-                  <button
+          <div
+            className={`flex flex-wrap gap-2 ${isErrorAddresses ? 'flex-col' : 'flex-row'}`}
+          >
+            {isLoadingAddresses ? (
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <AddressCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : isErrorAddresses ? (
+              <AddressListError onRetry={() => refetchAddresses()} />
+            ) : !addresses || addresses.length === 0 ? (
+              <p className="py-4 text-center text-sm text-text-secondary">
+                У тебя пока нет сохранённых адресов
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {addresses.map((address) => (
+                  <AddressCard
                     key={address.id}
-                    type="button"
-                    onClick={() => handleSelectAddress(address.id)}
-                    className={`flex min-w-45 cursor-pointer items-start gap-3 rounded-lg border px-2.5 py-2 text-left transition-all ${
-                      isSelected
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border bg-surface hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="flex flex-1 items-center justify-start gap-2">
-                      <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
-                          isSelected
-                            ? 'bg-primary text-white'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
-                        <MapPin className="h-3.5 w-3.5" />
-                      </span>
-
-                      <span className="min-w-0">
-                        <span className="block truncate text-xs font-medium text-text-primary">
-                          {address.street}, д. {address.house}
-                          {address.apartment && `, кв. ${address.apartment}`}
-                        </span>
-
-                        <span className="mt-0.5 block text-[11px] text-text-muted">
-                          {address.city}
-                        </span>
-                      </span>
-                    </div>
-
-                    {isSelected && (
-                      <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white">
-                        <Check className="h-2.5 w-2.5" />
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+                    address={address}
+                    isSelected={
+                      selectedAddressId === address.id && !isAddingAddress
+                    }
+                    handleSelectAddress={handleSelectAddress}
+                  />
+                ))}
+              </div>
+            )}
 
             <button
               type="button"
               onClick={handleAddNewAddress}
-              className={`flex min-w-38.75 cursor-pointer items-start gap-3 rounded-lg border px-2.5 py-2 text-left transition-all ${
+              className={`flex w-fit min-w-38.75 cursor-pointer items-start gap-3 rounded-lg border px-2.5 py-2 text-left transition-all ${
                 isAddingAddress
                   ? 'border-primary bg-primary/5 shadow-sm'
                   : 'border-border bg-surface hover:border-primary/40 hover:bg-primary/5'
@@ -230,13 +219,13 @@ const DeliveryForm = ({
             >
               <div className="flex h-full flex-1 items-center justify-start gap-2">
                 <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
+                  className={`flex size-7 shrink-0 items-center justify-center rounded-md ${
                     isAddingAddress
                       ? 'bg-primary text-white'
                       : 'bg-primary/10 text-primary'
                   }`}
                 >
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="size-3.5" />
                 </span>
 
                 <span className="text-xs font-medium text-text-primary">
@@ -246,7 +235,7 @@ const DeliveryForm = ({
 
               {isAddingAddress && (
                 <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white">
-                  <Check className="h-2.5 w-2.5" />
+                  <Check className="size-2.5" />
                 </span>
               )}
             </button>

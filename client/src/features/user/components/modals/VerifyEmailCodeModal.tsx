@@ -171,7 +171,7 @@ const VerifyEmailCodeModal = ({
   };
 
   const handleClose = () => {
-    //FIXME обдумать повторную отправки и отслеживания этих состояний
+    //FIXME: обдумать повторную отправки и отслеживания этих состояний
     resetConfirm();
     resetSend();
     setCode('');

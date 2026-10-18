@@ -29,6 +29,7 @@ const AddressModal = () => {
         addressId={
           modal?.type === 'update-address' ? modal.addressId : undefined
         }
+        onSubmitForm={() => onClose()}
       />
     </Modal>
   );

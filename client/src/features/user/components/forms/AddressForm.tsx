@@ -17,7 +17,7 @@ import type { IAddress } from '@/features/addresses/types/address.types';
 
 interface IAddressFormProps {
   addressId?: number;
-  onSubmitForm?: (data: IAddress) => void;
+  onSubmitForm?: (data?: IAddress) => void;
 }
 
 const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
@@ -37,7 +37,6 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
   } = useForm<AddressFormInput, unknown, AddressFormValues>({
     resolver: zodResolver(addressSchema),
   });
-  // const closeModal = useUserModalStore((state) => state.closeModal);
 
   useEffect(() => {
     if (addressId === undefined) {
@@ -70,8 +69,6 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
           house: '',
           apartment: '',
         });
-        // TODO: сделать универсальную форму без приввязки к модел
-        // closeModal();
         onSubmitForm?.(data);
       },
     });
@@ -81,7 +78,7 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
     resetMutation();
   };
 
-  //TODO: добавление комментария к адресу
+  //TODO: добавление комментария к адресу - для курьера
   return (
     <>
       {isError && <FormError message={error.message} onClose={closeError} />}

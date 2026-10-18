@@ -52,7 +52,7 @@ export interface IOrderItems {
     };
   };
 }
-//TODO при создании заказа использовать резерв и именно из него брать продукты
+
 export interface ICreateOrder {
   deliveryCity: string | null;
   deliveryStreet: string | null;

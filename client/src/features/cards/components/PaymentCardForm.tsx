@@ -115,14 +115,13 @@ const PaymentCardForm = ({ onSubmitForm }: IPaymentCardFormProps) => {
             <FieldError message={errors.date?.message} />
           </div>
           <div>
-            {/* FIXME: изменить плейсхолдер*/}
             <label className="mb-1.5 block text-xs font-medium text-text-secondary">
               CVC / CVV
             </label>
             <Input
               icon={Lock}
               type="password"
-              placeholder="..."
+              placeholder="•••"
               maxLength={3}
               {...register('cvc')}
               valid={
