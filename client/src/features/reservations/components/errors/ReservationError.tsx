@@ -1,5 +1,4 @@
 import Button from '@/components/ui/buttons/Button';
-import NavButton from '@/components/ui/buttons/NavButton';
 import { RefreshCw, ShoppingCart, House, X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router';
 

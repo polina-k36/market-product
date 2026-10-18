@@ -247,7 +247,7 @@ const DeliveryForm = ({
                 onSubmitForm={(data) => {
                   resetValid();
                   setIsAddingAddress(false);
-                  setSelectedAddressId(data.id);
+                  setSelectedAddressId(data?.id ?? 0); //TODO: посмотреть потом нормально - временное решение для билда
                 }}
               />
 

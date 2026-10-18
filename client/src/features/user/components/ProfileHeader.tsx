@@ -30,7 +30,7 @@ const ProfileHeader = ({ user }: IProfileHeaderProps) => {
           </div>
         </div>
       </div>
-      <ActiveOrderHeader activeOrders={[{ id: 23, status: 'SHIPPED' }]} />
+      <ActiveOrderHeader />
     </div>
   );
 };

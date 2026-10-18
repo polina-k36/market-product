@@ -1,4 +1,3 @@
-import React from 'react';
 import type { IAddress } from '../types/address.types';
 import { Check, MapPin } from 'lucide-react';
 
