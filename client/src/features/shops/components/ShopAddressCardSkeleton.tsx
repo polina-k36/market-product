@@ -1,4 +1,4 @@
-const AddressCardSkeleton = () => {
+const ShopAddressCardSkeleton = () => {
   return (
     <div
       aria-hidden="true"
@@ -21,4 +21,4 @@ const AddressCardSkeleton = () => {
   );
 };
 
-export default AddressCardSkeleton;
+export default ShopAddressCardSkeleton;

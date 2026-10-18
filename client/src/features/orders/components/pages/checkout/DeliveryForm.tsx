@@ -9,9 +9,9 @@ import { useChangeShopReservation } from '@/features/reservations/hooks/use-chan
 import { useLocation, useNavigate } from 'react-router';
 import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
-import AddressCard from '@/features/addresses/components/AddressCard';
-import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
-import AddressListError from '@/features/addresses/components/AddressListError';
+import ShopAddressCard from '@/features/shops/components/ShopAddressCard';
+import ShopAddressCardSkeleton from '@/features/shops/components/ShopAddressCardSkeleton';
+import ShopAddressListError from '@/features/shops/components/ShopAddressListError';
 
 interface IDeliveryFormProps {
   reservationId: number;
@@ -284,11 +284,11 @@ const DeliveryForm = ({
           {isLoadingShops ? (
             <div className="space-y-2">
               {Array.from({ length: 3 }, (_, index) => (
-                <AddressCardSkeleton key={index} />
+                <ShopAddressCardSkeleton key={index} />
               ))}
             </div>
           ) : isErrorShops ? (
-            <AddressListError onRetry={() => refetchShops()} />
+            <ShopAddressListError onRetry={() => refetchShops()} />
           ) : !shops || shops?.length === 0 ? (
             <p className="py-8 text-center text-sm text-text-secondary">
               Пока нет доступных магазинов
@@ -296,7 +296,7 @@ const DeliveryForm = ({
           ) : (
             <div className="max-h-[min(55vh,380px)] custom-scrollbar space-y-2 overflow-x-hidden overflow-y-auto">
               {shops?.map((shop) => (
-                <AddressCard
+                <ShopAddressCard
                   shop={shop}
                   isSelected={shop.id_shop === activeShopId}
                   onSelect={(id: number) => changeActiveShop(id)}

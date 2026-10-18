@@ -1,13 +1,17 @@
 import type { IShopData } from '@/features/shops/types/shop.types';
 import { Check, MapPin, Phone, Store } from 'lucide-react';
 
-interface StoreOptionProps {
+interface IShopAddressCardProps {
   shop: IShopData;
   isSelected: boolean;
   onSelect: (id: number) => void;
 }
 
-const AddressCard = ({ shop, isSelected, onSelect }: StoreOptionProps) => {
+const ShopAddressCard = ({
+  shop,
+  isSelected,
+  onSelect,
+}: IShopAddressCardProps) => {
   return (
     <button
       type="button"
@@ -64,4 +68,4 @@ const AddressCard = ({ shop, isSelected, onSelect }: StoreOptionProps) => {
   );
 };
 
-export default AddressCard;
+export default ShopAddressCard;

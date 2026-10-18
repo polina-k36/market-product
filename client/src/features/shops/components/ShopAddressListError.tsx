@@ -1,11 +1,11 @@
 import Button from '@/components/ui/buttons/Button';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
-interface AddressListErrorProps {
+interface IShopAddressListErrorProps {
   onRetry: () => void;
 }
 
-const AddressListError = ({ onRetry }: AddressListErrorProps) => {
+const ShopAddressListError = ({ onRetry }: IShopAddressListErrorProps) => {
   return (
     <div
       role="alert"
@@ -35,4 +35,4 @@ const AddressListError = ({ onRetry }: AddressListErrorProps) => {
   );
 };
 
-export default AddressListError;
+export default ShopAddressListError;

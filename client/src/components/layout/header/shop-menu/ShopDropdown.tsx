@@ -3,10 +3,10 @@ import { ChevronDown, Search, Store, X } from 'lucide-react';
 
 import { useShops } from '@/features/shops/hooks/use-shops';
 import { useShopStore } from '@/stores/shop/shop.store';
-import AddressCard from '../../../../features/addresses/components/AddressCard';
+import ShopAddressCard from '../../../../features/shops/components/ShopAddressCard';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
-import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
-import AddressListError from '@/features/addresses/components/AddressListError';
+import ShopAddressCardSkeleton from '@/features/shops/components/ShopAddressCardSkeleton';
+import ShopAddressListError from '@/features/shops/components/ShopAddressListError';
 
 const ShopDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -151,11 +151,11 @@ const ShopDropdown = () => {
               {isLoadingShops ? (
                 <div className="space-y-2">
                   {Array.from({ length: 3 }, (_, index) => (
-                    <AddressCardSkeleton key={index} />
+                    <ShopAddressCardSkeleton key={index} />
                   ))}
                 </div>
               ) : isErrorShops ? (
-                <AddressListError onRetry={() => refetchShops()} />
+                <ShopAddressListError onRetry={() => refetchShops()} />
               ) : !shops || shops?.length === 0 ? (
                 <p className="py-8 text-center text-sm text-text-secondary">
                   Пока нет доступных магазинов
@@ -163,7 +163,7 @@ const ShopDropdown = () => {
               ) : (
                 <div className="space-y-2">
                   {filteredShops?.map((shop) => (
-                    <AddressCard
+                    <ShopAddressCard
                       shop={shop}
                       isSelected={activeShop?.id_shop === shop.id_shop}
                       onSelect={handleSelect}
