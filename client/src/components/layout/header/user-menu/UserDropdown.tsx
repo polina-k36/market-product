@@ -22,6 +22,7 @@ const UserDropdown = ({ user, onClose }: IUserDropdownProps) => {
       onSuccess: () => {
         onClose();
         clearAuth();
+        location.reload();
       },
     });
   };

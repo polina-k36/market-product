@@ -2,15 +2,37 @@ import { useAddCartItem } from './use-add-cart-item';
 import { useRemoveCartItem } from './use-remove-cart-item';
 import { useDecrementCartItem } from './use-decrement-cart-item';
 import { useSetCartItemQuantity } from './use-set-cart-item-quantity';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 export function useCartItemOperations(productId: number, cartQuantity: number) {
   const { mutate: addCartItem } = useAddCartItem();
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: decrementCartItem } = useDecrementCartItem();
   const { mutate: setCartItemQuantity } = useSetCartItemQuantity();
+  const { addNotification } = useNotificationStore();
 
   const add = (quantity?: number) => {
-    addCartItem({ id: productId, quantity });
+    addCartItem(
+      { id: productId, quantity },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: 'success',
+            title: 'Товар добавлен',
+            description: 'Товар успешно добавлен в корзину',
+            duration: 3000,
+          });
+        },
+        onError: () => {
+          addNotification({
+            type: 'error',
+            title: 'Ошибка добавления товара',
+            description: 'Товар не может быть добавлен в корзину',
+            duration: 3000,
+          });
+        },
+      },
+    );
   };
   const increment = (quantity?: number) => {
     addCartItem({ id: productId, quantity });

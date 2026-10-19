@@ -3,17 +3,17 @@ import type { ReactNode } from 'react';
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
-export interface NotificationAction {
+export interface INotificationAction {
   label: string;
   onClick: () => void;
 }
 
-export interface NotificationProps {
+export interface INotificationProps {
   type?: NotificationType;
   title: string;
   description?: ReactNode;
   onClose?: () => void;
-  action?: NotificationAction;
+  action?: INotificationAction;
   className?: string;
 }
 
@@ -31,7 +31,7 @@ const styles: Record<
     icon: Info,
   },
   success: {
-    container: 'border-emerald-200 bg-emerald-50/60',
+    container: 'border-emerald-200 bg-emerald-50',
     iconContainer: 'bg-emerald-500 text-white',
     icon: CheckCircle2,
   },
@@ -54,7 +54,7 @@ const Notification = ({
   onClose,
   action,
   className = '',
-}: NotificationProps) => {
+}: INotificationProps) => {
   const style = styles[type];
   const Icon = style.icon;
   //TODO: обыграть плавное появление и у некоторых уведомлений которые не требуют взаимодействия скрывать их через время
