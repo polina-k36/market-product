@@ -61,7 +61,7 @@ export class UsersService {
         'This email or phone number is already in use.',
       );
 
-    const { password, phone, ...createDataWithoutPasswordAndPhone } =
+    const { password, phone, urlAvatar, ...createDataWithoutPasswordAndPhone } =
       createData;
 
     return client.user.create({

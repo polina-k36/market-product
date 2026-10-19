@@ -35,6 +35,7 @@ import jwtConfig from './common/config/jwt.config.js';
 import mailConfig from './common/config/mail.config.js';
 import googleConfig from './common/config/google.config.js';
 import s3Config from './common/config/s3.config.js';
+import resendConfig from './common/config/resend.config.js';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import s3Config from './common/config/s3.config.js';
         mailConfig,
         googleConfig,
         s3Config,
+        resendConfig,
       ],
       validationSchema: envSchema,
     }),

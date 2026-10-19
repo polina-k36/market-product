@@ -304,7 +304,7 @@ export class AuthService {
       html: this.getPasswordResetCodeTemplate(code.toString()),
     });
 
-    if (!sendEmail.success) {
+    if (!sendEmail) {
       throw new InternalServerErrorException(
         'Failed to send password reset code',
       );

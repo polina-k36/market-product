@@ -52,6 +52,10 @@ export const envSchema = z.object({
   EMAIL_USER: z.string().email('EMAIL_USER must be a valid email address'),
   EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required'),
 
+  EMAIL_FROM: z.string().email('EMAIL_FROM must be a valid email address'),
+
+  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
+
   S3_ENDPOINT: httpsUrlSchema,
 
   S3_REGION: z

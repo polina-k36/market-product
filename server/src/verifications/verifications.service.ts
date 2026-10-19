@@ -191,6 +191,7 @@ export class VerificationsService {
       value,
       verification.valueHash ?? '',
     );
+
     if (!isValidToken)
       throw new UnauthorizedException('Invalid verification token.');
 
