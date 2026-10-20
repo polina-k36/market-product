@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router';
 import type { OrderStatus } from '@/features/orders/types/order.types';
 import { useCancelOrder } from '@/features/orders/hooks/use-cancel-order';
 import { usePrepareCheckout } from '@/features/reservations/hooks/use-prepare-checkout';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 interface IOrderSummaryProps {
   orderId: number;
@@ -31,7 +32,22 @@ const OrderSummary = ({
   const navigate = useNavigate();
   const { mutate: cancelOrder } = useCancelOrder();
   const { checkout } = usePrepareCheckout();
-  console.log(status);
+  const { addNotification } = useNotificationStore();
+
+  const onCancelOrder = () => {
+    addNotification({
+      type: 'warning',
+      title: 'Внимание!',
+      description: 'Вы уверены, что хотите отменить заказ?',
+      action: {
+        label: 'Отменить',
+        onClick: () => {
+          cancelOrder(orderId);
+        },
+      },
+      duration: 0,
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
@@ -82,7 +98,7 @@ const OrderSummary = ({
         <Button
           variant="danger-filled"
           className="mt-2 w-full"
-          onClick={() => cancelOrder(orderId)}
+          onClick={() => onCancelOrder()}
         >
           <CircleX className="size-3.5" />
           Отменить заказ

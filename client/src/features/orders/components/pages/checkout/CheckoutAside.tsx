@@ -1,5 +1,6 @@
 import Button from '@/components/ui/buttons/Button';
 import { useReservationOperations } from '@/features/reservations/hooks/use-reservation-operations';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 import {
   ArrowRight,
   CheckCircle2,
@@ -26,10 +27,22 @@ const CheckoutAside = ({
 }: ICheckoutAsideProps) => {
   const { cancel } = useReservationOperations(reservationId);
   const navigate = useNavigate();
+  const { addNotification } = useNotificationStore();
 
   const cancelOrder = () => {
-    cancel(); //TODO: спросить уверен ли пользователь в своих дествиях и действительно ли хочет отменить заказ
-    navigate('/');
+    addNotification({
+      type: 'warning',
+      title: 'Внимание!',
+      description: 'Вы уверены, что хотите отменить заказ?',
+      action: {
+        label: 'Отменить',
+        onClick: () => {
+          cancel();
+          navigate('/');
+        },
+      },
+      duration: 0,
+    });
   };
   const confirmOrder = async () => {
     onConfirmOrder();

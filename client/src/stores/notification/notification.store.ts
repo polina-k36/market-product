@@ -46,6 +46,13 @@ export const useNotificationStore = create<INotificationStore>((set) => {
     const newNotification: INotification = {
       ...notification,
       id,
+      action: {
+        label: notification.action?.label ?? 'Закрыть',
+        onClick: () => {
+          notification.action?.onClick?.();
+          removeNotification(id);
+        },
+      },
     };
 
     set((state) => ({

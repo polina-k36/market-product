@@ -26,7 +26,7 @@ const styles: Record<
   }
 > = {
   info: {
-    container: 'border-blue-200 bg-blue-50/60',
+    container: 'border-blue-200 bg-blue-50',
     iconContainer: 'bg-blue-500 text-white',
     icon: Info,
   },
@@ -36,12 +36,12 @@ const styles: Record<
     icon: CheckCircle2,
   },
   warning: {
-    container: 'border-amber-200 bg-amber-50/60',
+    container: 'border-amber-200 bg-amber-50',
     iconContainer: 'bg-amber-500 text-white',
     icon: TriangleAlert,
   },
   error: {
-    container: 'border-red-200 bg-red-50/60',
+    container: 'border-red-200 bg-red-50',
     iconContainer: 'bg-red-500 text-white',
     icon: CircleX,
   },

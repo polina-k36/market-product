@@ -6,6 +6,7 @@ import OrderSummary from '@/features/orders/components/pages/info/OrderSummary';
 import PaymentInfo from '@/features/orders/components/pages/info/PaymentInfo';
 import { useOrder } from '@/features/orders/hooks/use-order';
 import { useParams } from 'react-router';
+import NotificationLayout from '@/components/layout/notification-layout/NotificationLayout';
 
 const OrderDetailsPage = () => {
   const params = useParams();
@@ -23,7 +24,7 @@ const OrderDetailsPage = () => {
   console.log(order?.orderItems);
 
   return (
-    <>
+    <NotificationLayout>
       {Number.isInteger(Number(params.id)) && order && (
         <OrderLayout
           header={
@@ -66,7 +67,7 @@ const OrderDetailsPage = () => {
           />
         </OrderLayout>
       )}
-    </>
+    </NotificationLayout>
   );
 };
 
