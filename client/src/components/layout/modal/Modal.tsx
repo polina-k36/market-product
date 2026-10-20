@@ -37,7 +37,7 @@ const Modal = ({
   const HeaderIcon = header?.icon;
   const BtnSubmitIcon = footer?.btnSubmitIcon;
   const dialogRef = useRef<HTMLDialogElement | null>(null);
-  //TODO: сделать закрытие на затемненный фон
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -60,8 +60,14 @@ const Modal = ({
     <dialog
       id="modal"
       ref={dialogRef}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) {
+          dialogRef.current.close();
+          document.body.style.overflowY = 'scroll';
+        }
+      }}
       aria-label="Модальное окно"
-      className={`fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-border bg-surface p-0 text-text-primary shadow-xl backdrop-blur-xs backdrop:bg-black/30 ${sizes[size]}`}
+      className={`fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-border bg-surface p-0 text-text-primary shadow-xl backdrop-blur-xs backdrop:bg-black/30 ${sizes[size]} backdrop:cursor-pointer`}
     >
       <div className={padding ?? ''}>
         {header && (

@@ -12,7 +12,7 @@ const CategoryListError = ({ resetErrorBoundary }: ICategoryListErrorProps) => {
       <button
         type="button"
         onClick={resetErrorBoundary}
-        className="shrink-0 text-sm font-semibold text-danger transition-colors hover:text-danger/80"
+        className="shrink-0 cursor-pointer text-sm font-semibold text-danger transition-colors hover:text-danger/80"
       >
         Повторить
       </button>

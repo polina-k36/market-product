@@ -10,7 +10,7 @@ import ProductGrid from '@/features/products/components/product-grid/ProductGrid
 import { useProductFilters } from '@/features/products/hooks/use-product-filters';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-
+//FIXME: предварительно может плюсовать количество в корзине а пртом уже отправлять в бд
 const MainPage = () => {
   const { filters } = useProductFilters();
 

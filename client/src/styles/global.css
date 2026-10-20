@@ -36,6 +36,7 @@
   /* Animate */
   --animate-shimmer: shimmer 1.5s ease-in-out infinite;
   --animate-field-error: field-error 300ms ease-out;
+  --animate-notification-enter: notification-enter 250ms ease-out both;
 }
 
 .dark {
@@ -114,5 +115,17 @@
   &::-webkit-scrollbar-track {
     border-radius: 9999px;
     background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+  }
+}
+
+@keyframes notification-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

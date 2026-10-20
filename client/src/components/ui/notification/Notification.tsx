@@ -57,10 +57,9 @@ const Notification = ({
 }: INotificationProps) => {
   const style = styles[type];
   const Icon = style.icon;
-  //TODO: обыграть плавное появление и у некоторых уведомлений которые не требуют взаимодействия скрывать их через время
 
   return (
-    <div className="m-auto mt-2.5 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div className="m-auto mt-2.5 w-full max-w-6xl animate-notification-enter px-4 sm:px-6 lg:px-8">
       <section
         role={type === 'error' ? 'alert' : 'status'}
         className={`flex w-full items-start gap-3 rounded-xl border p-4 shadow-sm ${style.container} ${className}`}
