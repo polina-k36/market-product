@@ -11,10 +11,11 @@ import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
 import ShopAddressCardSkeleton from '@/features/shops/components/ShopAddressCardSkeleton';
 import ShopAddressListError from '@/features/shops/components/ShopAddressListError';
-import AddressListError from '@/features/addresses/components/AddressCardListError';
+import AddressCardListError from '@/features/addresses/components/AddressCardListError';
 import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
 import AddressCard from '@/features/addresses/components/AddressCard';
 import ShopAddressCard from '@/features/shops/components/ShopAddressCard';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 interface IDeliveryFormProps {
   reservationId: number;
@@ -53,6 +54,7 @@ const DeliveryForm = ({
   const [isAddingAddress, setIsAddingAddress] = useState(false);
 
   const { mutate: changeShop } = useChangeShopReservation();
+  const { addNotification } = useNotificationStore();
 
   const handleSelectAddress = (addressId: number) => {
     resetValid();
@@ -67,31 +69,57 @@ const DeliveryForm = ({
   };
 
   const changeActiveShop = (shopId: number) => {
-    resetValid();
-    changeShop(
-      {
-        reservationId,
-        shopId,
-      },
-      {
-        onSuccess: (data) => {
-          console.log('changed shop');
-          navigate(`/orders/checkout/${data.reservationId}${location.search}`, {
-            state: {
-              issues: data.items.filter(
-                (item) =>
-                  item.status === 'UNAVAILABLE' ||
-                  item.status === 'PARTIALLY_RESERVED',
-              ),
+    addNotification({
+      type: 'warning',
+      title: 'Внимание!',
+      description:
+        'Вы уверены, что хотите сменить магазин? При смене магазина некоторые продукты могут быть недоступны.',
+      action: {
+        label: 'Сменить',
+        onClick: () => {
+          resetValid();
+          changeShop(
+            {
+              reservationId,
+              shopId,
             },
-          });
-          setActiveShopId(shopId);
-        },
-        onError: () => {
-          console.log('reservation not created'); // TODO: сообщить, что смена магазина невозможна
+            {
+              onSuccess: (data) => {
+                navigate(
+                  `/orders/checkout/${data.reservationId}${location.search}`,
+                  {
+                    state: {
+                      issues: data.items.filter(
+                        (item) =>
+                          item.status === 'UNAVAILABLE' ||
+                          item.status === 'PARTIALLY_RESERVED',
+                      ),
+                    },
+                  },
+                );
+                setActiveShopId(shopId);
+
+                addNotification({
+                  type: 'success',
+                  title: 'Успешно!',
+                  description: 'Новый магазин успешно выбран',
+                  duration: 3000,
+                });
+              },
+              onError: () => {
+                addNotification({
+                  type: 'error',
+                  title: 'В выбранном магазине нет не одного товара из списка',
+                  description: 'Выберите другой магазин или смените товары',
+                  duration: 3000,
+                });
+              },
+            },
+          );
         },
       },
-    );
+      duration: 0,
+    });
   };
 
   return (
@@ -188,7 +216,7 @@ const DeliveryForm = ({
                 ))}
               </div>
             ) : isErrorAddresses ? (
-              <AddressListError onRetry={() => refetchAddresses()} />
+              <AddressCardListError onRetry={() => refetchAddresses()} />
             ) : !addresses || addresses.length === 0 ? (
               <p className="py-4 text-center text-sm text-text-secondary">
                 У тебя пока нет сохранённых адресов
@@ -245,6 +273,12 @@ const DeliveryForm = ({
             <div className="mt-4">
               <AddressForm
                 onSubmitForm={(data) => {
+                  addNotification({
+                    type: 'success',
+                    title: 'Успешно!',
+                    description: 'Адрес успешно добавлен.',
+                    duration: 3000,
+                  });
                   resetValid();
                   setIsAddingAddress(false);
                   setSelectedAddressId(data?.id ?? 0); //TODO: посмотреть потом нормально - временное решение для билда

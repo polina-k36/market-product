@@ -6,6 +6,10 @@ import { AlertCircle, Banknote, Check, CreditCard, Plus } from 'lucide-react';
 import { useUserCards } from '@/features/cards/hooks/use-user-cards';
 import { usePaymentMethod } from '@/features/orders/hooks/use-payment-method';
 import Button from '@/components/ui/buttons/Button';
+import { useNotificationStore } from '@/stores/notification/notification.store';
+import PaymentCardButton from '@/features/cards/components/PaymentCardButton';
+import PaymentCardButtonSkeleton from '@/features/cards/components/PaymentCardButtonSkeleton';
+import PaymentCardListError from '@/features/cards/components/PaymentCardListError';
 
 interface IPaymentFormProps {
   selectedCardId: number | null;
@@ -20,11 +24,18 @@ const PaymentForm = ({
   resetValid,
   isNotValid = false,
 }: IPaymentFormProps) => {
-  const { data: cards } = useUserCards(); // TODO: обработать загрузку и ошибку карт
+  const {
+    data: cards,
+    isError: isErrorCards,
+    isLoading: isLoadingCards,
+    refetch: refetchCards,
+  } = useUserCards(); // TODO: обработать загрузку и ошибку карт
 
   const { method: paymentMethod, setMethod: setPaymentMethod } =
     usePaymentMethod();
   const [isAddingCard, setIsAddingCard] = useState(false);
+
+  const { addNotification } = useNotificationStore();
 
   const handleSelectCard = (cardId: number) => {
     resetValid();
@@ -136,52 +147,33 @@ const PaymentForm = ({
             Выберите карту
           </p>
 
-          <div className="flex flex-wrap gap-2">
-            {cards &&
-              cards.map((card) => {
-                const isSelected = selectedCardId === card.id && !isAddingCard;
-
-                return (
-                  <button
+          <div
+            className={`flex flex-wrap gap-2 ${isErrorCards ? 'flex-col' : 'flex-row'}`}
+          >
+            {isLoadingCards ? (
+              <div className="flex flex-wrap gap-2">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <PaymentCardButtonSkeleton key={index} />
+                ))}
+              </div>
+            ) : isErrorCards ? (
+              <PaymentCardListError onRetry={() => refetchCards()} />
+            ) : !cards || cards.length === 0 ? (
+              <p className="py-4 text-center text-sm text-text-secondary">
+                У тебя пока нет сохранённых карт
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {cards.map((card) => (
+                  <PaymentCardButton
                     key={card.id}
-                    type="button"
-                    onClick={() => handleSelectCard(card.id)}
-                    className={`flex min-w-32.5 cursor-pointer items-start gap-3 rounded-lg border px-2.5 py-2 text-left transition-all ${
-                      isSelected
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border bg-surface hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="flex flex-1 items-center justify-start gap-2">
-                      <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
-                          isSelected
-                            ? 'bg-primary text-white'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
-                        <CreditCard className="h-3.5 w-3.5" />
-                      </span>
-
-                      <span className="min-w-0">
-                        <span className="block text-xs font-medium text-text-primary uppercase">
-                          {card.cardBrand}
-                        </span>
-
-                        <span className="block text-[11px] text-text-muted">
-                          •••• {card.cardLast4}
-                        </span>
-                      </span>
-                    </div>
-
-                    {isSelected && (
-                      <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-white">
-                        <Check className="h-2.5 w-2.5" />
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+                    card={card}
+                    isSelected={selectedCardId === card.id && !isAddingCard}
+                    handleSelectCard={handleSelectCard}
+                  />
+                ))}
+              </div>
+            )}
 
             <button
               type="button"
@@ -220,6 +212,12 @@ const PaymentForm = ({
             <div className="mt-4">
               <PaymentCardForm
                 onSubmitForm={(data) => {
+                  addNotification({
+                    type: 'success',
+                    title: 'Успешно!',
+                    description: 'Карта успешно добавлена.',
+                    duration: 3000,
+                  });
                   resetValid();
                   setIsAddingCard(false);
                   setSelectedCardId(data.id);

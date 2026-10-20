@@ -5,7 +5,7 @@ interface IAddressListErrorProps {
   onRetry: () => void;
 }
 //FIXME: сделать общую панель ошибки для всех
-const AddressListError = ({ onRetry }: IAddressListErrorProps) => {
+const AddressCardListError = ({ onRetry }: IAddressListErrorProps) => {
   return (
     <div
       role="alert"
@@ -34,4 +34,4 @@ const AddressListError = ({ onRetry }: IAddressListErrorProps) => {
   );
 };
 
-export default AddressListError;
+export default AddressCardListError;
