@@ -10,6 +10,7 @@ export interface IPromoOrder {
   status: OrderStatus;
   itemCount: number;
   shop: {
+    id: number;
     city: string;
     street: string;
     house: string;

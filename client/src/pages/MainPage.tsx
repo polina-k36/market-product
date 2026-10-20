@@ -8,6 +8,7 @@ import CategoryListError from '@/features/categories/components/CategoryListErro
 import CategoryListSkeleton from '@/features/categories/components/CategoryListSkeleton';
 import ProductGrid from '@/features/products/components/product-grid/ProductGrid';
 import { useProductFilters } from '@/features/products/hooks/use-product-filters';
+import ShopInitializer from '@/features/shops/components/ShopInitializer';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 //FIXME: предварительно может плюсовать количество в корзине а пртом уже отправлять в бд
@@ -17,6 +18,7 @@ const MainPage = () => {
   return (
     <>
       <MainLayout>
+        <ShopInitializer />
         {!filters.search && (
           <>
             <HeroBanner />
