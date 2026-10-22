@@ -6,6 +6,6 @@ export function useAddress(id?: number) {
   return useQuery({
     queryKey: [...ADDRESSES_QUERY_KEY, id],
     queryFn: () => addressApi.getAddressById(id ?? 0),
-    enabled: id !== undefined && id > 0,
+    enabled: id !== undefined && id !== null && id > 0,
   });
 }

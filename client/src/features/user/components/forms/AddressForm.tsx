@@ -81,7 +81,6 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
     resetMutation();
   };
 
-  //TODO: добавление комментария к адресу - для курьера
   return (
     <>
       {isError && <FormError message={error.message} onClose={closeError} />}

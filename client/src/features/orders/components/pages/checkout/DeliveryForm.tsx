@@ -11,9 +11,9 @@ import Button from '@/components/ui/buttons/Button';
 import { useDeliveryMethod } from '@/features/orders/hooks/use-delivery-method';
 import ShopAddressCardSkeleton from '@/features/shops/components/ShopAddressCardSkeleton';
 import ShopAddressListError from '@/features/shops/components/ShopAddressListError';
-import AddressCardListError from '@/features/addresses/components/AddressCardListError';
-import AddressCardSkeleton from '@/features/addresses/components/AddressCardSkeleton';
-import AddressCard from '@/features/addresses/components/AddressCard';
+import AddressCardListError from '@/features/addresses/components/order/AddressCardListError';
+import AddressCardSkeleton from '@/features/addresses/components/order/AddressCardSkeleton';
+import AddressCard from '@/features/addresses/components/order/AddressCard';
 import ShopAddressCard from '@/features/shops/components/ShopAddressCard';
 import { useNotificationStore } from '@/stores/notification/notification.store';
 

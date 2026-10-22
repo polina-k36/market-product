@@ -7,6 +7,7 @@ export const addressApi = {
     const { data } = await api.get<IResponse<IAddress>>(
       `/user-addresses/${id}`,
     );
+    console.log(data);
     return data.data;
   },
   getAllAddresses: async (): Promise<IAddress[]> => {

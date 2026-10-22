@@ -14,16 +14,19 @@ import { useUserModalStore } from '../store/user-modal.store';
 import { useRemoveAddress } from '@/features/addresses/hooks/use-remove-address';
 import { useQueryClient } from '@tanstack/react-query';
 import { IMaskInput } from 'react-imask';
+import AddressCardForUserSettings from '@/features/addresses/components/user-settings/AddressCardForUserSettings';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 const ProfileSettings = () => {
   const { data: user } = useUserProfile();
   const { openCreateAddressModal, openUpdateAddressModal, openUserInfoModal } =
     useUserModalStore();
   const queryClient = useQueryClient();
+  const { addNotification } = useNotificationStore();
 
   const { mutate } = useRemoveAddress();
 
-  const onDelete = (id: number) => {
+  const onDeleteAddress = (id: number) => {
     mutate(id, {
       onSuccess: () => {
         queryClient.refetchQueries({
@@ -31,7 +34,12 @@ const ProfileSettings = () => {
         });
       },
       onError: (e) => {
-        alert(e.message);
+        addNotification({
+          type: 'error',
+          title: 'Ошибка удаления адреса',
+          description: e.message,
+          duration: 0,
+        });
       },
     });
   };
@@ -145,37 +153,12 @@ const ProfileSettings = () => {
 
             <div className="mt-5 space-y-2.5">
               {user.addresses.map((address) => (
-                <div
+                <AddressCardForUserSettings
+                  address={address}
                   key={address.id}
-                  className="group relative rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-emerald-500/20 hover:bg-emerald-500/3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="mt-1 text-sm leading-5 text-text-secondary">
-                        {`г. ${address.city} ${address.street} д. ${address.house} ${address.apartment ? `кв. ${address.apartment}` : ''} `}
-                      </p>
-                    </div>
-
-                    <div className="flex gap-4">
-                      <button
-                        type="button"
-                        className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-emerald-500"
-                        onClick={() => openUpdateAddressModal(address.id)}
-                      >
-                        Изменить
-                      </button>
-                      <button
-                        type="button"
-                        className="shrink-0 cursor-pointer text-xs font-medium text-text-muted transition-colors duration-200 hover:text-danger"
-                        onClick={() => {
-                          onDelete(address.id);
-                        }}
-                      >
-                        Удалить
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  onDelete={onDeleteAddress}
+                  onEdit={openUpdateAddressModal}
+                />
               ))}
             </div>
           </section>
@@ -203,22 +186,22 @@ const ProfileSettings = () => {
               {user.cards.map((card) => (
                 <div
                   key={card.id}
-                  className="group flex items-center gap-3 rounded-xl border border-border bg-surface-muted px-4 py-3 transition-all duration-200 hover:border-violet-500/20 hover:bg-violet-500/3"
+                  className="rounded-xl border border-border bg-surface p-4 transition-colors hover:border-primary/30"
                 >
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface text-[0.625rem] font-bold text-text-secondary shadow-sm">
-                    <CreditCard />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-sm font-semibold text-text-primary">
-                        •••• •••• •••• {card.cardLast4}
-                      </p>
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <CreditCard className="size-5" aria-hidden="true" />
                     </div>
 
-                    <p className="mt-1 text-xs text-text-muted">
-                      {card.cardBrand}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm leading-6 font-semibold text-text-primary">
+                        •••• •••• •••• {card.cardLast4}
+                      </p>
+
+                      <p className="mt-1 text-xs text-text-muted">
+                        {card.cardBrand}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}

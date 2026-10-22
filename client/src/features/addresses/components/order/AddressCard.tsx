@@ -1,4 +1,4 @@
-import type { IAddress } from '../types/address.types';
+import type { IAddress } from '../../types/address.types';
 import { Check, MapPin } from 'lucide-react';
 
 interface IAddressCardProps {
