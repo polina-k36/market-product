@@ -7,6 +7,7 @@ import { Calendar, CreditCard, Lock } from 'lucide-react';
 import MaskedInput from '@/components/ui/inputs/MaskedInput';
 import { useCreteUserCard } from '../hooks/use-create-user-card';
 import type { IUserCard } from '../types/card.types';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 interface IPaymentCardFormProps {
   onSubmitForm?: (data: IUserCard) => void;
@@ -25,6 +26,7 @@ const PaymentCardForm = ({ onSubmitForm }: IPaymentCardFormProps) => {
   });
 
   const { mutate: createCard } = useCreteUserCard();
+  const { addNotification } = useNotificationStore();
 
   const onSubmit = (data: CardFormValues) => {
     const [monthStr, yearStr] = data.date.split('/');
@@ -37,7 +39,12 @@ const PaymentCardForm = ({ onSubmitForm }: IPaymentCardFormProps) => {
       expireMonth < 1 ||
       expireMonth > 12
     ) {
-      return;
+      addNotification({
+        type: 'error',
+        title: 'Ошибка добавления карты',
+        description: 'Ваша карта просрочена',
+        duration: 0,
+      });
     }
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
@@ -47,7 +54,7 @@ const PaymentCardForm = ({ onSubmitForm }: IPaymentCardFormProps) => {
       expireYear < currentYear ||
       (expireYear === currentYear && expireMonth < currentMonth)
     ) {
-      return; //FIXME: подумать над отправкой ошибок или объектов для сообщений
+      return;
     }
 
     createCard(

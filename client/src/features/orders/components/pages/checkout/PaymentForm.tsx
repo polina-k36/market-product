@@ -29,7 +29,7 @@ const PaymentForm = ({
     isError: isErrorCards,
     isLoading: isLoadingCards,
     refetch: refetchCards,
-  } = useUserCards(); // TODO: обработать загрузку и ошибку карт
+  } = useUserCards();
 
   const { method: paymentMethod, setMethod: setPaymentMethod } =
     usePaymentMethod();
