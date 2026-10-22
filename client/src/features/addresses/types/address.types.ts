@@ -4,6 +4,7 @@ export interface IAddress {
   street: string;
   house: string;
   apartment: string | null;
+  comment: string | null;
 }
 
 export interface ICreateUpdateAddress {
@@ -11,4 +12,5 @@ export interface ICreateUpdateAddress {
   street: string;
   house: string;
   apartment: string | null;
+  comment: string | null;
 }

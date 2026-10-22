@@ -1,6 +1,6 @@
 import Input from '@/components/ui/inputs/Input';
 import { useAddress } from '@/features/addresses/hooks/use-address';
-import { Building2, MapPin, Navigation } from 'lucide-react';
+import { Building2, MapPin, MessageSquare, Navigation } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
   addressSchema,
@@ -12,8 +12,8 @@ import { useEffect } from 'react';
 import FieldError from '@/features/auth/components/FieldError';
 import { useCreateUpdateAddress } from '@/features/addresses/hooks/use-create-update-address';
 import FormError from '@/features/auth/components/FormError';
-// import { useUserModalStore } from '../../store/user-modal.store';
 import type { IAddress } from '@/features/addresses/types/address.types';
+import Textarea from '@/components/ui/inputs/Textarea';
 
 interface IAddressFormProps {
   addressId?: number;
@@ -45,6 +45,7 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
         street: '',
         house: '',
         apartment: '',
+        comment: '',
       });
 
       return;
@@ -56,6 +57,7 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
         street: address.street,
         house: address.house,
         apartment: address.apartment ?? '',
+        comment: address.comment ?? '',
       });
     }
   }, [addressId, address, resetForm]);
@@ -68,6 +70,7 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
           street: '',
           house: '',
           apartment: '',
+          comment: '',
         });
         onSubmitForm?.(data);
       },
@@ -159,6 +162,23 @@ const AddressForm = ({ addressId, onSubmitForm }: IAddressFormProps) => {
             />
             <FieldError message={errors.apartment?.message} />
           </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs font-medium text-text-secondary">
+            Комментарий
+          </label>
+          <Textarea
+            icon={MessageSquare}
+            placeholder="Оставьте комментарий"
+            {...register('comment')}
+            valid={
+              getFieldState('comment').isTouched
+                ? !getFieldState('comment').invalid
+                : undefined
+            }
+          />
+          <FieldError message={errors.comment?.message} />
         </div>
       </form>
     </>

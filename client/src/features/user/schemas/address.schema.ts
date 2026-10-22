@@ -23,6 +23,7 @@ export const addressSchema = z.object({
       z.literal(''),
     ])
     .transform((value) => (value === '' ? null : value)),
+  comment: z.string(),
 });
 
 export type AddressFormInput = z.input<typeof addressSchema>;

@@ -95,7 +95,7 @@ const Notification = ({
             type="button"
             onClick={onClose}
             aria-label="Закрыть уведомление"
-            className="shrink-0 rounded-md p-1 text-text-muted transition-colors hover:bg-black/5 hover:text-text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            className="shrink-0 cursor-pointer rounded-md p-1 text-text-muted transition-colors hover:bg-black/5 hover:text-text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             <X className="h-4 w-4" />
           </button>
