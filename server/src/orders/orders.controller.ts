@@ -30,14 +30,13 @@ import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ChangeOrderStatusDto } from './dto/change-order-status.dto.js';
 import { ReturnOrderDto } from './dto/return-order.dto.js';
 import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
-
+//FIXME: не забыть поправить верификацию
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @EmailVerified(true)
   @Post()
   @ApiOperation({
     summary: 'Создать заказ',
@@ -183,7 +182,6 @@ export class OrdersController {
   }
 
   @Roles('ADMIN')
-  @EmailVerified(true)
   @Patch(':id/status')
   @ApiOperation({
     summary: 'Изменить статус заказа',
@@ -226,7 +224,6 @@ export class OrdersController {
     };
   }
 
-  @EmailVerified(true)
   @Post(':id/cancel')
   @ApiOperation({
     summary: 'Отменить заказ',
@@ -271,7 +268,6 @@ export class OrdersController {
     };
   }
 
-  @EmailVerified(true)
   @Post(':id/return')
   @ApiOperation({
     summary: 'Оформить возврат заказа',
@@ -317,7 +313,6 @@ export class OrdersController {
   }
 
   @Roles('ADMIN')
-  @EmailVerified(true)
   @Delete(':id')
   @ApiOperation({
     summary: 'Удалить заказ',

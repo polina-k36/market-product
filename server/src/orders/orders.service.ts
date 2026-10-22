@@ -165,6 +165,7 @@ export class OrdersService {
         },
         shop: {
           select: {
+            id: true,
             city: true,
             street: true,
             house: true,

@@ -421,6 +421,7 @@ model UserAddress {
   street    String  @db.VarChar(200)
   house     String  @db.VarChar(20)
   apartment String? @db.VarChar(20)
+  comment   String? @db.Text
 
   userId    Int      @map("id_user")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)

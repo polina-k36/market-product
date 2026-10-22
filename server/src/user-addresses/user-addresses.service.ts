@@ -42,6 +42,7 @@ export class UserAddressesService {
         street: true,
         house: true,
         apartment: true,
+        comment: true,
       },
     });
   }

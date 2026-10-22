@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserAddressDto {
   @ApiProperty({
@@ -34,7 +34,16 @@ export class CreateUserAddressDto {
     example: '12',
     maxLength: 20,
   })
+  @IsOptional()
   @IsString()
   @MaxLength(20)
   apartment?: string;
+
+  @ApiPropertyOptional({
+    description: 'Комментарий к адресу',
+    example: 'Домофон не работает',
+  })
+  @IsString()
+  @IsOptional()
+  comment?: string;
 }
