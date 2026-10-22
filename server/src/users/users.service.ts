@@ -152,6 +152,7 @@ export class UsersService {
             house: true,
             city: true,
             apartment: true,
+            comment: true,
           },
         },
       },
