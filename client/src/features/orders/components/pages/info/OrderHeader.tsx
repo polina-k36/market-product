@@ -1,6 +1,7 @@
 import NavButton from '@/components/ui/buttons/NavButton';
 import type { OrderStatus } from '@/features/orders/types/order.types';
 import { orderStatusConfig } from '@/features/orders/utils/order-status.utils';
+import { formatDateTime } from '@/utils/format-date.utils';
 import { useNavigate } from 'react-router';
 
 interface IOrderHeaderProps {
@@ -31,7 +32,7 @@ const OrderHeader = ({ id, date, status }: IOrderHeaderProps) => {
             </h1>
 
             <span className="text-sm text-text-secondary">
-              {date.toLocaleString('ru-RU')}
+              {formatDateTime(date)}
             </span>
           </div>
         </div>

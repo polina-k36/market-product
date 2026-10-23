@@ -1,4 +1,4 @@
-import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
+import ProductQuantityControl from '@/components/ui/controls/ProductQuantityControl';
 import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
 import { Plus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router';
@@ -71,7 +71,7 @@ const ProductCard = ({
               <Plus />
             </button>
           ) : (
-            <CartItemQuantityControl
+            <ProductQuantityControl
               unit={unit}
               quantity={cartQuantity}
               onIncrement={increment}

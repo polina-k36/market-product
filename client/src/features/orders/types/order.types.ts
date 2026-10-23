@@ -37,6 +37,15 @@ export interface IFullOrder {
     house: string;
   };
   orderItems: IOrderItems[];
+  invoices: IReturnedInvoice[];
+}
+
+export interface IReturnedInvoice {
+  date: Date;
+  invoiceItems: {
+    productId: number;
+    quantity: number;
+  }[];
 }
 
 export interface IOrderItems {

@@ -1,6 +1,6 @@
 import { useCartItemOperations } from '../hooks/use-cart-item-operations';
 import { useReservationItemOperations } from '@/features/reservations/hooks/use-reservation-item-operations';
-import CartItemQuantityControl from './CartItemQuantityControl';
+import ProductQuantityControl from '../../../components/ui/controls/ProductQuantityControl';
 import { Image, Trash2, AlertTriangle, PackageX } from 'lucide-react';
 import { env } from '@/config/env';
 import { useShopStore } from '@/stores/shop/shop.store';
@@ -129,7 +129,7 @@ const CartProductCard = ({ product, mode }: ICartProductCardProps) => {
           )}
         </div>
 
-        <CartItemQuantityControl
+        <ProductQuantityControl
           quantity={quantity}
           unit={product.unit}
           onIncrement={onIncrement}

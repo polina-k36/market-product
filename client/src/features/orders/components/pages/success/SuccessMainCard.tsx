@@ -1,3 +1,4 @@
+import { formatDateTime } from '@/utils/format-date.utils';
 import { CalendarCheck, CheckCircle } from 'lucide-react';
 
 interface ISuccessMainCardProps {
@@ -25,7 +26,7 @@ const SuccessMainCard = ({ orderId, total, date }: ISuccessMainCardProps) => {
       </p>
       <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-2 text-sm font-medium text-accent">
         <CalendarCheck className="h-4 w-4" />
-        Дата заказа: {date.toLocaleString('ru-RU')}
+        Дата заказа: {formatDateTime(date)}
       </div>
     </div>
   );

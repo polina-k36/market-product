@@ -8,7 +8,7 @@ import {
 import NavButton from '@/components/ui/buttons/NavButton';
 import { useNavigate } from 'react-router';
 import { useCartItemOperations } from '@/features/cart/hooks/use-cart-item-operations';
-import CartItemQuantityControl from '@/features/cart/components/CartItemQuantityControl';
+import ProductQuantityControl from '@/components/ui/controls/ProductQuantityControl';
 import { env } from '@/config/env';
 
 interface IProductDetailsProps {
@@ -113,7 +113,7 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <CartItemQuantityControl
+                <ProductQuantityControl
                   unit={product.unit.shortTitle}
                   quantity={product.cartQuantity}
                   onDecrement={decrement}

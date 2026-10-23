@@ -1,4 +1,5 @@
 import NavButton from '@/components/ui/buttons/NavButton';
+import { formatDateTime } from '@/utils/format-date.utils';
 import { Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -26,14 +27,7 @@ const CheckoutHeader = ({ isNewReservation }: ICheckoutHeaderProps) => {
       <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[0.8rem] font-medium tracking-wider text-text-muted">
-            {currentDateTime.toLocaleString('ru-RU', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })}
+            {formatDateTime(currentDateTime)}
           </p>
 
           <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">

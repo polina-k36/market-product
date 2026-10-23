@@ -48,7 +48,7 @@ const OrderDetailsPage = () => {
             />
           }
         >
-          <OrderItems items={order.orderItems} />
+          <OrderItems items={order.orderItems} invoices={order.invoices} />
 
           <DeliveryInfo
             address={
