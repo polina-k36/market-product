@@ -4,6 +4,7 @@ import type {
   ICreateOrder,
   IFullOrder,
   IPromoOrder,
+  IReturnProduct,
 } from '../types/order.types';
 
 export const ordersApi = {
@@ -45,11 +46,20 @@ export const ordersApi = {
     );
     return data.data;
   },
-  //TODO: возврат не всего заказа а некоторых продуктов из него
-  // returnOrder: async (id: number) => {
-  //   const { data } = await api.post<IResponse<IFullOrder>>(
-  //     `orders/${id}/return`,
-  //   );
-  //   return data.data;
-  // },
+
+  returnOrder: async ({
+    id,
+    products,
+  }: {
+    id: number;
+    products: IReturnProduct[];
+  }) => {
+    const { data } = await api.post<IResponse<IFullOrder>>(
+      `orders/${id}/return`,
+      {
+        products,
+      },
+    );
+    return data.data;
+  },
 };

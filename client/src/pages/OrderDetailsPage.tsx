@@ -1,7 +1,7 @@
 import OrderLayout from '@/components/layout/order/OrderLayout';
 import DeliveryInfo from '@/features/orders/components/pages/info/DeliveryInfo';
 import OrderHeader from '@/features/orders/components/pages/info/OrderHeader';
-import OrderItems from '@/features/orders/components/pages/OrderItems';
+import OrderItems from '@/features/orders/components/pages/info/OrderItems';
 import OrderSummary from '@/features/orders/components/pages/info/OrderSummary';
 import PaymentInfo from '@/features/orders/components/pages/info/PaymentInfo';
 import { useOrder } from '@/features/orders/hooks/use-order';
@@ -48,7 +48,12 @@ const OrderDetailsPage = () => {
             />
           }
         >
-          <OrderItems items={order.orderItems} invoices={order.invoices} />
+          <OrderItems
+            orderId={order.id}
+            items={order.orderItems}
+            invoices={order.invoices}
+            returnLogic={order.status !== 'CANCELLED'}
+          />
 
           <DeliveryInfo
             address={

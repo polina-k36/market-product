@@ -87,20 +87,22 @@ const OrderCard = ({ order }: IOrderCardProps) => {
         </div>
       </div>
       <div>
-        {statusInfo.key !== 'RETURNED' && statusInfo.key !== 'CANCELLED' && (
-          <>
-            <StatusTracker
-              shopAddress={order.shopAddress}
-              onlyTracker
-              deliveryMethod={
-                order.delMethod === 'Самовывоз' ? 'pickup' : 'delivery'
-              }
-              status={statusInfo.key}
-            />
+        {statusInfo.key !== 'RETURNED' &&
+          statusInfo.key !== 'CANCELLED' &&
+          statusInfo.key !== 'DELIVERED' && (
+            <>
+              <StatusTracker
+                shopAddress={order.shopAddress}
+                onlyTracker
+                deliveryMethod={
+                  order.delMethod === 'Самовывоз' ? 'pickup' : 'delivery'
+                }
+                status={statusInfo.key}
+              />
 
-            <div className="mt-3 h-px w-full bg-border" />
-          </>
-        )}
+              <div className="mt-3 h-px w-full bg-border" />
+            </>
+          )}
       </div>
 
       <div className="mt-4 flex items-end justify-between gap-3">

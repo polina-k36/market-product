@@ -40,6 +40,12 @@ export interface IFullOrder {
   invoices: IReturnedInvoice[];
 }
 
+export interface IReturnProduct {
+  productId: number;
+  quantity: number;
+  price: number;
+}
+
 export interface IReturnedInvoice {
   date: Date;
   invoiceItems: {
