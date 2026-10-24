@@ -1,6 +1,6 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useShops } from '../../hooks/use-shops';
-import { shopColumns } from '../../model/shop-columns';
+import { shopColumns } from '../../tables/shop-columns';
 
 const ShopsTable = () => {
   const { data: shops } = useShops();

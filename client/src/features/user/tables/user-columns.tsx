@@ -1,5 +1,5 @@
 import type { IAdminTableColumn } from '@/components/ui/table/admin-table.types';
-import type { IFullInfoUser } from '../../types/user.types';
+import type { IFullInfoUser } from '../types/user.types';
 
 export const userColumns: IAdminTableColumn<IFullInfoUser>[] = [
   {

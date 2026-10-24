@@ -1,4 +1,5 @@
 import MainAdminLayout from '@/components/layout/main-admin-layout/MainAdminLayout';
+import CategoriesTable from '@/features/categories/components/admin-table/CategoriesTable';
 import ProductsTable from '@/features/products/components/admin-table/ProductsTable';
 import ShopsTable from '@/features/shops/components/admin-table/ShopsTable';
 import UsersTable from '@/features/user/components/table/UsersTable';
@@ -15,7 +16,8 @@ const MainAdminPage = () => {
     <MainAdminLayout onLogout={onLogout}>
       {/* <ProductsTable /> */}
       {/* <UsersTable /> */}
-      <ShopsTable />
+      {/* <ShopsTable /> */}
+      <CategoriesTable />
     </MainAdminLayout>
   );
 };

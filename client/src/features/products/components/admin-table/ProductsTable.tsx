@@ -1,8 +1,8 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useProducts } from '../../hooks/use-products';
-import { productColumns } from '../../model/product-columns';
+import { productColumns } from '../../tables/product-columns';
 
-function ProductsTable() {
+const ProductsTable = () => {
   const { data: products } = useProducts({ page: 1 });
 
   const onAdd = () => {
@@ -50,6 +50,6 @@ function ProductsTable() {
       />
     </section>
   );
-}
+};
 
 export default ProductsTable;

@@ -1,8 +1,8 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useUsers } from '../../hooks/use-users';
-import { userColumns } from '../model/user-columns';
+import { userColumns } from '../../tables/user-columns';
 
-function UsersTable() {
+const UsersTable = () => {
   const { data: users } = useUsers();
   const onAdd = () => {
     console.log('Добавить продукт');
@@ -49,6 +49,6 @@ function UsersTable() {
       />
     </section>
   );
-}
+};
 
 export default UsersTable;
