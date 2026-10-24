@@ -118,6 +118,36 @@
   }
 }
 
+@utility small-custom-scrollbar {
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 0.3rem;
+    height: 0.3rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background-color: color-mix(
+      in srgb,
+      var(--color-text-muted) 40%,
+      transparent
+    );
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(
+      in srgb,
+      var(--color-text-muted) 60%,
+      transparent
+    );
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+  }
+}
 @keyframes notification-enter {
   from {
     opacity: 0;

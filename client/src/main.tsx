@@ -14,6 +14,7 @@ import OrderDetailsPage from './pages/OrderDetailsPage';
 import VerificationEmailPage from './pages/VerificationEmailPage';
 import OrderCheckoutPage from './pages/OrderCheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
+import MainAdminPage from './pages/admin/MainAdminPage';
 
 const queryClient = new QueryClient({
   // defaultOptions: {
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/admin" element={<MainAdminPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/orders/:id" element={<OrderDetailsPage />} />
           <Route path="/products/:id" element={<ProductPage />} />

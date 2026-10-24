@@ -1,6 +1,8 @@
 export interface IPromoProduct {
   id: number;
   title: string;
+  composition: string;
+  description: string;
   imageKey: string;
   price: string;
   category: string;
@@ -8,6 +10,7 @@ export interface IPromoProduct {
     fullTitle: string;
     shortTitle: string;
   };
+  nds: string;
   cartQuantity: number;
 }
 
