@@ -59,12 +59,19 @@ export class ProductsService {
           id: true,
           imageKey: true,
           title: true,
+          description: true,
+          composition: true,
           price: true,
           category: {
             select: { title: true },
           },
           unit: {
             select: { fullTitle: true, shortTitle: true },
+          },
+          nds: {
+            select: {
+              titleRate: true,
+            },
           },
           cartItems: cartItemSelect,
         },
@@ -80,11 +87,12 @@ export class ProductsService {
       total,
       totalPages,
       data: products.map((product) => {
-        const { category, cartItems, ...dataProduct } = product;
+        const { category, cartItems, nds, ...dataProduct } = product;
         return {
           ...dataProduct,
           category: category.title,
           cartQuantity: cartItems[0]?.quantity ?? 0,
+          nds: nds.titleRate,
         };
       }),
     };

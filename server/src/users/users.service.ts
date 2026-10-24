@@ -93,9 +93,34 @@ export class UsersService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          phone: true,
+          birthDate: true,
+          role: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+          isBanned: true,
+          bannedAt: true,
+          banReason: true,
+          _count: {
+            select: {
+              addresses: true,
+              cards: true,
+              orders: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
     ]);
-
     const totalPages = Math.ceil(total / limit);
 
     return {
@@ -104,7 +129,15 @@ export class UsersService {
       limit,
       total,
       totalPages,
-      data: users,
+      data: users.map((user) => {
+        const { _count, ...dataUser } = user;
+        return {
+          ...dataUser,
+          addressesCount: _count.addresses,
+          cardsCount: _count.cards,
+          ordersCount: _count.orders,
+        };
+      }),
     };
   }
 

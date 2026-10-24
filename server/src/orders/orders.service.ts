@@ -281,6 +281,7 @@ export class OrdersService {
         include: { orderItems: true },
       });
       if (!order) throw new NotFoundException('Order not found.');
+
       if (order.statusId !== OrderStatusEnum.DELIVERED) {
         throw new BadRequestException(
           'The order must be delivered before a return can be requested.',
@@ -297,6 +298,7 @@ export class OrdersService {
         );
 
       const availableForReturn: { productId: number; quantity: number }[] = [];
+
       for (const item of order.orderItems) {
         availableForReturn.push({
           productId: item.productId,
@@ -319,6 +321,7 @@ export class OrdersService {
         }
       }
 
+      console.log('dtoReturnOrder.products', dtoReturnOrder.products);
       for (const item of dtoReturnOrder.products) {
         const product = availableForReturn.find(
           (product) => product.productId === item.productId,
@@ -351,6 +354,7 @@ export class OrdersService {
         dtoReturnOrder.products,
         tx,
       );
+
       return newReturnInvoice;
     });
   }
@@ -424,6 +428,20 @@ export class OrdersService {
                 },
               },
             },
+          },
+        },
+        invoices: {
+          select: {
+            date: true,
+            invoiceItems: {
+              select: {
+                productId: true,
+                quantity: true,
+              },
+            },
+          },
+          where: {
+            invoiceTypeId: 3, //возврат
           },
         },
       },

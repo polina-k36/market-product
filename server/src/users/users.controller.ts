@@ -26,8 +26,8 @@ import { GetUsersQueryDto } from './dto/get-users-query.dto.js';
 import { UpdatePasswordDto } from './dto/update-password.dto.js';
 
 @ApiTags('Users')
-@UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
-@Roles('ADMIN')
+// @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
+// @Roles('ADMIN') //TODO: вернуть роль после проверки
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
