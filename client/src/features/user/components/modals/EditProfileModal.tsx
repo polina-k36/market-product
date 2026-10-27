@@ -6,16 +6,16 @@ import { useState } from 'react';
 
 import EditUserInfoForm from '../forms/EditUserInfoForm';
 import ChangePasswordForm from '../forms/ChangePasswordForm';
-import { useUserModalStore } from '../../store/user-modal.store';
 import VerifyEmailLinkModal from './VerifyEmailLinkModal';
 import VerifyEmailCodeModal from './VerifyEmailCodeModal';
 import { useUserProfile } from '@/features/auth/hooks/use-user-profile';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 type ProfileTab = 'personal' | 'password' | 'email';
 
 const EditProfileModal = () => {
-  const onClose = useUserModalStore((state) => state.closeModal);
-  const modal = useUserModalStore((state) => state.modal);
+  const onClose = useModalStore((state) => state.closeModal);
+  const modal = useModalStore((state) => state.modal);
   const { data: user } = useUserProfile();
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('personal');

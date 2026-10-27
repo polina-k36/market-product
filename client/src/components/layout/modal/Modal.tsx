@@ -64,6 +64,7 @@ const Modal = ({
         if (e.target === dialogRef.current) {
           dialogRef.current.close();
           document.body.style.overflowY = 'scroll';
+          onClose?.();
         }
       }}
       aria-label="Модальное окно"

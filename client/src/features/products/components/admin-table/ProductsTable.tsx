@@ -1,20 +1,30 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useProducts } from '../../hooks/use-products';
 import { productColumns } from '../../tables/product-columns';
+import { useModalStore } from '@/stores/modal/modal.store';
+import type { IPromoProduct } from '../../types/products.types';
+import ProductAdminModal from '../modals/ProductAdminModal';
+import Button from '@/components/ui/buttons/Button';
 
 const ProductsTable = () => {
   const { data: products } = useProducts({ page: 1 });
+  const openCreateProductModal = useModalStore(
+    (state) => state.openCreateProductModal,
+  );
+  const openUpdateProductModal = useModalStore(
+    (state) => state.openUpdateProductModal,
+  );
 
   const onAdd = () => {
-    console.log('Добавить продукт');
+    openCreateProductModal();
   };
 
-  const onEdit = () => {
-    console.log('Редактировать', 2);
+  const onEdit = (row: IPromoProduct) => {
+    openUpdateProductModal(row.id);
   };
 
-  const onDelete = () => {
-    console.log('Удалить', 2);
+  const onDelete = (row: IPromoProduct) => {
+    console.log('Удалить', row.id);
   };
 
   if (!products) return null;
@@ -30,14 +40,9 @@ const ProductsTable = () => {
             Всего записей: {products.data.length}
           </p>
         </div>
-
-        <button
-          type="button"
-          onClick={onAdd}
-          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-primary-hover"
-        >
+        <Button variant="primary" type="button" onClick={onAdd}>
           + Добавить
-        </button>
+        </Button>
       </div>
 
       <AdminTable
@@ -48,6 +53,7 @@ const ProductsTable = () => {
         onDelete={onDelete}
         horizontalScroll
       />
+      <ProductAdminModal />
     </section>
   );
 };

@@ -7,7 +7,6 @@ import { CheckCircle, Mail, Phone, User2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { useUserModalStore } from '../../store/user-modal.store';
 import {
   editUserInfoSchema,
   type EditUserInfoFormInput,
@@ -16,12 +15,13 @@ import {
 import { PROFILE_QUERY_KEY } from '@/features/auth/hooks/use-user-profile';
 import { useUpdateUserInfo } from '../../hooks/use-update-info';
 import MaskedInput from '@/components/ui/inputs/MaskedInput';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 const EditUserInfoForm = () => {
   const { data: user } = useUserProfile();
   const queryClient = useQueryClient();
 
-  const closeModal = useUserModalStore((state) => state.closeModal);
+  const closeModal = useModalStore((state) => state.closeModal);
 
   const { mutate, reset: resetMutation, isError, error } = useUpdateUserInfo();
 

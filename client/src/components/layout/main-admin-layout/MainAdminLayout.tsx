@@ -21,17 +21,20 @@ import {
   ChartNoAxesCombined,
   CircleDollarSign,
   Layers,
+  type LucideIcon,
 } from 'lucide-react';
+import { useAuthStore } from '@/stores/auth/auth.store';
+import { useLogout } from '@/features/auth/hooks/use-logout';
+import { useNavigate } from 'react-router';
 
 interface IMainAdminLayoutProps {
   children: ReactNode;
-  onLogout: () => void;
 }
 
 interface INavigationItem {
   id: string;
   label: string;
-  icon: typeof Store;
+  icon: LucideIcon;
 }
 
 interface INavigationGroup {
@@ -96,14 +99,24 @@ const navigationGroups: INavigationGroup[] = [
   },
 ];
 
-export default function MainAdminLayout({
-  children,
-  onLogout,
-}: IMainAdminLayoutProps) {
+export default function MainAdminLayout({ children }: IMainAdminLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('products');
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
+
+  const { clearAuth } = useAuthStore();
+  const { mutate: logout } = useLogout();
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        clearAuth();
+        navigate('/');
+      },
+    });
+  };
 
   const activeItem = navigationGroups
     .flatMap((group) => group.items)

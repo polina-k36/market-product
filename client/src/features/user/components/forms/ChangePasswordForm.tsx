@@ -2,7 +2,6 @@ import Input from '@/components/ui/inputs/Input';
 import ButtonIcon from '@/components/ui/buttons/ButtonIcon';
 import FieldError from '@/features/auth/components/FieldError';
 import FormError from '@/features/auth/components/FormError';
-import { useUserModalStore } from '@/features/user/store/user-modal.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeClosed, Lock } from 'lucide-react';
 import { useState } from 'react';
@@ -13,9 +12,10 @@ import {
   type ChangePasswordFormValues,
 } from '../../schemas/change-password.schema';
 import { useChangePassword } from '../../hooks/use-change-password';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 const ChangePasswordForm = () => {
-  const closeModal = useUserModalStore((state) => state.closeModal);
+  const closeModal = useModalStore((state) => state.closeModal);
 
   const [currentPasswordOpen, setCurrentPasswordOpen] = useState(false);
   const [newPasswordOpen, setNewPasswordOpen] = useState(false);

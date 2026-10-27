@@ -19,7 +19,10 @@ interface IProductDetailsProps {
     description: string;
     imageKey: string;
     price: string;
-    category: string;
+    category: {
+      id: number;
+      title: string;
+    };
     unit: {
       fullTitle: string;
       shortTitle: string;
@@ -48,7 +51,7 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
               className="h-full w-full object-cover transition-transform duration-500 ease-in hover:scale-[1.1]"
             />
             <div className="absolute top-3 left-3 z-15 rounded-full bg-surface/95 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm backdrop-blur-md sm:text-[0.9375rem]">
-              {product.category}
+              {product.category.title}
             </div>
           </div>
         </div>
@@ -56,7 +59,7 @@ const ProductDetails = ({ product }: IProductDetailsProps) => {
         <div className="pt-1 lg:pt-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
             <Tag className="size-4" />
-            {product.category}
+            {product.category.title}
           </div>
 
           <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-text-primary sm:text-5xl">

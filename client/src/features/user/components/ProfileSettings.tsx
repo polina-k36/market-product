@@ -10,17 +10,17 @@ import {
   Plus,
   User2,
 } from 'lucide-react';
-import { useUserModalStore } from '../store/user-modal.store';
 import { useRemoveAddress } from '@/features/addresses/hooks/use-remove-address';
 import { useQueryClient } from '@tanstack/react-query';
 import { IMaskInput } from 'react-imask';
 import AddressCardForUserSettings from '@/features/addresses/components/user-settings/AddressCardForUserSettings';
 import { useNotificationStore } from '@/stores/notification/notification.store';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 const ProfileSettings = () => {
   const { data: user } = useUserProfile();
   const { openCreateAddressModal, openUpdateAddressModal, openUserInfoModal } =
-    useUserModalStore();
+    useModalStore();
   const queryClient = useQueryClient();
   const { addNotification } = useNotificationStore();
 

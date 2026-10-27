@@ -21,10 +21,19 @@ export interface IFullProduct {
   description: string;
   imageKey: string;
   price: string;
-  category: string;
+  category: {
+    id: number;
+    title: string;
+  };
+  nds: {
+    id: number;
+    rate: number;
+    titleRate: string;
+  };
   unit: {
-    fullTitle: string;
+    id: number;
     shortTitle: string;
+    fullTitle: string;
   };
   cartQuantity: number;
 }

@@ -1,11 +1,11 @@
 import Modal from '@/components/layout/modal/Modal';
 import { MapPin, Save } from 'lucide-react';
-import { useUserModalStore } from '../../store/user-modal.store';
 import AddressForm from '../forms/AddressForm';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 const AddressModal = () => {
-  const onClose = useUserModalStore((state) => state.closeModal);
-  const modal = useUserModalStore((state) => state.modal);
+  const onClose = useModalStore((state) => state.closeModal);
+  const modal = useModalStore((state) => state.modal);
   return (
     <Modal
       onClose={onClose}
