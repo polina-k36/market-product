@@ -148,6 +148,7 @@
     background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
   }
 }
+
 @keyframes notification-enter {
   from {
     opacity: 0;

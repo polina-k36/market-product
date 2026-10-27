@@ -47,5 +47,36 @@ export interface IProductFilters {
   categoryId?: number;
 }
 
+export interface ICreateProduct {
+  title: string;
+  description: string;
+  composition: string;
+  imageKey: string;
+  price: number;
+  categoryId: number;
+  unitId: number;
+  ndsId: number;
+}
+
+export interface ICreatedProductInfo {
+  id: number;
+  title: string;
+  description: string;
+  composition: string;
+  imageKey: string;
+  price: number;
+}
+
+export interface IUpdateProduct {
+  title?: string;
+  description?: string;
+  composition?: string;
+  imageKey?: string;
+  price?: number;
+  categoryId?: number;
+  unitId?: number;
+  ndsId?: number;
+}
+
 export type ProductFilterKey =
   'page' | 'search' | 'priceFrom' | 'priceTo' | 'categoryId';

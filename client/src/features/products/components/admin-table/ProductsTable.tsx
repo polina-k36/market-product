@@ -5,9 +5,13 @@ import { useModalStore } from '@/stores/modal/modal.store';
 import type { IPromoProduct } from '../../types/products.types';
 import ProductAdminModal from '../modals/ProductAdminModal';
 import Button from '@/components/ui/buttons/Button';
+import { useRemoveProduct } from '../../hooks/use-remove-product';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 const ProductsTable = () => {
   const { data: products } = useProducts({ page: 1 });
+  const { mutate: removeProduct } = useRemoveProduct();
+  const { addNotification } = useNotificationStore();
   const openCreateProductModal = useModalStore(
     (state) => state.openCreateProductModal,
   );
@@ -24,7 +28,24 @@ const ProductsTable = () => {
   };
 
   const onDelete = (row: IPromoProduct) => {
-    console.log('Удалить', row.id);
+    removeProduct(row.id, {
+      onSuccess: (data) => {
+        addNotification({
+          type: 'success',
+          title: 'Удаление товара',
+          description: `Продукт #${data.id} успешно удален`,
+          duration: 3000,
+        });
+      },
+      onError: () => {
+        addNotification({
+          type: 'error',
+          title: 'Ошибка удаления товара',
+          description: `Продукт #${row.id} не был удален`,
+          duration: 3000,
+        });
+      },
+    });
   };
 
   if (!products) return null;

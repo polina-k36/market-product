@@ -23,6 +23,10 @@ import { useCategories } from '@/features/categories/hooks/use-categories';
 import { useUnits } from '@/features/units/hooks/use-units';
 import { useNds } from '@/features/nds/hooks/use-nds';
 import { useProduct } from '../../hooks/use-product';
+import { useUpdateProduct } from '../../hooks/use-update-product';
+import { useCreateProduct } from '../../hooks/use-create-product';
+import { useNotificationStore } from '@/stores/notification/notification.store';
+import { useModalStore } from '@/stores/modal/modal.store';
 
 interface IProductAdminFormProps {
   productId?: number;
@@ -30,15 +34,23 @@ interface IProductAdminFormProps {
   onCloseError?: () => void;
 }
 
+//TODO: сделать добавление/обновление изображения
+
 const ProductAdminForm = ({
   productId,
   serverError,
   onCloseError,
 }: IProductAdminFormProps) => {
   const { data: product } = useProduct(productId);
+  const { mutate: updateProduct } = useUpdateProduct(productId ?? -1);
+  const { mutate: createProduct } = useCreateProduct();
   const { data: categories } = useCategories();
   const { data: units } = useUnits();
   const { data: ndsRates } = useNds();
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+  const closeModal = useModalStore((state) => state.closeModal);
 
   const {
     register,
@@ -72,14 +84,86 @@ const ProductAdminForm = ({
   }, [product, reset]);
 
   const onSubmit = (data: ProductAdminFormValues) => {
-    console.log({
-      ...data,
-      price: Number(data.price),
-      categoryId: Number(data.categoryId),
-      unitId: Number(data.unitId),
-      ndsId: Number(data.ndsId),
-      imageKey: '',
-    });
+    if (productId) {
+      updateProduct(
+        {
+          ...data,
+          price: Number(data.price),
+          categoryId: Number(data.categoryId),
+          unitId: Number(data.unitId),
+          ndsId: Number(data.ndsId),
+        },
+        {
+          onSuccess: (data) => {
+            addNotification({
+              type: 'success',
+              title: 'Обновление товара',
+              description: `Продукт #${data.id} успешно обновлен`,
+              duration: 3000,
+            });
+            closeModal();
+
+            reset({
+              title: '',
+              description: '',
+              composition: '',
+              price: '',
+              categoryId: '',
+              unitId: '',
+              ndsId: '',
+            });
+          },
+          onError: () => {
+            addNotification({
+              type: 'error',
+              title: 'Ошибка обновления товара',
+              description: `Продукт не удалось обновить`,
+              duration: 3000,
+            });
+          },
+        },
+      );
+    } else {
+      createProduct(
+        {
+          ...data,
+          price: Number(data.price),
+          categoryId: Number(data.categoryId),
+          unitId: Number(data.unitId),
+          ndsId: Number(data.ndsId),
+          imageKey: '',
+        },
+        {
+          onSuccess: (data) => {
+            addNotification({
+              type: 'success',
+              title: 'Добавление товара',
+              description: `Продукт #${data.id} успешно добавлен`,
+              duration: 3000,
+            });
+            closeModal();
+
+            reset({
+              title: '',
+              description: '',
+              composition: '',
+              price: '',
+              categoryId: '',
+              unitId: '',
+              ndsId: '',
+            });
+          },
+          onError: () => {
+            addNotification({
+              type: 'error',
+              title: 'Ошибка добавления товара',
+              description: `Продукт не удалось добавить`,
+              duration: 3000,
+            });
+          },
+        },
+      );
+    }
   };
 
   const getValid = (field: keyof ProductAdminFormInput) => {
