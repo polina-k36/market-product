@@ -28,14 +28,14 @@ const ShopDropdown = () => {
     if (!query) return shops;
 
     return shops.filter((shop) =>
-      `${shop.shop_city} ${shop.shop_street} д. ${shop.shop_house} ${shop.phone.replace(/\D/g, '')}`
+      `${shop.city} ${shop.street} д. ${shop.house} ${shop.phone.replace(/\D/g, '')}`
         .toLowerCase()
         .includes(query),
     );
   }, [shops, search]);
 
   const activeShop = useMemo(
-    () => shops?.find((shop) => shop.id_shop === shopId),
+    () => shops?.find((shop) => shop.id === shopId),
     [shops, shopId],
   );
 
@@ -71,7 +71,7 @@ const ShopDropdown = () => {
 
           <span className="block truncate text-sm font-medium text-text-primary">
             {activeShop
-              ? `${activeShop.shop_city}, ${activeShop.shop_street} д. ${activeShop.shop_house}`
+              ? `${activeShop.city}, ${activeShop.street} д. ${activeShop.house}`
               : 'Выбрать магазин'}
           </span>
         </span>
@@ -164,7 +164,7 @@ const ShopDropdown = () => {
                   {filteredShops?.map((shop) => (
                     <ShopAddressCard
                       shop={shop}
-                      isSelected={activeShop?.id_shop === shop.id_shop}
+                      isSelected={activeShop?.id === shop.id}
                       onSelect={handleSelect}
                     />
                   ))}

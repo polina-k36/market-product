@@ -1,20 +1,68 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useShops } from '../../hooks/use-shops';
 import { shopColumns } from '../../tables/shop-columns';
+import ShopAdminModal from '../modals/ShopAdminModal';
+import { useModalStore } from '@/stores/modal/modal.store';
+import type { IShopData } from '../../types/shop.types';
+import { useRemoveShop } from '../../hooks/use-remove-shop';
+import { useNotificationStore } from '@/stores/notification/notification.store';
+import Button from '@/components/ui/buttons/Button';
 
 const ShopsTable = () => {
   const { data: shops } = useShops();
 
+  const openCreateShopModal = useModalStore(
+    (state) => state.openCreateShopModal,
+  );
+
+  const openUpdateShopModal = useModalStore(
+    (state) => state.openUpdateShopModal,
+  );
+
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+
+  const { mutate: removeShop } = useRemoveShop();
+
   const onAdd = () => {
-    console.log('Добавить продукт');
+    openCreateShopModal();
   };
 
-  const onEdit = () => {
-    console.log('Редактировать', 2);
+  const onEdit = (row: IShopData) => {
+    openUpdateShopModal(row.id);
   };
 
-  const onDelete = () => {
-    console.log('Удалить', 2);
+  const onDelete = (row: IShopData) => {
+    addNotification({
+      type: 'warning',
+      title: 'Подтверждение действий',
+      description: `Вы действительно хотите удалить магазин #${row.id}`,
+      action: {
+        label: 'Удалить магазин',
+        onClick: () => {
+          removeShop(row.id, {
+            onSuccess: () => {
+              addNotification({
+                type: 'success',
+                title: 'Успешное удаление',
+                description: `Удаление магазина #${row.id} прошло успешно`,
+                duration: 3000,
+              });
+            },
+            onError: () => {
+              addNotification({
+                type: 'error',
+                title: 'Ошибка удаления',
+                description: `Удаление магазина #${row.id} не было завершено`,
+                duration: 3000,
+              });
+            },
+          });
+        },
+      },
+      duration: 0,
+    });
   };
 
   if (!shops) return null;
@@ -30,24 +78,20 @@ const ShopsTable = () => {
             Всего записей: {shops.length}
           </p>
         </div>
-
-        <button
-          type="button"
-          onClick={onAdd}
-          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-primary-hover"
-        >
+        <Button type="button" onClick={onAdd} variant="primary">
           + Добавить
-        </button>
+        </Button>
       </div>
 
       <AdminTable
         data={shops}
         columns={shopColumns}
-        getRowId={(shop) => shop.id_shop}
+        getRowId={(shop) => shop.id}
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
       />
+      <ShopAdminModal />
     </section>
   );
 };

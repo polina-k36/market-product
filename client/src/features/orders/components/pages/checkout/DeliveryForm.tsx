@@ -321,7 +321,7 @@ const DeliveryForm = ({
               {shops?.map((shop) => (
                 <ShopAddressCard
                   shop={shop}
-                  isSelected={shop.id_shop === activeShopId}
+                  isSelected={shop.id === activeShopId}
                   onSelect={(id: number) => changeActiveShop(id)}
                 />
               ))}

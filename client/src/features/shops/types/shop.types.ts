@@ -1,7 +1,21 @@
 export interface IShopData {
-  id_shop: number;
-  shop_city: string;
-  shop_street: string;
-  shop_house: string;
+  id: number;
+  city: string;
+  street: string;
+  house: string;
   phone: string;
+}
+
+export interface ICreateShop {
+  city: string;
+  street: string;
+  house: string;
+  phone: string;
+}
+
+export interface IUpdateShop {
+  city?: string;
+  street?: string;
+  house?: string;
+  phone?: string;
 }

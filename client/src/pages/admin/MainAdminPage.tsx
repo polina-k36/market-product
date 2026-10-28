@@ -11,9 +11,9 @@ import { useState } from 'react';
 const MainAdminPage = () => {
   return (
     <MainAdminLayout>
-      <ProductsTable />
+      {/* <ProductsTable /> */}
       {/* <UsersTable /> */}
-      {/* <ShopsTable /> */}
+      <ShopsTable />
       {/* <CategoriesTable /> */}
       {/* <InvoicesTable /> */}
     </MainAdminLayout>

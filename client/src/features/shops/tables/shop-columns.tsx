@@ -8,7 +8,7 @@ export const shopColumns: IAdminTableColumn<IShopData>[] = [
     width: 60,
     minWidth: 50,
     align: 'center',
-    value: (shop) => shop.id_shop,
+    value: (shop) => shop.id,
   },
   {
     key: 'shopCity',
@@ -16,7 +16,7 @@ export const shopColumns: IAdminTableColumn<IShopData>[] = [
     width: 180,
     minWidth: 130,
     align: 'left',
-    value: (shop) => shop.shop_city,
+    value: (shop) => shop.city,
   },
   {
     key: 'shopStreet',
@@ -24,7 +24,7 @@ export const shopColumns: IAdminTableColumn<IShopData>[] = [
     width: 240,
     minWidth: 160,
     align: 'left',
-    value: (shop) => shop.shop_street,
+    value: (shop) => shop.street,
   },
   {
     key: 'shopHouse',
@@ -32,7 +32,7 @@ export const shopColumns: IAdminTableColumn<IShopData>[] = [
     width: 100,
     minWidth: 90,
     align: 'left',
-    value: (shop) => shop.shop_house,
+    value: (shop) => shop.house,
   },
   {
     key: 'phone',
