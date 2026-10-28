@@ -9,7 +9,11 @@ export type ProductModal =
 export type ShopModal =
   { type: 'create-shop' } | { type: 'update-shop'; shopId: number };
 
-export type ModalState = UserModal | ProductModal | ShopModal | null;
+export type CategoryModal =
+  { type: 'create-category' } | { type: 'update-category'; categoryId: number };
+
+export type ModalState =
+  UserModal | ProductModal | ShopModal | CategoryModal | null;
 
 export interface IModalState {
   modal: ModalState;
@@ -20,5 +24,7 @@ export interface IModalState {
   openUpdateProductModal: (productId: number) => void;
   openCreateShopModal: () => void;
   openUpdateShopModal: (shopId: number) => void;
+  openCreateCategoryModal: () => void;
+  openUpdateCategoryModal: (categoryId: number) => void;
   closeModal: () => void;
 }

@@ -32,6 +32,14 @@ export const useModalStore = create<IModalState>((set) => ({
     set({ modal: { type: 'update-shop', shopId } });
   },
 
+  openCreateCategoryModal: () => {
+    set({ modal: { type: 'create-category' } });
+  },
+
+  openUpdateCategoryModal: (categoryId) => {
+    set({ modal: { type: 'update-category', categoryId } });
+  },
+
   closeModal: () => {
     set({ modal: null });
   },

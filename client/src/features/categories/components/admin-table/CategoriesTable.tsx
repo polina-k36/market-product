@@ -1,19 +1,64 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useCategories } from '../../hooks/use-categories';
 import { categoryColumns } from '../../tables/category-columns';
+import CategoryAdminModal from '../../modals/CategoryAdminModal';
+import { useModalStore } from '@/stores/modal/modal.store';
+import type { IFullCategory } from '../../types/categories.types';
+import { useRemoveCategory } from '../../hooks/use-remove-category';
+import { useNotificationStore } from '@/stores/notification/notification.store';
+import Button from '@/components/ui/buttons/Button';
 
 const CategoriesTable = () => {
   const { data: categories } = useCategories();
+  const openCreateCategoryModal = useModalStore(
+    (state) => state.openCreateCategoryModal,
+  );
+  const openUpdateCategoryModal = useModalStore(
+    (state) => state.openUpdateCategoryModal,
+  );
+  const { mutate: removeCategory } = useRemoveCategory();
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+
   const onAdd = () => {
-    console.log('Добавить продукт');
+    openCreateCategoryModal();
   };
 
-  const onEdit = () => {
-    console.log('Редактировать', 2);
+  const onEdit = (row: IFullCategory) => {
+    openUpdateCategoryModal(row.id);
   };
 
-  const onDelete = () => {
-    console.log('Удалить', 2);
+  const onDelete = (row: IFullCategory) => {
+    addNotification({
+      type: 'warning',
+      title: 'Подтверждение действий',
+      description: `Вы действительно хотите удалить категорию #${row.id} - ${row.title}`,
+      action: {
+        label: 'Удалить категорию',
+        onClick: () => {
+          removeCategory(row.id, {
+            onSuccess: () => {
+              addNotification({
+                type: 'success',
+                title: 'Успешное удаление',
+                description: `Удаление категории #${row.id} прошло успешно`,
+                duration: 3000,
+              });
+            },
+            onError: () => {
+              addNotification({
+                type: 'error',
+                title: 'Ошибка удаления',
+                description: `Удаление категории #${row.id} не было завершено`,
+                duration: 3000,
+              });
+            },
+          });
+        },
+      },
+      duration: 0,
+    });
   };
 
   if (!categories) return null;
@@ -30,13 +75,9 @@ const CategoriesTable = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onAdd}
-          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-primary-hover"
-        >
+        <Button variant="primary" type="button" onClick={onAdd}>
           + Добавить
-        </button>
+        </Button>
       </div>
 
       <AdminTable
@@ -47,6 +88,7 @@ const CategoriesTable = () => {
         onDelete={onDelete}
         horizontalScroll
       />
+      <CategoryAdminModal />
     </section>
   );
 };
