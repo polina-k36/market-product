@@ -28,10 +28,6 @@ import { useLogout } from '@/features/auth/hooks/use-logout';
 import { useNavigate } from 'react-router';
 import NotificationLayout from '../notification-layout/NotificationLayout';
 
-interface IMainAdminLayoutProps {
-  children: ReactNode;
-}
-
 interface INavigationItem {
   id: string;
   label: string;
@@ -100,10 +96,19 @@ const navigationGroups: INavigationGroup[] = [
   },
 ];
 
-export default function MainAdminLayout({ children }: IMainAdminLayoutProps) {
+interface IMainAdminLayoutProps {
+  children: ReactNode;
+  activeSection: string;
+  onSectionChange: (sectionId: string) => void;
+}
+
+export default function MainAdminLayout({
+  children,
+  activeSection,
+  onSectionChange,
+}: IMainAdminLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('products');
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([]);
 
   const { clearAuth } = useAuthStore();
@@ -126,10 +131,8 @@ export default function MainAdminLayout({ children }: IMainAdminLayoutProps) {
   const pageTitle = activeItem?.label ?? 'Панель управления';
 
   const handleSectionChange = (sectionId: string) => {
-    setActiveSection(sectionId);
+    onSectionChange(sectionId);
     setIsMobileMenuOpen(false);
-
-    console.log('Selected section:', sectionId);
   };
 
   const toggleGroup = (groupId: string) => {
@@ -318,7 +321,7 @@ export default function MainAdminLayout({ children }: IMainAdminLayoutProps) {
 
             <button
               type="button"
-              onClick={() => console.log('Open storefront')}
+              onClick={() => navigate('/')}
               title={isCollapsed ? 'К магазину' : undefined}
               className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary ${isCollapsed ? 'lg:justify-center lg:px-0' : ''} `}
             >
