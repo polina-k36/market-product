@@ -5,6 +5,7 @@ import InvoicesTable from '@/features/invoices/components/admin-table/InvoicesTa
 import ProductsTable from '@/features/products/components/admin-table/ProductsTable';
 import ShopsTable from '@/features/shops/components/admin-table/ShopsTable';
 import UsersTable from '@/features/user/components/table/UsersTable';
+import SuppliersTable from '@/features/suppliers/components/admin-table/SuppliersTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -18,6 +19,8 @@ const MainAdminPage = () => {
       {activeSection === 'users' && <UsersTable />}
       {activeSection === 'shops' && <ShopsTable />}
       {activeSection === 'categories' && <CategoriesTable />}
+      {activeSection === 'suppliers' && <SuppliersTable />}
+
       {activeSection === 'checks' && <InvoicesTable />}
     </MainAdminLayout>
   );

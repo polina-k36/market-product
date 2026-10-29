@@ -40,6 +40,14 @@ export const useModalStore = create<IModalState>((set) => ({
     set({ modal: { type: 'update-category', categoryId } });
   },
 
+  openCreateSupplierModal: () => {
+    set({ modal: { type: 'create-supplier' } });
+  },
+
+  openUpdateSupplierModal: (supplierId) => {
+    set({ modal: { type: 'update-supplier', supplierId } });
+  },
+
   closeModal: () => {
     set({ modal: null });
   },

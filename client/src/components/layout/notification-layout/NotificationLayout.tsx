@@ -3,11 +3,15 @@ import type { ReactNode } from 'react';
 
 interface INotificationLayoutProps {
   children: ReactNode;
+  className?: string;
 }
 
-const NotificationLayout = ({ children }: INotificationLayoutProps) => {
+const NotificationLayout = ({
+  children,
+  className,
+}: INotificationLayoutProps) => {
   return (
-    <div>
+    <div className={className}>
       <Notifications />
       {children}
     </div>
