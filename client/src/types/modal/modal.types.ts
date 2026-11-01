@@ -15,11 +15,22 @@ export type CategoryModal =
 export type SupplierModal =
   { type: 'create-supplier' } | { type: 'update-supplier'; supplierId: number };
 
+export type PaymentMethodModal =
+  | { type: 'create-payment-method' }
+  | { type: 'update-payment-method'; paymentMethodId: number };
+
 export type ModalState =
-  UserModal | ProductModal | ShopModal | CategoryModal | SupplierModal | null;
+  | UserModal
+  | ProductModal
+  | ShopModal
+  | CategoryModal
+  | SupplierModal
+  | PaymentMethodModal
+  | null;
 
 export interface IModalState {
   modal: ModalState;
+
   openCreateAddressModal: () => void;
   openUpdateAddressModal: (addressId: number) => void;
   openUserInfoModal: () => void;
@@ -31,5 +42,8 @@ export interface IModalState {
   openUpdateCategoryModal: (categoryId: number) => void;
   openCreateSupplierModal: () => void;
   openUpdateSupplierModal: (supplierId: number) => void;
+  openCreatePaymentMethodModal: () => void;
+  openUpdatePaymentMethodModal: (paymentMethodId: number) => void;
+
   closeModal: () => void;
 }

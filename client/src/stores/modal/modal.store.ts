@@ -48,6 +48,14 @@ export const useModalStore = create<IModalState>((set) => ({
     set({ modal: { type: 'update-supplier', supplierId } });
   },
 
+  openCreatePaymentMethodModal: () => {
+    set({ modal: { type: 'create-payment-method' } });
+  },
+
+  openUpdatePaymentMethodModal: (paymentMethodId) => {
+    set({ modal: { type: 'update-payment-method', paymentMethodId } });
+  },
+
   closeModal: () => {
     set({ modal: null });
   },

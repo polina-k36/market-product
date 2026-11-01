@@ -1,6 +1,5 @@
 import { api } from '@/api/axios';
 import type {
-  ICreatedSupplierInfo,
   ICreateSupplier,
   ISupplier,
   IUpdateSupplier,
@@ -8,10 +7,8 @@ import type {
 import type { IResponse } from '@/types/api/api-response.type';
 
 export const supplierApi = {
-  create: async (
-    createdData: ICreateSupplier,
-  ): Promise<ICreatedSupplierInfo> => {
-    const { data } = await api.post<IResponse<ICreatedSupplierInfo>>(
+  create: async (createdData: ICreateSupplier): Promise<ISupplier> => {
+    const { data } = await api.post<IResponse<ISupplier>>(
       'suppliers',
       createdData,
     );
@@ -25,8 +22,8 @@ export const supplierApi = {
   }: {
     supplierId: number;
     updatedData: IUpdateSupplier;
-  }): Promise<ICreatedSupplierInfo> => {
-    const { data } = await api.patch<IResponse<ICreatedSupplierInfo>>(
+  }): Promise<ISupplier> => {
+    const { data } = await api.patch<IResponse<ISupplier>>(
       `suppliers/${supplierId}`,
       updatedData,
     );
@@ -34,8 +31,8 @@ export const supplierApi = {
     return data.data;
   },
 
-  remove: async (supplierId: number): Promise<ICreatedSupplierInfo> => {
-    const { data } = await api.delete<IResponse<ICreatedSupplierInfo>>(
+  remove: async (supplierId: number): Promise<ISupplier> => {
+    const { data } = await api.delete<IResponse<ISupplier>>(
       `suppliers/${supplierId}`,
     );
 

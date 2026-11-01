@@ -1,8 +1,8 @@
 export interface ISupplier {
   id: number;
   title: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ICreateSupplier {
@@ -11,11 +11,4 @@ export interface ICreateSupplier {
 
 export interface IUpdateSupplier {
   title: string;
-}
-
-export interface ICreatedSupplierInfo {
-  id: number;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
 }

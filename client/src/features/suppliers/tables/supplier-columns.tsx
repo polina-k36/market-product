@@ -1,5 +1,6 @@
 import type { IAdminTableColumn } from '@/components/ui/table/admin-table.types';
 import type { ISupplier } from '../types/supplier.types';
+import { formatDateTime } from '@/utils/format-date.utils';
 
 export const supplierColumns: IAdminTableColumn<ISupplier>[] = [
   {
@@ -22,13 +23,13 @@ export const supplierColumns: IAdminTableColumn<ISupplier>[] = [
     title: 'Дата создания',
     width: 180,
     minWidth: 150,
-    value: (supplier) => new Date(supplier.createdAt).toLocaleString('ru-RU'),
+    value: (supplier) => formatDateTime(supplier.createdAt),
   },
   {
     key: 'updatedAt',
     title: 'Дата обновления',
     width: 180,
     minWidth: 150,
-    value: (supplier) => new Date(supplier.updatedAt).toLocaleString('ru-RU'),
+    value: (supplier) => formatDateTime(supplier.updatedAt),
   },
 ];
