@@ -38,11 +38,11 @@ const PaymentMethodsTable = () => {
         label: 'Удалить способ оплаты',
         onClick: () => {
           removePaymentMethod(row.id, {
-            onSuccess: (response) => {
+            onSuccess: (data) => {
               addNotification({
                 type: 'success',
                 title: 'Удаление способа оплаты',
-                description: `Способ оплаты #${response.data.id} успешно удален`,
+                description: `Способ оплаты #${data.id} успешно удален`,
                 duration: 3000,
               });
             },
@@ -71,7 +71,7 @@ const PaymentMethodsTable = () => {
             Справочник — Способы оплаты
           </h2>
           <p className="mt-1 text-sm text-text-secondary">
-            Всего записей: {paymentMethods.data.length}
+            Всего записей: {paymentMethods.length}
           </p>
         </div>
         <Button variant="primary" type="button" onClick={onAdd}>
@@ -80,7 +80,7 @@ const PaymentMethodsTable = () => {
       </div>
 
       <AdminTable
-        data={paymentMethods.data}
+        data={paymentMethods}
         columns={paymentMethodColumns}
         getRowId={(paymentMethod) => paymentMethod.id}
         onEdit={onEdit}

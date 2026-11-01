@@ -19,6 +19,10 @@ export type PaymentMethodModal =
   | { type: 'create-payment-method' }
   | { type: 'update-payment-method'; paymentMethodId: number };
 
+export type DeliveryMethodModal =
+  | { type: 'create-delivery-method' }
+  | { type: 'update-delivery-method'; deliveryMethodId: number };
+
 export type ModalState =
   | UserModal
   | ProductModal
@@ -26,6 +30,7 @@ export type ModalState =
   | CategoryModal
   | SupplierModal
   | PaymentMethodModal
+  | DeliveryMethodModal
   | null;
 
 export interface IModalState {
@@ -44,6 +49,8 @@ export interface IModalState {
   openUpdateSupplierModal: (supplierId: number) => void;
   openCreatePaymentMethodModal: () => void;
   openUpdatePaymentMethodModal: (paymentMethodId: number) => void;
+  openCreateDeliveryMethodModal: () => void;
+  openUpdateDeliveryMethodModal: (deliveryMethodId: number) => void;
 
   closeModal: () => void;
 }

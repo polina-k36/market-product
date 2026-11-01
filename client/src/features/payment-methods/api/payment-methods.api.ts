@@ -7,25 +7,25 @@ import type { IResponse } from '@/types/api/api-response.type';
 
 export const paymentMethodApi = {
   getPaymentMethods: async () => {
-    const response =
+    const { data } =
       await api.get<IResponse<IPaymentMethod[]>>('/payment-methods');
 
-    return response.data;
+    return data.data;
   },
   getPaymentMethod: async (id: number) => {
-    const response = await api.get<IResponse<IPaymentMethod>>(
+    const { data } = await api.get<IResponse<IPaymentMethod>>(
       `/payment-methods/${id}`,
     );
 
-    return response.data;
+    return data.data;
   },
   create: async (createData: ICreateUpdatePaymentMethod) => {
-    const response = await api.post<IResponse<IPaymentMethod>>(
+    const { data } = await api.post<IResponse<IPaymentMethod>>(
       '/payment-methods',
       createData,
     );
 
-    return response.data;
+    return data.data;
   },
   update: async ({
     id,
@@ -34,18 +34,18 @@ export const paymentMethodApi = {
     id: number;
     updateData: ICreateUpdatePaymentMethod;
   }) => {
-    const response = await api.patch<IResponse<IPaymentMethod>>(
+    const { data } = await api.patch<IResponse<IPaymentMethod>>(
       `/payment-methods/${id}`,
       updateData,
     );
 
-    return response.data;
+    return data.data;
   },
   remove: async (id: number) => {
-    const response = await api.delete<IResponse<IPaymentMethod>>(
+    const { data } = await api.delete<IResponse<IPaymentMethod>>(
       `/payment-methods/${id}`,
     );
 
-    return response.data;
+    return data.data;
   },
 };

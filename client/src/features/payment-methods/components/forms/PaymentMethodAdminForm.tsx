@@ -51,18 +51,18 @@ const PaymentMethodAdminForm = ({
 
   useEffect(() => {
     reset({
-      title: paymentMethod?.data.title ?? '',
+      title: paymentMethod?.title ?? '',
     });
   }, [paymentMethod, reset]);
 
   const onSubmit = (data: PaymentMethodAdminFormValues) => {
     if (paymentMethodId) {
       updatePaymentMethod(data, {
-        onSuccess: (response) => {
+        onSuccess: (data) => {
           addNotification({
             type: 'success',
             title: 'Обновление способа оплаты',
-            description: `Способ оплаты #${response.data.id} успешно обновлен`,
+            description: `Способ оплаты #${data.id} успешно обновлен`,
             duration: 3000,
           });
           closeModal();
@@ -79,11 +79,11 @@ const PaymentMethodAdminForm = ({
       });
     } else {
       createPaymentMethod(data, {
-        onSuccess: (response) => {
+        onSuccess: (data) => {
           addNotification({
             type: 'success',
             title: 'Добавление способа оплаты',
-            description: `Способ оплаты #${response.data.id} успешно добавлен`,
+            description: `Способ оплаты #${data.id} успешно добавлен`,
             duration: 3000,
           });
           closeModal();

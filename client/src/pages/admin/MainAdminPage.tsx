@@ -7,6 +7,7 @@ import ShopsTable from '@/features/shops/components/admin-table/ShopsTable';
 import UsersTable from '@/features/user/components/table/UsersTable';
 import SuppliersTable from '@/features/suppliers/components/admin-table/SuppliersTable';
 import PaymentMethodsTable from '@/features/payment-methods/components/tables/PaymentMethodsTable';
+import DeliveryMethodsTable from '@/features/delivery-methods/components/tables/DeliveryMethodsTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -22,6 +23,7 @@ const MainAdminPage = () => {
       {activeSection === 'categories' && <CategoriesTable />}
       {activeSection === 'suppliers' && <SuppliersTable />}
       {activeSection === 'payments' && <PaymentMethodsTable />}
+      {activeSection === 'deliveries' && <DeliveryMethodsTable />}
 
       {activeSection === 'checks' && <InvoicesTable />}
     </MainAdminLayout>
