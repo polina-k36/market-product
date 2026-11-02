@@ -1,6 +1,10 @@
 import { api } from '@/api/axios';
-import type { IResponse } from '@/types/api/api-response.type';
 import type {
+  IPaginationResponse,
+  IResponse,
+} from '@/types/api/api-response.type';
+import type {
+  IAdminTableOrder,
   ICreateOrder,
   IFullOrder,
   IPromoOrder,
@@ -8,8 +12,17 @@ import type {
 } from '../types/order.types';
 
 export const ordersApi = {
+  getAll: async (): Promise<IAdminTableOrder[]> => {
+    const { data } =
+      await api.get<IPaginationResponse<IAdminTableOrder>>('/orders');
+
+    return data.data.map((order) => ({
+      ...order,
+      date: new Date(order.date),
+    }));
+  },
   getMineOrders: async (): Promise<IPromoOrder[]> => {
-    const { data } = await api.get<IResponse<IPromoOrder[]>>('orders/me');
+    const { data } = await api.get<IResponse<IPromoOrder[]>>('/orders/me');
 
     return data.data.map((order) => ({
       ...order,
@@ -26,14 +39,14 @@ export const ordersApi = {
   },
   create: async (createData: ICreateOrder): Promise<IFullOrder> => {
     const { data } = await api.post<IResponse<IFullOrder>>(
-      'orders',
+      '/orders',
       createData,
     );
     return data.data;
   },
   getMineActiveOrders: async (): Promise<IPromoOrder[]> => {
     const { data } =
-      await api.get<IResponse<IPromoOrder[]>>('orders/me/active');
+      await api.get<IResponse<IPromoOrder[]>>('/orders/me/active');
 
     return data.data.map((order) => ({
       ...order,
@@ -42,7 +55,7 @@ export const ordersApi = {
   },
   cancelOrder: async (id: number) => {
     const { data } = await api.post<IResponse<IFullOrder>>(
-      `orders/${id}/cancel`,
+      `/orders/${id}/cancel`,
     );
     return data.data;
   },
@@ -55,7 +68,7 @@ export const ordersApi = {
     products: IReturnProduct[];
   }) => {
     const { data } = await api.post<IResponse<IFullOrder>>(
-      `orders/${id}/return`,
+      `/orders/${id}/return`,
       {
         products,
       },

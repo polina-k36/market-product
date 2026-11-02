@@ -64,7 +64,7 @@ const navigationGroups: INavigationGroup[] = [
     id: 'documents',
     label: 'Накладные и чеки',
     items: [
-      { id: 'checks', label: 'Чеки', icon: Receipt },
+      { id: 'orders', label: 'Чеки', icon: Receipt },
       { id: 'incoming-invoices', label: 'Поставки', icon: FileText },
       { id: 'expenses-invoices', label: 'Расходы', icon: TrendingDown },
     ],

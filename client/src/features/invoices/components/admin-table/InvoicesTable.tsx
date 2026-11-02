@@ -1,6 +1,7 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { invoiceColumns } from '../../tables/invoice-columns';
 import type { IInvoice } from '../../types/invoice.types';
+import Button from '@/components/ui/buttons/Button';
 
 interface IInvoicesTableProp {
   title: string;
@@ -29,13 +30,11 @@ const InvoicesTable = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onAdd}
-          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-primary-hover"
-        >
-          + Добавить
-        </button>
+        {onAdd && (
+          <Button type="button" onClick={onAdd} variant="primary">
+            + Добавить
+          </Button>
+        )}
       </div>
 
       <AdminTable

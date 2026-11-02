@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import MainAdminLayout from '@/components/layout/main-admin-layout/MainAdminLayout';
 import CategoriesTable from '@/features/categories/components/admin-table/CategoriesTable';
-import InvoicesTable from '@/features/invoices/components/admin-table/InvoicesTable';
 import ProductsTable from '@/features/products/components/admin-table/ProductsTable';
 import ShopsTable from '@/features/shops/components/admin-table/ShopsTable';
 import UsersTable from '@/features/user/components/table/UsersTable';
@@ -12,6 +11,7 @@ import NdsTable from '@/features/nds/components/tables/NdsTable';
 import UnitTable from '@/features/units/components/tables/UnitTable';
 import IncomingInvoicesTable from '@/features/invoices/components/admin-table/IncomingInvoicesTable';
 import ExpensesInvoicesTable from '@/features/invoices/components/admin-table/ExpensesInvoicesTable';
+import OrdersTable from '@/features/orders/components/admin-table/OrdersTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -31,6 +31,7 @@ const MainAdminPage = () => {
       {activeSection === 'nds' && <NdsTable />}
       {activeSection === 'units' && <UnitTable />}
 
+      {activeSection === 'orders' && <OrdersTable />}
       {activeSection === 'incoming-invoices' && <IncomingInvoicesTable />}
       {activeSection === 'expenses-invoices' && <ExpensesInvoicesTable />}
     </MainAdminLayout>
