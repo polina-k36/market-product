@@ -9,6 +9,7 @@ import SuppliersTable from '@/features/suppliers/components/admin-table/Supplier
 import PaymentMethodsTable from '@/features/payment-methods/components/tables/PaymentMethodsTable';
 import DeliveryMethodsTable from '@/features/delivery-methods/components/tables/DeliveryMethodsTable';
 import NdsTable from '@/features/nds/components/tables/NdsTable';
+import UnitTable from '@/features/units/components/tables/UnitTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -26,6 +27,7 @@ const MainAdminPage = () => {
       {activeSection === 'payments' && <PaymentMethodsTable />}
       {activeSection === 'deliveries' && <DeliveryMethodsTable />}
       {activeSection === 'nds' && <NdsTable />}
+      {activeSection === 'units' && <UnitTable />}
 
       {activeSection === 'checks' && <InvoicesTable />}
     </MainAdminLayout>

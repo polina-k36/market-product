@@ -26,6 +26,9 @@ export type DeliveryMethodModal =
 export type NdsModal =
   { type: 'create-nds' } | { type: 'update-nds'; ndsId: number };
 
+export type UnitModal =
+  { type: 'create-unit' } | { type: 'update-unit'; unitId: number };
+
 export type ModalState =
   | UserModal
   | ProductModal
@@ -35,6 +38,7 @@ export type ModalState =
   | PaymentMethodModal
   | DeliveryMethodModal
   | NdsModal
+  | UnitModal
   | null;
 
 export interface IModalState {
@@ -65,6 +69,9 @@ export interface IModalState {
 
   openCreateNdsModal: () => void;
   openUpdateNdsModal: (ndsId: number) => void;
+
+  openCreateUnitModal: () => void;
+  openUpdateUnitModal: (unitId: number) => void;
 
   closeModal: () => void;
 }

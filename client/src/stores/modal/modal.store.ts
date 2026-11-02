@@ -72,6 +72,14 @@ export const useModalStore = create<IModalState>((set) => ({
     set({ modal: { type: 'update-nds', ndsId } });
   },
 
+  openCreateUnitModal: () => {
+    set({ modal: { type: 'create-unit' } });
+  },
+
+  openUpdateUnitModal: (unitId) => {
+    set({ modal: { type: 'update-unit', unitId } });
+  },
+
   closeModal: () => {
     set({ modal: null });
   },

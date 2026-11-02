@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { unitApi } from '../api/unit.api';
 
-export const UNITS_QUERY_KEY = ['units'];
+export const UNITS_QUERY_KEY = ['units'] as const;
 
 export function useUnits() {
   return useQuery({

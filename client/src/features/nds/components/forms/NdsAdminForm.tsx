@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Percent } from 'lucide-react';
+import { Percent, ReceiptText } from 'lucide-react';
 import Input from '@/components/ui/inputs/Input';
 import FieldError from '@/features/auth/components/FieldError';
 import FormError from '@/features/auth/components/FormError';
@@ -16,7 +16,7 @@ import {
   type NdsAdminFormValues,
 } from '../../schemas/nds-admin.schema';
 
-interface IPaymentMethodAdminFormProps {
+interface INdsAdminFormProps {
   ndsId?: number;
   serverError?: string;
   onCloseError?: () => void;
@@ -26,7 +26,7 @@ const NdsAdminForm = ({
   ndsId,
   serverError,
   onCloseError,
-}: IPaymentMethodAdminFormProps) => {
+}: INdsAdminFormProps) => {
   const { data: ndsRate } = useNdsRate(ndsId);
   const { mutate: updateNds } = useUpdateNdsRate(ndsId ?? -1);
   const { mutate: createNds } = useCreateNdsRate();
@@ -45,14 +45,14 @@ const NdsAdminForm = ({
     resolver: zodResolver(ndsAdminSchema),
     defaultValues: {
       titleRate: '',
-      rate: undefined,
+      rate: '',
     },
   });
 
   useEffect(() => {
     reset({
       titleRate: ndsRate?.titleRate ?? '',
-      rate: ndsRate?.rate.toString(),
+      rate: ndsRate?.rate ? `${ndsRate?.rate}` : '',
     });
   }, [ndsRate, reset]);
 
@@ -68,8 +68,8 @@ const NdsAdminForm = ({
           });
           closeModal();
           reset({
-            titleRate: undefined,
-            rate: undefined,
+            titleRate: '',
+            rate: '',
           });
         },
         onError: () => {
@@ -92,8 +92,8 @@ const NdsAdminForm = ({
           });
           closeModal();
           reset({
-            titleRate: undefined,
-            rate: undefined,
+            titleRate: '',
+            rate: '',
           });
         },
         onError: () => {
@@ -129,7 +129,7 @@ const NdsAdminForm = ({
             Название ставки НДС
           </label>
           <Input
-            icon={Percent}
+            icon={ReceiptText}
             type="text"
             placeholder="НДС 15 %"
             {...register('titleRate')}
