@@ -3,9 +3,9 @@ import { paymentMethodApi } from '../api/payment-methods.api';
 
 export const PAYMENT_METHODS_QUERY_KEY = ['payment-methods'] as const;
 
-export const usePaymentMethods = () => {
+export function usePaymentMethods() {
   return useQuery({
     queryKey: PAYMENT_METHODS_QUERY_KEY,
-    queryFn: paymentMethodApi.getPaymentMethods,
+    queryFn: paymentMethodApi.getAll,
   });
-};
+}

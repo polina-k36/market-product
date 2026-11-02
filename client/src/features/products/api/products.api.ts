@@ -42,7 +42,7 @@ export const productsApi = {
 
     return data.data;
   },
-  getProducts: async (
+  getAll: async (
     filters: IProductFilters,
   ): Promise<IPaginationResponse<IPromoProduct>> => {
     const { data } = await api.get<IPaginationResponse<IPromoProduct>>(

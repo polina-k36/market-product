@@ -23,6 +23,9 @@ export type DeliveryMethodModal =
   | { type: 'create-delivery-method' }
   | { type: 'update-delivery-method'; deliveryMethodId: number };
 
+export type NdsModal =
+  { type: 'create-nds' } | { type: 'update-nds'; ndsId: number };
+
 export type ModalState =
   | UserModal
   | ProductModal
@@ -31,6 +34,7 @@ export type ModalState =
   | SupplierModal
   | PaymentMethodModal
   | DeliveryMethodModal
+  | NdsModal
   | null;
 
 export interface IModalState {
@@ -38,19 +42,29 @@ export interface IModalState {
 
   openCreateAddressModal: () => void;
   openUpdateAddressModal: (addressId: number) => void;
+
   openUserInfoModal: () => void;
+
   openCreateProductModal: () => void;
   openUpdateProductModal: (productId: number) => void;
+
   openCreateShopModal: () => void;
   openUpdateShopModal: (shopId: number) => void;
+
   openCreateCategoryModal: () => void;
   openUpdateCategoryModal: (categoryId: number) => void;
+
   openCreateSupplierModal: () => void;
   openUpdateSupplierModal: (supplierId: number) => void;
+
   openCreatePaymentMethodModal: () => void;
   openUpdatePaymentMethodModal: (paymentMethodId: number) => void;
+
   openCreateDeliveryMethodModal: () => void;
   openUpdateDeliveryMethodModal: (deliveryMethodId: number) => void;
+
+  openCreateNdsModal: () => void;
+  openUpdateNdsModal: (ndsId: number) => void;
 
   closeModal: () => void;
 }

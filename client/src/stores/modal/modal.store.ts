@@ -64,6 +64,14 @@ export const useModalStore = create<IModalState>((set) => ({
     set({ modal: { type: 'update-delivery-method', deliveryMethodId } });
   },
 
+  openCreateNdsModal: () => {
+    set({ modal: { type: 'create-nds' } });
+  },
+
+  openUpdateNdsModal: (ndsId) => {
+    set({ modal: { type: 'update-nds', ndsId } });
+  },
+
   closeModal: () => {
     set({ modal: null });
   },

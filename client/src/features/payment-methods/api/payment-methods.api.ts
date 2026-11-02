@@ -6,13 +6,13 @@ import type {
 import type { IResponse } from '@/types/api/api-response.type';
 
 export const paymentMethodApi = {
-  getPaymentMethods: async () => {
+  getAll: async () => {
     const { data } =
       await api.get<IResponse<IPaymentMethod[]>>('/payment-methods');
 
     return data.data;
   },
-  getPaymentMethod: async (id: number) => {
+  getPaymentMethodById: async (id: number) => {
     const { data } = await api.get<IResponse<IPaymentMethod>>(
       `/payment-methods/${id}`,
     );

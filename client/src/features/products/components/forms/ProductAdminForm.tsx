@@ -21,12 +21,12 @@ import {
 import Select from '@/components/ui/inputs/Select';
 import { useCategories } from '@/features/categories/hooks/use-categories';
 import { useUnits } from '@/features/units/hooks/use-units';
-import { useNds } from '@/features/nds/hooks/use-nds';
 import { useProduct } from '../../hooks/use-product';
 import { useUpdateProduct } from '../../hooks/use-update-product';
 import { useCreateProduct } from '../../hooks/use-create-product';
 import { useNotificationStore } from '@/stores/notification/notification.store';
 import { useModalStore } from '@/stores/modal/modal.store';
+import { useNdsRates } from '@/features/nds/hooks/use-nds-rates';
 
 interface IProductAdminFormProps {
   productId?: number;
@@ -46,7 +46,7 @@ const ProductAdminForm = ({
   const { mutate: createProduct } = useCreateProduct();
   const { data: categories } = useCategories();
   const { data: units } = useUnits();
-  const { data: ndsRates } = useNds();
+  const { data: ndsRates } = useNdsRates();
   const addNotification = useNotificationStore(
     (state) => state.addNotification,
   );

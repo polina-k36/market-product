@@ -11,7 +11,7 @@ export function useProducts(filters: Omit<IProductFilters, 'limit'>) {
   return useQuery({
     queryKey: [...PRODUCTS_QUERY_KEY, filters],
     queryFn: () =>
-      productsApi.getProducts({
+      productsApi.getAll({
         limit: PRODUCTS_LIMIT,
         ...filters,
       }),

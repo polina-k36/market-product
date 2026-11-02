@@ -3,7 +3,7 @@ import { ndsApi } from '../api/nds.api';
 
 export const NDS_QUERY_KEY = ['nds'] as const;
 
-export function useNds() {
+export function useNdsRates() {
   return useQuery({
     queryKey: NDS_QUERY_KEY,
     queryFn: ndsApi.getAll,
