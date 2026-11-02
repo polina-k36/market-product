@@ -10,6 +10,8 @@ import PaymentMethodsTable from '@/features/payment-methods/components/tables/Pa
 import DeliveryMethodsTable from '@/features/delivery-methods/components/tables/DeliveryMethodsTable';
 import NdsTable from '@/features/nds/components/tables/NdsTable';
 import UnitTable from '@/features/units/components/tables/UnitTable';
+import IncomingInvoicesTable from '@/features/invoices/components/admin-table/IncomingInvoicesTable';
+import ExpensesInvoicesTable from '@/features/invoices/components/admin-table/ExpensesInvoicesTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -29,7 +31,8 @@ const MainAdminPage = () => {
       {activeSection === 'nds' && <NdsTable />}
       {activeSection === 'units' && <UnitTable />}
 
-      {activeSection === 'checks' && <InvoicesTable />}
+      {activeSection === 'incoming-invoices' && <IncomingInvoicesTable />}
+      {activeSection === 'expenses-invoices' && <ExpensesInvoicesTable />}
     </MainAdminLayout>
   );
 };

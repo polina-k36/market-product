@@ -1,5 +1,6 @@
 import type { IAdminTableColumn } from '@/components/ui/table/admin-table.types';
 import type { IInvoice } from '../types/invoice.types';
+import { formatDateTime } from '@/utils/format-date.utils';
 
 export const invoiceColumns: IAdminTableColumn<IInvoice>[] = [
   {
@@ -16,7 +17,7 @@ export const invoiceColumns: IAdminTableColumn<IInvoice>[] = [
     width: 180,
     minWidth: 130,
     align: 'left',
-    value: (invoice) => invoice.date,
+    value: (invoice) => formatDateTime(invoice.date),
   },
   {
     key: 'shop',
