@@ -14,6 +14,7 @@ async function bootstrap() {
       'http://localhost:5173',
       'http://10.170.156.158:5173',
       'https://product-market-diplom.duckdns.org',
+      'http://10.156.162.158:5173',
     ],
     credentials: true,
   });

@@ -23,14 +23,14 @@ export class InvoicesService {
     createInvoice: CreateOutgoingInvoiceDto,
     tx?: Prisma.TransactionClient,
   ) {
-    return this.create(createInvoice, InvoiceTypeEnum.OUTGOING, tx);
+    return this.create(createInvoice, Number(InvoiceTypeEnum.OUTGOING), tx);
   }
 
   createIncomingInvoiceAndRestock(createInvoice: CreateIncomingInvoiceDto) {
     return this.prisma.$transaction(async (tx) => {
       const invoice = await this.create(
         createInvoice,
-        InvoiceTypeEnum.INCOMING,
+        Number(InvoiceTypeEnum.INCOMING),
         tx,
       );
       await this.productStock.restock(
@@ -46,7 +46,7 @@ export class InvoicesService {
     createInvoice: CreateReturnInvoiceDto,
     tx?: Prisma.TransactionClient,
   ) {
-    return this.create(createInvoice, InvoiceTypeEnum.RETURN, tx);
+    return this.create(createInvoice, Number(InvoiceTypeEnum.RETURN), tx);
   }
 
   async create(
@@ -82,13 +82,13 @@ export class InvoicesService {
   getOutgoingInvoiceByOrderId(orderId: number, tx?: Prisma.TransactionClient) {
     const client = tx ?? this.prisma;
     return client.invoice.findFirst({
-      where: { orderId, invoiceTypeId: InvoiceTypeEnum.OUTGOING },
+      where: { orderId, invoiceTypeId: Number(InvoiceTypeEnum.OUTGOING) },
     });
   }
 
   getReturnInvoicesByOrderId(orderId: number) {
     return this.prisma.invoice.findMany({
-      where: { orderId, invoiceTypeId: InvoiceTypeEnum.RETURN },
+      where: { orderId, invoiceTypeId: Number(InvoiceTypeEnum.RETURN) },
       include: {
         invoiceItems: {
           select: {
@@ -120,6 +120,28 @@ export class InvoicesService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        select: {
+          id: true,
+          date: true,
+          supplier: {
+            select: {
+              title: true,
+            },
+          },
+          invoiceType: {
+            select: {
+              title: true,
+            },
+          },
+          orderId: true,
+          shop: {
+            select: {
+              city: true,
+              street: true,
+              house: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -131,7 +153,12 @@ export class InvoicesService {
       limit,
       total,
       totalPages,
-      data: invoices,
+      data: invoices.map((invoice) => ({
+        ...invoice,
+        shop: `${invoice.shop.street}, ${invoice.shop.house}, ${invoice.shop.city}`,
+        invoiceType: invoice.invoiceType.title,
+        supplier: invoice.supplier ? invoice.supplier.title : null,
+      })),
     };
   }
 
@@ -139,7 +166,7 @@ export class InvoicesService {
     const { supplierId, invoiceTypeId, shopId, dateFrom, dateTo } = filters;
     const where: Prisma.InvoiceWhereInput = {
       supplierId,
-      invoiceTypeId,
+      invoiceTypeId: Number(invoiceTypeId),
       shopId,
     };
 

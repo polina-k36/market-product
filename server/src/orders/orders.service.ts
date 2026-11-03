@@ -105,6 +105,44 @@ export class OrdersService {
         where,
         skip: (page - 1) * limit,
         take: limit,
+        select: {
+          id: true,
+          date: true,
+          deliveryCity: true,
+          deliveryApartment: true,
+          deliveryHouse: true,
+          deliveryStreet: true,
+          deliveryMethod: {
+            select: {
+              title: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          shop: {
+            select: {
+              id: true,
+              city: true,
+              street: true,
+              house: true,
+            },
+          },
+          status: {
+            select: {
+              title: true,
+            },
+          },
+          totalPrice: true,
+          _count: {
+            select: {
+              orderItems: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -116,7 +154,15 @@ export class OrdersService {
       limit,
       total,
       totalPages,
-      data: orders,
+      data: orders.map((order) => {
+        const { _count, status, deliveryMethod, ...dataOrder } = order;
+        return {
+          ...dataOrder,
+          status: status.title,
+          deliveryMethod: deliveryMethod.title,
+          itemCount: _count.orderItems,
+        };
+      }),
     };
   }
 

@@ -29,6 +29,7 @@ import { envSchema } from './common/config/env.validation.js';
 import { CartsModule } from './carts/carts.module.js';
 import { StockReservationModule } from './stock-reservation/stock-reservation.module.js';
 import { StockReservationItemsModule } from './stock-reservation-items/stock-reservation-items.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import appConfig from './common/config/app.config.js';
 import databaseConfig from './common/config/database.config.js';
 import jwtConfig from './common/config/jwt.config.js';
@@ -80,6 +81,7 @@ import resendConfig from './common/config/resend.config.js';
     CartsModule,
     StockReservationModule,
     StockReservationItemsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

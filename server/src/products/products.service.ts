@@ -176,13 +176,22 @@ export class ProductsService {
         price: true,
         category: {
           select: {
+            id: true,
             title: true,
           },
         },
         unit: {
           select: {
+            id: true,
             fullTitle: true,
             shortTitle: true,
+          },
+        },
+        nds: {
+          select: {
+            id: true,
+            rate: true,
+            titleRate: true,
           },
         },
         cartItems: cartItemSelect,
@@ -191,10 +200,9 @@ export class ProductsService {
 
     if (!product) throw new NotFoundException('Product not found');
 
-    const { category, cartItems, ...dataProduct } = product;
+    const { cartItems, ...dataProduct } = product;
     return {
       ...dataProduct,
-      category: category.title,
       cartQuantity: cartItems[0]?.quantity ?? 0,
     };
   }

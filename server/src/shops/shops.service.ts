@@ -6,28 +6,29 @@ import {
 import { CreateShopDto } from './dto/create-shop.dto.js';
 import { UpdateShopDto } from './dto/update-shop.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { FilterShopsDto } from './dto/filter-shops.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { ProductStockService } from '../product-stock/product-stock.service.js';
 import { GetShopsQueryDto } from './dto/get-shops-query.dto.js';
 import type { Shop } from '../generated/prisma/client.js';
 @Injectable()
 export class ShopsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly productStockService: ProductStockService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createShopDto: CreateShopDto) {
     const shop = await this.prisma.shop.findFirst({
       where: {
         OR: [
           {
-            city_street_house: {
-              city: createShopDto.city,
-              street: createShopDto.street,
-              house: createShopDto.house,
-            },
+            AND: [
+              {
+                city: createShopDto.city,
+              },
+              {
+                street: createShopDto.street,
+              },
+              {
+                house: createShopDto.house,
+              },
+            ],
           },
           {
             phone: createShopDto.phone,
@@ -67,7 +68,7 @@ export class ShopsService {
     }
 
     const shops = await this.prisma.$queryRaw<Shop[]>`
-      SELECT *
+      SELECT id_shop as id, shop_city as city, shop_street as street, shop_house as house, phone
       FROM shop
       WHERE ${Prisma.join(conditions, ' AND ')}
       LIMIT ${limit} OFFSET ${(page - 1) * limit} 
@@ -100,11 +101,17 @@ export class ShopsService {
       where: {
         OR: [
           {
-            city_street_house: {
-              city: updateShopDto.city,
-              street: updateShopDto.street,
-              house: updateShopDto.house,
-            },
+            AND: [
+              {
+                city: updateShopDto.city,
+              },
+              {
+                street: updateShopDto.street,
+              },
+              {
+                house: updateShopDto.house,
+              },
+            ],
           },
           {
             phone: updateShopDto.phone,
