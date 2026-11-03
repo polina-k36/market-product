@@ -74,7 +74,7 @@ const navigationGroups: INavigationGroup[] = [
     label: 'Отчёты',
     items: [
       {
-        id: 'orders-by-date',
+        id: 'all-checks-by-date',
         label: 'Количество заказов по датам',
         icon: CalendarDays,
       },
@@ -85,12 +85,12 @@ const navigationGroups: INavigationGroup[] = [
       },
       {
         id: 'orders-by-status',
-        label: 'Отменённые и выполненные заказы',
+        label: 'Отменённые и выполненные',
         icon: BarChart3,
       },
       {
-        id: 'profit-by-period',
-        label: 'Прибыль филиалов за период',
+        id: 'popular-products',
+        label: 'Популярные продукты',
         icon: ChartNoAxesCombined,
       },
       {
@@ -167,14 +167,11 @@ export default function MainAdminLayout({
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-67.5 flex-col border-r border-border bg-surface transition-[width,transform] duration-200 lg:${isCollapsed ? 'w-19' : 'w-67.5'} ${
+        className={`fixed inset-y-0 left-0 z-50 flex min-w-19 flex-col border-r border-border bg-surface transition-[width,transform] duration-200 lg:${isCollapsed ? 'w-19' : 'w-67.5'} ${
           isMobileMenuOpen
             ? 'translate-x-0'
             : '-translate-x-full lg:translate-x-0'
         } `}
-        style={{
-          width: undefined,
-        }}
       >
         <div
           className={`flex h-19 shrink-0 items-center border-b border-border px-4 ${isCollapsed ? 'lg:justify-center lg:px-2' : 'justify-between'} `}

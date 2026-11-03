@@ -12,6 +12,11 @@ import UnitTable from '@/features/units/components/tables/UnitTable';
 import IncomingInvoicesTable from '@/features/invoices/components/admin-table/IncomingInvoicesTable';
 import ExpensesInvoicesTable from '@/features/invoices/components/admin-table/ExpensesInvoicesTable';
 import OrdersTable from '@/features/orders/components/admin-table/OrdersTable';
+import AllChecksReportsTable from '@/features/reports/components/admin-tables/AllChecksReportsTable';
+import AvgOrdersReportsTable from '@/features/reports/components/admin-tables/AvgOrdersReportsTable';
+import ChecksStatesReportsTable from '@/features/reports/components/admin-tables/ChecksStatesReportsTable';
+import PopularProductsReportsTable from '@/features/reports/components/admin-tables/PopularProductsReportsTable';
+import PopularCategoriesReportsTable from '@/features/reports/components/admin-tables/PopularCategoriesReportsTable';
 
 const MainAdminPage = () => {
   const [activeSection, setActiveSection] = useState('products');
@@ -34,6 +39,14 @@ const MainAdminPage = () => {
       {activeSection === 'orders' && <OrdersTable />}
       {activeSection === 'incoming-invoices' && <IncomingInvoicesTable />}
       {activeSection === 'expenses-invoices' && <ExpensesInvoicesTable />}
+
+      {activeSection === 'all-checks-by-date' && <AllChecksReportsTable />}
+      {activeSection === 'average-check' && <AvgOrdersReportsTable />}
+      {activeSection === 'orders-by-status' && <ChecksStatesReportsTable />}
+      {activeSection === 'popular-products' && <PopularProductsReportsTable />}
+      {activeSection === 'popular-categories' && (
+        <PopularCategoriesReportsTable />
+      )}
     </MainAdminLayout>
   );
 };
