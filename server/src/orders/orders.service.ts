@@ -19,6 +19,8 @@ import { FilterOrdersDto } from './dto/filter-orders.dto.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { ACTIVE_ORDER_STATUSES } from './constants/orders.constants.js';
 import { StockReservationService } from '../stock-reservation/stock-reservation.service.js';
+import { PdfService } from '../pdf/pdf.service.js';
+import { PdfOrderData } from '../pdf/interfaces/pdf.interfaces.js';
 
 @Injectable()
 export class OrdersService {
@@ -29,6 +31,7 @@ export class OrdersService {
     private readonly productStockService: ProductStockService,
     private readonly invoicesService: InvoicesService,
     private readonly stockReservationService: StockReservationService,
+    private readonly pdfService: PdfService,
   ) {}
 
   async create(userId: number, createOrderDto: CreateOrderDto) {
@@ -542,6 +545,64 @@ export class OrdersService {
         itemCount: _count.orderItems,
       };
     });
+  }
+
+  async exportOrderPdf(id: number): Promise<Buffer> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        shop: true,
+        paymentMethod: true,
+        deliveryMethod: true,
+        status: true,
+        userCard: true,
+        orderItems: {
+          include: {
+            product: {
+              include: {
+                unit: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) throw new NotFoundException('Order not found');
+
+    const pdfData: PdfOrderData = {
+      id: order.id,
+      date: order.date,
+      shopAddress: `${order.shop.city} ${order.shop.street} д. ${order.shop.house}`,
+      payment: order.paymentMethod.title,
+      delivery: order.deliveryMethod.title,
+      status: order.status.title,
+
+      card: order.userCard
+        ? order.userCard.isDeleted
+          ? `Удалена ****${order.userCard.cardLast4}`
+          : `****${order.userCard.cardLast4}`
+        : 'Пусто',
+
+      items: order.orderItems.map((item) => {
+        const unit = item.product.unit.shortTitle;
+
+        const quantity = ['кг', 'г', 'л'].includes(unit)
+          ? Number(item.quantity.toFixed(2))
+          : Math.round(Number(item.quantity));
+
+        return {
+          title: item.product.title,
+          quantity: `${quantity} ${unit}`,
+          price: Number(item.price),
+          sum: Number(item.quantity) * Number(item.price),
+        };
+      }),
+    };
+
+    return this.pdfService.generateOrderPdf(pdfData);
   }
 
   remove(id: number) {

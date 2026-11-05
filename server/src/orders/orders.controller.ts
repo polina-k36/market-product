@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -30,6 +31,7 @@ import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ChangeOrderStatusDto } from './dto/change-order-status.dto.js';
 import { ReturnOrderDto } from './dto/return-order.dto.js';
 import { GetOrdersQueryDto } from './dto/get-orders-query.dto.js';
+import { type Response } from 'express';
 //FIXME: не забыть поправить верификацию
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
 @ApiTags('Orders')
@@ -343,5 +345,34 @@ export class OrdersController {
   })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.ordersService.remove(id);
+  }
+
+  @Get(':id/pdf')
+  @ApiOperation({ summary: 'Скачать PDF-чек заказа' })
+  @ApiParam({
+    name: 'id',
+    description: 'Идентификатор заказа',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'PDF-чек успешно сформирован',
+    content: {
+      'application/pdf': {},
+    },
+  })
+  async downloadOrderPdf(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.ordersService.exportOrderPdf(id);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="order-${id}.pdf"`,
+      'Content-Length': buffer.length,
+    });
+
+    return res.send(buffer);
   }
 }

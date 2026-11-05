@@ -6,6 +6,7 @@ import { OrderItemsModule } from '../order-items/order-items.module.js';
 import { ProductStockModule } from '../product-stock/product-stock.module.js';
 import { InvoicesModule } from '../invoices/invoices.module.js';
 import { StockReservationModule } from '../stock-reservation/stock-reservation.module.js';
+import { PdfModule } from '../pdf/pdf.module.js';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { StockReservationModule } from '../stock-reservation/stock-reservation.m
     ProductStockModule,
     InvoicesModule,
     StockReservationModule,
+    PdfModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

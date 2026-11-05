@@ -10,6 +10,8 @@ import { Prisma } from '../generated/prisma/client.js';
 import { GetInvoicesQueryDto } from './dto/get-invoices-query.dto.js';
 import { FilterInvoicesDto } from './dto/filter-invoices.dto.js';
 import { ProductStockService } from '../product-stock/product-stock.service.js';
+import { PdfInvoiceData } from '../pdf/interfaces/pdf.interfaces.js';
+import { PdfService } from '../pdf/pdf.service.js';
 
 @Injectable()
 export class InvoicesService {
@@ -17,6 +19,7 @@ export class InvoicesService {
     private readonly prisma: PrismaService,
     private readonly invoiceItemsService: InvoiceItemsService,
     private readonly productStock: ProductStockService,
+    private readonly pdfService: PdfService,
   ) {}
 
   createOutgoingInvoice(
@@ -178,5 +181,56 @@ export class InvoicesService {
     }
 
     return where;
+  }
+
+  async exportInvoicePdf(id: number): Promise<Buffer> {
+    const invoice = await this.prisma.invoice.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        shop: true,
+        supplier: true,
+        invoiceType: true,
+        invoiceItems: {
+          include: {
+            product: {
+              include: {
+                unit: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!invoice) throw new NotFoundException('Invoice not found.');
+
+    const pdfData: PdfInvoiceData = {
+      id: invoice.id,
+      date: invoice.date,
+      invoiceType: invoice.invoiceType.title,
+
+      shopAddress: `${invoice.shop.city} ${invoice.shop.street} д. ${invoice.shop.house}`,
+
+      supplier: invoice.supplier?.title ?? null,
+
+      items: invoice.invoiceItems.map((item) => {
+        const unit = item.product.unit.shortTitle;
+
+        const quantity = ['кг', 'г', 'л'].includes(unit)
+          ? Number(item.quantity.toFixed(2))
+          : Math.round(Number(item.quantity));
+
+        return {
+          title: item.product.title,
+          quantity: `${quantity} ${unit}`,
+          price: Number(item.price),
+          sum: Number(item.quantity) * Number(item.price),
+        };
+      }),
+    };
+
+    return this.pdfService.generateInvoicePdf(pdfData);
   }
 }

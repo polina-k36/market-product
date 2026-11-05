@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
 
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -9,6 +9,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ReportType } from './types/reports.types.js';
+import type { Response } from 'express';
 
 @ApiTags('Reports')
 @Controller('reports')
@@ -308,5 +309,188 @@ export class ReportsController {
         query.period,
       ),
     };
+  }
+
+  @Get('all-checks/excel')
+  @ApiOperation({
+    summary: 'Экспорт отчёта по количеству заказов в Excel',
+    description:
+      'Формирует и возвращает Excel-файл с количеством заказов ' +
+      'по каждому магазину за указанный период.',
+  })
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description:
+      'Количество последних дней, за которые необходимо сформировать отчёт. ' +
+      'Если параметр не указан, используется значение 100.',
+    example: 100,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel-файл успешно сформирован.',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {},
+    },
+  })
+  async exportAllChecksExcel(
+    @Query() query: ReportQueryDto,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.reportsService.exportAllChecksExcel(query.period);
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="all-checks.xlsx"',
+    });
+
+    return res.send(buffer);
+  }
+
+  @Get('checks-state/excel')
+  @ApiOperation({
+    summary: 'Экспорт отчёта о состоянии заказов в Excel',
+    description:
+      'Формирует Excel-файл со статистикой выполненных и отменённых заказов.',
+  })
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description: 'Количество последних дней для формирования отчёта.',
+    example: 100,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel-файл успешно сформирован.',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {},
+    },
+  })
+  async exportChecksStateExcel(
+    @Query() query: ReportQueryDto,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.reportsService.exportChecksStateExcel(
+      query.period,
+    );
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="checks-state.xlsx"',
+    });
+
+    return res.send(buffer);
+  }
+
+  @Get('avg/excel')
+  @ApiOperation({
+    summary: 'Экспорт отчёта о среднем чеке в Excel',
+    description:
+      'Формирует Excel-файл со средней стоимостью заказа по каждому магазину.',
+  })
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description: 'Количество последних дней для формирования отчёта.',
+    example: 100,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel-файл успешно сформирован.',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {},
+    },
+  })
+  async exportAvgExcel(@Query() query: ReportQueryDto, @Res() res: Response) {
+    const buffer = await this.reportsService.exportAvgExcel(query.period);
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="average-check.xlsx"',
+    });
+
+    return res.send(buffer);
+  }
+
+  @Get('popular-categories/excel')
+  @ApiOperation({
+    summary: 'Экспорт отчёта о популярных категориях в Excel',
+    description:
+      'Формирует Excel-файл с рейтингом категорий, количеством продаж, ' +
+      'выручкой и долей продаж.',
+  })
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description: 'Количество последних дней для формирования отчёта.',
+    example: 100,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel-файл успешно сформирован.',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {},
+    },
+  })
+  async exportPopularCategoryExcel(
+    @Query() query: ReportQueryDto,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.reportsService.exportPopularCategoryExcel(
+      query.period,
+    );
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="popular-categories.xlsx"',
+    });
+
+    return res.send(buffer);
+  }
+
+  @Get('popular-products/excel')
+  @ApiOperation({
+    summary: 'Экспорт отчёта о популярных товарах в Excel',
+    description:
+      'Формирует Excel-файл с рейтингом товаров, количеством продаж ' +
+      'и общей выручкой.',
+  })
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description: 'Количество последних дней для формирования отчёта.',
+    example: 100,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel-файл успешно сформирован.',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {},
+    },
+  })
+  async exportPopularProductExcel(
+    @Query() query: ReportQueryDto,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.reportsService.exportPopularProductExcel(
+      query.period,
+    );
+    //FIXME: возможно вынести заголовок для получения
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="popular-products.xlsx"',
+    });
+
+    return res.send(buffer);
   }
 }

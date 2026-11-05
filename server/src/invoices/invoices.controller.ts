@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { EmailVerified } from '../auth/decorators/email-verified.decorator.js';
+import { type Response } from 'express';
 
 @ApiTags('Invoices')
 @UseGuards(JwtAuthGuard, RolesGuard, EmailVerifiedGuard)
@@ -113,5 +115,34 @@ export class InvoicesController {
       success: true,
       data: await this.invoicesService.createIncomingInvoiceAndRestock(body),
     };
+  }
+
+  @Get(':id/pdf')
+  @ApiOperation({ summary: 'Скачать PDF-накладную' })
+  @ApiParam({
+    name: 'id',
+    description: 'Идентификатор накладной',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'PDF-накладная успешно сформирована',
+    content: {
+      'application/pdf': {},
+    },
+  })
+  async downloadInvoicePdf(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.invoicesService.exportInvoicePdf(id);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="invoice-${id}.pdf"`,
+      'Content-Length': buffer.length,
+    });
+
+    return res.send(buffer);
   }
 }
