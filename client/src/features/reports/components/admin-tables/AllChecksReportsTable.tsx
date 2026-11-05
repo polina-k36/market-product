@@ -1,11 +1,17 @@
 import AdminTable from '@/components/ui/table/AdminTable';
+
 import { useState } from 'react';
+
 import { useAllChecks } from '../../hooks/use-all-checks';
 import { allChecksColumns } from '../../tables/all-checks.columns';
-import ReportPeriodSelect from '../../ui/ReportPeriodSelect';
+import ReportPeriodSelect from '../ui/ReportPeriodSelect';
+import ExportExcelButton from '@/components/ui/buttons/ExportExcelButton';
+import { reportApi } from '../../api/report.api';
+import { formatDateTimeForFile } from '@/utils/format-date.utils';
 
 const AllChecksReportsTable = () => {
   const [period, setPeriod] = useState(100);
+
   const { data: orders, isLoading } = useAllChecks(period);
 
   if (!orders && isLoading) {
@@ -26,7 +32,15 @@ const AllChecksReportsTable = () => {
             Всего записей: {orders.length}
           </p>
         </div>
-        <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+          <ExportExcelButton
+            onExport={() => reportApi.exportAllChecksExcel(period)}
+            fileName={`all-checks_${period}-days_${formatDateTimeForFile(new Date())}.xlsx`}
+          />
+        </div>
       </div>
 
       <AdminTable

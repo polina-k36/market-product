@@ -72,6 +72,7 @@ const ProductsTable = () => {
         getRowId={(product) => product.id}
         onEdit={onEdit}
         onDelete={onDelete}
+        isSearching
         horizontalScroll
       />
       <ProductAdminModal />

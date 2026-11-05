@@ -1,8 +1,11 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useState } from 'react';
-import ReportPeriodSelect from '../../ui/ReportPeriodSelect';
+import ReportPeriodSelect from '../ui/ReportPeriodSelect';
 import { useChecksStates } from '../../hooks/use-checks-state';
 import { checksStateColumns } from '../../tables/checks-state.columns';
+import { reportApi } from '../../api/report.api';
+import ExportExcelButton from '@/components/ui/buttons/ExportExcelButton';
+import { formatDateTimeForFile } from '@/utils/format-date.utils';
 
 const ChecksStatesReportsTable = () => {
   const [period, setPeriod] = useState(100);
@@ -26,7 +29,14 @@ const ChecksStatesReportsTable = () => {
             Всего записей: {orders.length}
           </p>
         </div>
-        <ReportPeriodSelect period={period} onChange={setPeriod} />
+        <div className="flex flex-wrap items-center gap-3">
+          <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+          <ExportExcelButton
+            onExport={() => reportApi.exportChecksStates(period)}
+            fileName={`checks-states_${period}-days_${formatDateTimeForFile(new Date())}.xlsx`}
+          />
+        </div>
       </div>
 
       <AdminTable
@@ -34,6 +44,7 @@ const ChecksStatesReportsTable = () => {
         columns={checksStateColumns}
         getRowId={(order) => order.id}
         horizontalScroll
+        isSearching={false}
       />
     </section>
   );

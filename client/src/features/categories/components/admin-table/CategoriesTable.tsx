@@ -86,6 +86,7 @@ const CategoriesTable = () => {
         getRowId={(category) => category.id}
         onEdit={onEdit}
         onDelete={onDelete}
+        isSearching
         horizontalScroll
       />
       <CategoryAdminModal />

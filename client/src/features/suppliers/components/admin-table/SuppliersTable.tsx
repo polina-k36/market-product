@@ -73,6 +73,7 @@ const SuppliersTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
       <SupplierAdminModal />
     </section>

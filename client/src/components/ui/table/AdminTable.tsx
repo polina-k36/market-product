@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { IAdminTableColumn } from './admin-table.types';
-import { Pencil, Trash2, Search, Inbox } from 'lucide-react';
+import { Pencil, Trash2, Search, Inbox, FileDown } from 'lucide-react';
 
 interface IAdminTableProps<T> {
   data: T[];
   columns: IAdminTableColumn<T>[];
   getRowId: (row: T) => string | number;
+
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onDownloadPdf?: (row: T) => void;
+
+  isSearching: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
@@ -23,6 +27,8 @@ function AdminTable<T>({
   getRowId,
   onEdit,
   onDelete,
+  onDownloadPdf,
+  isSearching,
   searchValue,
   onSearchChange,
   searchPlaceholder = 'Поиск по таблице...',
@@ -32,7 +38,7 @@ function AdminTable<T>({
 }: IAdminTableProps<T>) {
   const [internalSearch, setInternalSearch] = useState('');
   const currentSearch = searchValue ?? internalSearch;
-  const hasActions = Boolean(onEdit || onDelete);
+  const hasActions = Boolean(onEdit || onDelete || onDownloadPdf);
 
   const handleSearchChange = (value: string) => {
     if (onSearchChange) {
@@ -73,11 +79,17 @@ function AdminTable<T>({
     return fallback;
   };
 
+  const actionsWidth =
+    Number(Boolean(onEdit)) * 40 +
+    Number(Boolean(onDelete)) * 40 +
+    Number(Boolean(onDownloadPdf)) * 40 +
+    16;
+
   const minTableWidth = columns.reduce(
     (total, column) =>
       total +
       getWidthInPixels(column.minWidth, getWidthInPixels(column.width, 80)),
-    hasActions ? 96 : 0,
+    hasActions ? actionsWidth : 0,
   );
 
   const getColumnStyle = (column: IAdminTableColumn<T>): CSSProperties => ({
@@ -119,16 +131,18 @@ function AdminTable<T>({
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden">
-      <div className="relative w-full shrink-0 sm:max-w-sm">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted" />
-        <input
-          type="search"
-          value={currentSearch}
-          onChange={(event) => handleSearchChange(event.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full rounded-xl border border-border bg-surface py-2.5 pr-3 pl-9 text-sm text-text-primary transition outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15"
-        />
-      </div>
+      {isSearching && (
+        <div className="relative w-full shrink-0 sm:max-w-md">
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted" />
+          <input
+            type="search"
+            value={currentSearch}
+            onChange={(event) => handleSearchChange(event.target.value)}
+            placeholder={searchPlaceholder}
+            className="w-full rounded-xl border border-border bg-surface py-2.5 pr-3 pl-9 text-sm text-text-primary transition outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15"
+          />
+        </div>
+      )}
 
       <div className="small-custom-scrollbar min-h-0 w-full max-w-full min-w-0 flex-1 overflow-auto rounded-xl border border-border">
         <table
@@ -148,7 +162,7 @@ function AdminTable<T>({
                 }}
               />
             ))}
-            {hasActions && <col style={{ width: 96 }} />}
+            {hasActions && <col style={{ width: actionsWidth }} />}
           </colgroup>
 
           <thead className="sticky top-0 z-10 bg-surface-muted">
@@ -168,7 +182,7 @@ function AdminTable<T>({
               {hasActions && (
                 <th
                   className="sticky right-0 z-20 w-24 border-b border-l border-border bg-surface-muted px-1 py-3 text-center font-semibold text-text-secondary shadow-[-6px_0_10px_-8px_rgba(0,0,0,0.25)] sm:px-2"
-                  style={{ minWidth: 96, width: 96 }}
+                  style={{ minWidth: actionsWidth, width: actionsWidth }}
                 >
                   Действия
                 </th>
@@ -197,7 +211,7 @@ function AdminTable<T>({
                 {hasActions && (
                   <td
                     className="sticky right-0 z-5 border-l border-border bg-surface px-1 py-2 shadow-[-6px_0_10px_-8px_rgba(0,0,0,0.25)] sm:px-2"
-                    style={{ minWidth: 96, width: 96 }}
+                    style={{ minWidth: actionsWidth, width: actionsWidth }}
                   >
                     <div className="flex items-center justify-center gap-1">
                       {onEdit && (
@@ -219,6 +233,17 @@ function AdminTable<T>({
                           className="cursor-pointer rounded-lg p-2 text-text-secondary transition hover:bg-danger/10 hover:text-danger"
                         >
                           <Trash2 size={16} />
+                        </button>
+                      )}
+                      {onDownloadPdf && (
+                        <button
+                          type="button"
+                          onClick={() => onDownloadPdf(row)}
+                          aria-label="Скачать PDF"
+                          title="Скачать PDF"
+                          className="cursor-pointer rounded-lg p-2 text-text-secondary transition hover:bg-primary-soft hover:text-primary"
+                        >
+                          <FileDown size={16} />
                         </button>
                       )}
                     </div>

@@ -2,6 +2,8 @@ import AdminTable from '@/components/ui/table/AdminTable';
 import { invoiceColumns } from '../../tables/invoice-columns';
 import type { IInvoice } from '../../types/invoice.types';
 import Button from '@/components/ui/buttons/Button';
+import { invoiceApi } from '../../api/invoice.api';
+import { useNotificationStore } from '@/stores/notification/notification.store';
 
 interface IInvoicesTableProp {
   title: string;
@@ -18,7 +20,37 @@ const InvoicesTable = ({
   onDelete,
   onEdit,
 }: IInvoicesTableProp) => {
+  const addNotification = useNotificationStore(
+    (state) => state.addNotification,
+  );
+
   if (!invoices) return null;
+
+  const handleDownloadPdf = (id: number) => {
+    invoiceApi
+      .exportInvoicePdf(id)
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = `invoice-${id}.pdf`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      })
+      .catch(() => {
+        addNotification({
+          type: 'error',
+          title: 'Не удалось скачать накладную',
+          description: 'Попробуйте скачать документ ещё раз.',
+          duration: 3000,
+        });
+      });
+  };
 
   return (
     <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-5 overflow-hidden">
@@ -43,7 +75,9 @@ const InvoicesTable = ({
         getRowId={(invoice) => invoice.id}
         onEdit={onEdit}
         onDelete={onDelete}
+        onDownloadPdf={(row) => handleDownloadPdf(row.id)}
         horizontalScroll
+        isSearching
       />
     </section>
   );

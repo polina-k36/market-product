@@ -90,6 +90,7 @@ const ShopsTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
       <ShopAdminModal />
     </section>

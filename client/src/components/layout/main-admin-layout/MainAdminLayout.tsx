@@ -56,7 +56,6 @@ const navigationGroups: INavigationGroup[] = [
       { id: 'deliveries', label: 'Способы доставки', icon: Truck },
       { id: 'nds', label: 'Ставки НДС', icon: Percent },
       { id: 'units', label: 'Единицы измерения', icon: Ruler },
-      { id: 'roles', label: 'Роли', icon: ShieldCheck },
       { id: 'suppliers', label: 'Поставщики', icon: Factory },
     ],
   },

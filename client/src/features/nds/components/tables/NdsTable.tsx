@@ -82,6 +82,7 @@ const NdsTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
 
       <NdsAdminModal />

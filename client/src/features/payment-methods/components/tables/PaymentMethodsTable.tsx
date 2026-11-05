@@ -86,6 +86,7 @@ const PaymentMethodsTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
 
       <PaymentMethodAdminModal />

@@ -26,3 +26,20 @@ export const formatDateTime = (
   };
   return new Intl.DateTimeFormat(locale, defaultOptions).format(new Date(date));
 };
+
+export const formatDateTimeForFile = (date: Date) => {
+  const formattedDate = date
+    .toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    .replace(',', '')
+    .replace(/\s/g, '_')
+    .replace(/\./g, '-')
+    .replace(/:/g, '-');
+
+  return formattedDate;
+};

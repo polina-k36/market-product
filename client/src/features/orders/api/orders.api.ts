@@ -75,4 +75,11 @@ export const ordersApi = {
     );
     return data.data;
   },
+  exportOrderPdf: async (id: number): Promise<Blob> => {
+    const response = await api.get(`/orders/${id}/pdf`, {
+      responseType: 'blob',
+    });
+
+    return response.data;
+  },
 };

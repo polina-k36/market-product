@@ -46,6 +46,7 @@ const UsersTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
     </section>
   );

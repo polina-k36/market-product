@@ -1,8 +1,11 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useState } from 'react';
-import ReportPeriodSelect from '../../ui/ReportPeriodSelect';
+import ReportPeriodSelect from '../ui/ReportPeriodSelect';
 import { useAvgOrders } from '../../hooks/use-avg-orders';
 import { avgColumns } from '../../tables/avg.columns';
+import ExportExcelButton from '@/components/ui/buttons/ExportExcelButton';
+import { reportApi } from '../../api/report.api';
+import { formatDateTimeForFile } from '@/utils/format-date.utils';
 
 const AvgOrdersReportsTable = () => {
   const [period, setPeriod] = useState(100);
@@ -26,7 +29,15 @@ const AvgOrdersReportsTable = () => {
             Всего записей: {orders.length}
           </p>
         </div>
-        <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+          <ExportExcelButton
+            onExport={() => reportApi.exportAvgOrders(period)}
+            fileName={`avg-orders_${period}-days_${formatDateTimeForFile(new Date())}.xlsx`}
+          />
+        </div>
       </div>
 
       <AdminTable
@@ -34,6 +45,7 @@ const AvgOrdersReportsTable = () => {
         columns={avgColumns}
         getRowId={(order) => order.id}
         horizontalScroll
+        isSearching={false}
       />
     </section>
   );

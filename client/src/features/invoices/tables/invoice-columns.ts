@@ -30,8 +30,8 @@ export const invoiceColumns: IAdminTableColumn<IInvoice>[] = [
   {
     key: 'invoiceType',
     title: 'Тип накладной',
-    width: 180,
-    minWidth: 130,
+    width: 150,
+    minWidth: 100,
     align: 'left',
     value: (invoice) => invoice.invoiceType,
   },
@@ -46,8 +46,8 @@ export const invoiceColumns: IAdminTableColumn<IInvoice>[] = [
   {
     key: 'orderId',
     title: 'Номер заказа',
-    width: 180,
-    minWidth: 130,
+    width: 110,
+    minWidth: 80,
     align: 'left',
     value: (invoice) => invoice.orderId,
   },

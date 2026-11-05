@@ -1,8 +1,11 @@
 import AdminTable from '@/components/ui/table/AdminTable';
 import { useState } from 'react';
-import ReportPeriodSelect from '../../ui/ReportPeriodSelect';
+import ReportPeriodSelect from '../ui/ReportPeriodSelect';
 import { usePopularCategories } from '../../hooks/use-popular-categories';
 import { popularCategoryColumns } from '../../tables/popular-category.columns';
+import ExportExcelButton from '@/components/ui/buttons/ExportExcelButton';
+import { reportApi } from '../../api/report.api';
+import { formatDateTimeForFile } from '@/utils/format-date.utils';
 
 const PopularCategoriesReportsTable = () => {
   const [period, setPeriod] = useState(100);
@@ -26,7 +29,15 @@ const PopularCategoriesReportsTable = () => {
             Всего записей: {categories.length}
           </p>
         </div>
-        <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <ReportPeriodSelect period={period} onChange={setPeriod} />
+
+          <ExportExcelButton
+            onExport={() => reportApi.exportPopularCategories(period)}
+            fileName={`popular-categories_${period}-days_${formatDateTimeForFile(new Date())}.xlsx`}
+          />
+        </div>
       </div>
 
       <AdminTable
@@ -34,6 +45,7 @@ const PopularCategoriesReportsTable = () => {
         columns={popularCategoryColumns}
         getRowId={(category) => category.id}
         horizontalScroll
+        isSearching={false}
       />
     </section>
   );

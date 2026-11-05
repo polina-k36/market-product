@@ -86,6 +86,7 @@ const DeliveryMethodsTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
 
       <DeliveryMethodAdminModal />

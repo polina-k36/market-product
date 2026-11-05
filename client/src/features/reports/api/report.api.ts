@@ -63,4 +63,53 @@ export const reportApi = {
     );
     return data.data;
   },
+
+  exportAllChecksExcel: async (period: number): Promise<Blob> => {
+    const { data } = await api.get('/reports/all-checks/excel', {
+      params: { period },
+      responseType: 'blob',
+    });
+
+    return data;
+  },
+
+  exportChecksStates: async (period: number): Promise<Blob> => {
+    const { data } = await api.get('/reports/checks-state/excel', {
+      responseType: 'blob',
+      params: {
+        period,
+      },
+    });
+    return data;
+  },
+
+  exportAvgOrders: async (period: number): Promise<Blob> => {
+    const { data } = await api.get('/reports/avg/excel', {
+      params: {
+        responseType: 'blob',
+        period,
+      },
+    });
+    return data;
+  },
+
+  exportPopularCategories: async (period: number): Promise<Blob> => {
+    const { data } = await api.get('/reports/popular-categories/excel', {
+      responseType: 'blob',
+      params: {
+        period,
+      },
+    });
+    return data;
+  },
+
+  exportPopularProducts: async (period: number): Promise<Blob> => {
+    const { data } = await api.get('/reports/popular-products/excel', {
+      responseType: 'blob',
+      params: {
+        period,
+      },
+    });
+    return data;
+  },
 };

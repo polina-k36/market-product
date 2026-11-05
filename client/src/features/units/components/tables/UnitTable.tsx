@@ -82,6 +82,7 @@ const UnitTable = () => {
         onEdit={onEdit}
         onDelete={onDelete}
         horizontalScroll
+        isSearching
       />
 
       <NdsAdminModal />
